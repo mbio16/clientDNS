@@ -63,7 +63,13 @@ public class UInt16{
 	  byte [] a = new byte [] {(byte) 0x00,(byte) 0x00,bytes[1],bytes[0]};
 	  ByteBuffer wrapper = java.nio.ByteBuffer.wrap(a);
 	  return new UInt16(wrapper.getInt());
-  } 
+  }
+  
+  public UInt16 loadFromBytes(byte byte0,byte byte1) {
+	  byte [] a = new byte [] {(byte) 0x00,(byte) 0x00,byte1,byte0};
+	  ByteBuffer wrapper = java.nio.ByteBuffer.wrap(a);
+	  return new UInt16(wrapper.getInt());
+  }
   public UInt16 generateRandom() {
 	  Random random = new Random();
 	  return new UInt16(random.nextInt(MAX_VALUE));
