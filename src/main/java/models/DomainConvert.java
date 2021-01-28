@@ -63,6 +63,7 @@ public class DomainConvert {
 		LOGGER.info(result);
 		return result;
 	}
+	
     public static boolean isValidDomainName(String domainName) {
         return pDomainNameOnly.matcher(domainName).find();
     }
