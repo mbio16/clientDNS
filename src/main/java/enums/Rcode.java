@@ -14,4 +14,13 @@ public enum Rcode {
     private Rcode(Byte code) {
         this.code = code;
     }
+	
+        public static Rcode getTypeByCode(byte code){
+            for(Rcode e :Rcode.values()){
+                if(e.code == code) return e;
+            }
+            return null;
+        }
+    	
+
 }

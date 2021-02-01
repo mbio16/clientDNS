@@ -1,23 +1,35 @@
 package enums;
 
+import models.UInt16;
+
 public enum Qcount {
-	    A((byte)1),
-	    AAAA((byte) 28),
-		CDNSKEY((byte) 60),
-		CNAME((byte) 5),
-		DNSKEY((byte)48),
-		DS((byte) 39),
-		PTR((byte) 12),
-		SOA((byte) 6),
-		MX((byte) 15),
-		RRSIG((byte) 46),
-		SIG((byte) 24),
-		TXT((byte) 16),
-		CAA((byte) 257),
-		CERT((byte) 37);
+	    A(1),
+	    AAAA(28),
+		CDNSKEY(60),
+		CNAME(5),
+		DNSKEY(48),
+		DS(39),
+		PTR(12),
+		SOA(6),
+		MX(15),
+		RRSIG(46),
+		SIG(24),
+		TXT(16),
+		CAA(257),
+		CERT(37);
 		
-		public byte code;
-	    private Qcount(Byte code) {
+		public UInt16 code;
+	    private Qcount(UInt16 code) {
 	        this.code = code;
 	    }
+	    private Qcount(int code) {
+	    	this.code = new UInt16(code);
+	    }
+	    public static Qcount getTypeByCode(UInt16 code){
+	        for(Qcount type : Qcount.values()){
+	            if(type.code.equals(code)) return type;
+	        }
+	        return null;
+	    }
+	    
 	}

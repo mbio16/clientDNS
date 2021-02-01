@@ -9,5 +9,12 @@ public enum OpCode {
     private OpCode(Byte code) {
         this.code = code;
     }
+    
+    public static OpCode getTypeByCode(byte code){
+        for(OpCode e :OpCode.values()){
+            if(e.code == code) return e;
+        }
+        return null;
+    }
 }
 
