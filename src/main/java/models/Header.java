@@ -26,9 +26,10 @@ import enums.Tc;
 		private UInt16		AnCount;
 		private UInt16		NsCount;
 		private UInt16		ArCount;
+		private static final int size = 12;
+		
+		
 
-		
-		
 		public Header(boolean recursion, boolean dnssec, int numberOfQueries) {
 			id = new UInt16().generateRandom();
 			//id = new UInt16()
@@ -109,5 +110,7 @@ import enums.Tc;
 			return this;
 		}
 		
-		
+		public static int getSize() {
+			return size;
+		}
 }

@@ -1,6 +1,8 @@
 package models;
 
-import java.nio.charset.StandardCharsets;
+
+
+import java.util.Arrays;
 
 import enums.Qcount;
 import enums.Qtype;
@@ -8,18 +10,24 @@ import enums.Qtype;
 public class Request {
 
 	private String qName;
+	private byte [] nameInBytes;
 	private Qcount qCount;
 	private Qtype qtype;
 	private static final int BYTE_SIZE_OF_QCLASS_AND_QTYPE = 4;
+	private int size;
+	private int endIndex; 
 	public Request(String qName,Qcount qCount) throws Exception {
-		this.qName = DomainConvert.encodeDNS(qName);
+		this.qName = qName;
+		this.nameInBytes = DomainConvert.encodeDNS(qName);
 		this.qCount = qCount;
 		this.qtype = Qtype.IN;
+		this.endIndex = 0;
+		this.size = this.nameInBytes.length+BYTE_SIZE_OF_QCLASS_AND_QTYPE;
 	}
 	
 	public Request() {};
+	
 	public byte[] getRequestAsBytes() {
-		byte [] nameInBytes = qName.getBytes(StandardCharsets.US_ASCII);
 		
 		int lenghtOfName = nameInBytes.length;
 		
@@ -35,23 +43,39 @@ public class Request {
 	}
 	
 	
+
+
 	@Override
 	public String toString() {
-		return "Request [qName=" + qName + ", qCount=" + qCount + ", qtype=" + qtype + "]";
+		return "Request [qName=" + qName + ", nameInBytes=" + Arrays.toString(nameInBytes) + ", qCount=" + qCount
+				+ ", qtype=" + qtype + ", endIndex=" + endIndex + "]";
 	}
 
-	public Request parseRequest(byte [] request) {
-		int size = request.length - BYTE_SIZE_OF_QCLASS_AND_QTYPE;
-		byte [] encodedName = new byte[size];
-		for (int i = 0; i < size; i++) {
-			encodedName[i]=request[i];
+	public int getSize() {
+		return size;
+	}
+
+	public Request parseRequest(byte [] request,int startIndex) {
+		
+		//pøedìlat
+		int nameEndIndex = DomainConvert.getIndexOfLastByteOfName(request, startIndex);
+		
+		this.endIndex = nameEndIndex + BYTE_SIZE_OF_QCLASS_AND_QTYPE;
+
+		
+		byte [] encodedName = new byte[nameEndIndex-startIndex+1];
+		int j=0;
+		for (int i = startIndex; i < nameEndIndex+1; i++) {
+			encodedName[j] = request[i];
+			j++;
 		}
-		String name= new String(encodedName);
-		this.qName = DomainConvert.decodeDNS(name);
+		this.nameInBytes = encodedName;
+		this.qName = DomainConvert.decodeDNS(encodedName);
 		System.out.println(qName);
 		
-		this.qCount =  Qcount.getTypeByCode(new UInt16().loadFromBytes(request[size],request[size+1]));
-		this.qtype = Qtype.getTypeByCode(new UInt16().loadFromBytes(request[size+2],request[size+3]));
+		this.qCount =  Qcount.getTypeByCode(new UInt16().loadFromBytes(request[this.endIndex-3],request[this.endIndex-2]));
+		this.qtype = Qtype.getTypeByCode(new UInt16().loadFromBytes(request[this.endIndex-1],request[this.endIndex]));
+		this.size = nameInBytes.length+BYTE_SIZE_OF_QCLASS_AND_QTYPE;
 		return this;
 	}
 }

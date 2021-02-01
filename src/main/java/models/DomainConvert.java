@@ -2,6 +2,7 @@ package models;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
@@ -14,57 +15,65 @@ public class DomainConvert {
 	
 	private static Logger LOGGER = Logger.getLogger(DomainConvert.class.getName());
 	
-	public static String encodeDNS(String domain) throws Exception {
+	public static byte [] encodeDNS(String domain) throws Exception {
 		if (!Charset.forName("US-ASCII").newEncoder().canEncode(domain)) {
 			domain = Punycode.toPunycode(domain);
 		}
 		if(!isValidDomainName(domain)) {
 			throw new Exception("Domain not valid");
 		}
-		String result = "";
+		ArrayList<Byte> resultByte = new ArrayList<Byte>();
 		String splited [] = domain.split("\\.");
-		for (String string : splited) {
-			
-			result += string.length() + string;
+		for (String string : splited) {			
+			resultByte.add((byte) string.length());
+			 byte [] toAdd = string.getBytes("Us-ASCII");
+			for (int i = 0; i < toAdd.length; i++) {
+				resultByte.add(toAdd[i]);
+			}
 		}	
-		result += "0";
-		LOGGER.info("Domain name encode: " + result);
-		return result;
+		resultByte.add((byte) 0x00);
+		byte [] arrayToReturn = new byte [resultByte.size()];
+		
+		for (int i = 0; i < arrayToReturn.length; i++) {
+			arrayToReturn[i] = resultByte.get(i);
+		}
+		return arrayToReturn;
 	}
 	
-	public static String decodeDNS(String encodedDomain) {
+	public static String decodeDNS(byte [] encodedDomain) {
 		int passed = 0;
 		String result = "";
-		try {
-			byte [] byteDomain = encodedDomain.getBytes("US-ASCII");
-			int i = 67;
-			while (i !=0 ) {
-			char first = (char) byteDomain[passed];
-			if(Integer.parseInt(Character.toString(first))==0) {
-				break;
-			}
-			char second = (char) byteDomain[passed+1];
-			if(Character.isDigit(second)) {
-				int size =Integer.parseInt(Character.toString(first) + Character.toString(second));
-				result += encodedDomain.substring(passed+2, passed+size+2) + ".";
-				passed += size+2;
-			}
-			else {
-				int size =Integer.parseInt(Character.toString(first));
-				result += encodedDomain.substring(passed+1, passed+size+1) + ".";
-				passed += size+1;
-				}
-			i--;
-			}
- 		} catch (UnsupportedEncodingException e) {
-			LOGGER.severe("Cannot convert domain:  "+ encodedDomain +" " + e.toString());
+		while(true) {
+		int size = (int) encodedDomain[passed];
+		if (size == 0) 
+		{
+			return result.substring(0,result.length()-1);
 		}
-		result = result.substring(0,result.length()-1);
-		LOGGER.info(result);
-		return result;
+		else {
+		for (int i = passed+1; i < passed+size+1; i++) {
+			result +=(char)encodedDomain[i];
+		}
+		passed += size+1;
+		result += ".";
+		}
+		}
+	}
+	
+	public static int getIndexOfLastByteOfName(byte[] wholeAnswerSection, int start) {
+		 int position = start;
+		 while(true) {
+			 if ((int) wholeAnswerSection[position] == 0) {
+				return position;
+			}
+			 else {
+				 position +=(int) wholeAnswerSection[position] +1;
+			 }
+		 }
+		 
 	}
 	
     public static boolean isValidDomainName(String domainName) {
         return pDomainNameOnly.matcher(domainName).find();
+        
     }
 }
