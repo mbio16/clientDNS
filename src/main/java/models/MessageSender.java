@@ -8,11 +8,15 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import enums.APPLICATION_PROTOCOL;
 import enums.Qcount;
 import enums.TRANSPORT_PROTOCOL;
+import exceptions.TimeOutException;
 
 public class MessageSender {
 	private Header header;
@@ -21,32 +25,38 @@ public class MessageSender {
 	private APPLICATION_PROTOCOL application_protocol;
 	private static final int DNS_PORT = 53;
 	private byte[] messageAsBytes;
-	private String resolverIP;
+	//private String resolverIP;
 	private InetAddress ip;
 	private int size;
 	private Socket socket;
+	private int messagesSent;
+	private byte  [] recieveReply;
+	private long timeElapsed;
+	private static final int MAX_MESSAGES_SENT=3;
+	private static final int TIME_OUT_MILLIS = 3000;
+	
+	private static Logger LOGGER = Logger.getLogger(DomainConvert.class.getName());
 	public MessageSender(boolean recursion, boolean dnssec, String domain, Qcount[] types,
-			TRANSPORT_PROTOCOL transport_protocol, APPLICATION_PROTOCOL application_protocol,String resolverIP) {
-
-		try {
+			TRANSPORT_PROTOCOL transport_protocol, APPLICATION_PROTOCOL application_protocol,String resolverIP) throws Exception {
 			requests = new ArrayList<Request>();
 			header = new Header(true, true, types.length);
 			size = Header.getSize();
-			for (Qcount qcount : types) {
-				Request r = new Request(domain, qcount);
-				requests.add(r);
-				size += r.getSize();
-			}
-			this.resolverIP = resolverIP;
+			addRequests(types, domain);
+			//this.resolverIP = resolverIP;
 			this.transport_protocol = transport_protocol;
 			this.application_protocol = application_protocol;
 			this.ip =InetAddress.getByName(resolverIP);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			this.messagesSent = 0;
+			this.recieveReply = new byte [1024];
 	}
 
+	private void addRequests(Qcount [] types, String domain) throws Exception {
+		for (Qcount qcount : types) {
+			Request r = new Request(domain, qcount);
+			requests.add(r);
+			size += r.getSize();
+		}
+	}
 	public void send() throws Exception {
 		switch (application_protocol) {
 		case DNS:
@@ -73,18 +83,35 @@ public class MessageSender {
 		}
 	}
 
-	private void dnsOverUDP() throws Exception {
-		if (size>512) {
-			throw new Exception("512");
-		}
-		try {
+	private void dnsOverUDP() throws TimeOutException, IOException {
+		assert size>512 : "Too big  than512";
+		messagesSent = 0;
 		messageToBytes();
-		DatagramPacket datagramPacket = new DatagramPacket(messageAsBytes, messageAsBytes.length,ip,DNS_PORT);
-		new DatagramSocket().send(datagramPacket);
+		DatagramSocket datagramSocket = new DatagramSocket();
+		boolean run = true;
+		while (run) {
+			try {
+				if(messagesSent==MAX_MESSAGES_SENT) return;
+			DatagramPacket responsePacket = new DatagramPacket(recieveReply, recieveReply.length);
+			DatagramPacket datagramPacket = new DatagramPacket(messageAsBytes, messageAsBytes.length,ip,DNS_PORT);
+			datagramSocket.setSoTimeout(TIME_OUT_MILLIS);
+			datagramSocket.send(datagramPacket);
+			datagramSocket.receive(responsePacket);
+			run = false;
+			//parseResponse(false);
+			}
+			catch (SocketTimeoutException e) {
+	            // timeout exception.
+	            LOGGER.warning("Time out for the: " + (messagesSent+1) + " message");
+	            if(messagesSent==MAX_MESSAGES_SENT) {
+	            	socket.close();
+	            	throw new TimeOutException();
+	            }
+	        }
+			messagesSent++;
 		}
-		catch (Exception e) {
-			throw new Exception(e.toString());
-		}
+		
+		
 	}
 
 	private void dnsOverTcp() throws IOException {
@@ -101,6 +128,11 @@ public class MessageSender {
 		socket.close();
 	}
 	
+//	private void saveResponse(boolean tcp) {
+//		LOGGER.info("We got some teply for query");
+//		if (!tcp) {			
+//		}
+//	}
 	private void messageToBytes() {
 		int curentIndex = 0;
 		if(transport_protocol == TRANSPORT_PROTOCOL.TCP) {
@@ -129,4 +161,22 @@ public class MessageSender {
 		}
 		
 	}
+
+	public Header getHeader() {
+		return header;
+	}
+
+	public int getMessagesSent() {
+		return messagesSent;
+	}
+
+	public byte[] getRecieveReply() {
+		return recieveReply;
+	}
+
+	public long getTimeElapsed() {
+		return timeElapsed;
+	}
+	
+	
 }

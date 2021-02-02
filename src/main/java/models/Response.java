@@ -5,9 +5,8 @@ import enums.Qtype;
 
 public class Response {
 
-	private byte [] wholeMessage;
+	private byte [] rawMessage;
 	private byte [] name;
-	private byte [] response;
 	private String nameAsString;
 	private Qcount qcount;
 	private Qtype qtype;
@@ -15,14 +14,21 @@ public class Response {
 	private UInt16 rdLenght;
 	private int byteSize;
 	private int endIndex;
-	public Response(byte [] wholeMessage, byte [] response) {
-		this.wholeMessage = wholeMessage;
-		this.response = response;
+	public Response(byte [] rawMessage) {
+		this.rawMessage = rawMessage;
 	}
 	
-//	private void parseResponse() {
-//		res
-//	}
+	public void parseResponse(int startIndex) {
+		int currentIndex = startIndex;
+		byte firstByte = rawMessage[currentIndex];
+		boolean [] firstByteAsArray = DataTypesConverter.byteToBoolArr(firstByte, 8);
+		if (firstByteAsArray[6] && firstByteAsArray[7]) {
+			//comprese
+			
+		}
+		
+		
+	}
 	
 	
 	

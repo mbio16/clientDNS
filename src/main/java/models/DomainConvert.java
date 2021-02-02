@@ -1,9 +1,8 @@
 package models;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.logging.Logger;
+//import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 public class DomainConvert {
@@ -13,7 +12,7 @@ public class DomainConvert {
         pDomainNameOnly = Pattern.compile(DOMAIN_NAME_PATTERN);
     }
 	
-	private static Logger LOGGER = Logger.getLogger(DomainConvert.class.getName());
+	//private static Logger LOGGER = Logger.getLogger(DomainConvert.class.getName());
 	
 	public static byte [] encodeDNS(String domain) throws Exception {
 		if (!Charset.forName("US-ASCII").newEncoder().canEncode(domain)) {

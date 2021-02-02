@@ -3,6 +3,7 @@ package models;
 
 
 import java.util.Arrays;
+import java.util.logging.Logger;
 
 import enums.Qcount;
 import enums.Qtype;
@@ -16,6 +17,8 @@ public class Request {
 	private static final int BYTE_SIZE_OF_QCLASS_AND_QTYPE = 4;
 	private int size;
 	private int endIndex; 
+	
+	private static final Logger LOGGER = Logger.getLogger(Language.class.getName());
 	public Request(String qName,Qcount qCount) throws Exception {
 		this.qName = qName;
 		this.nameInBytes = DomainConvert.encodeDNS(qName);
@@ -70,12 +73,11 @@ public class Request {
 			j++;
 		}
 		this.nameInBytes = encodedName;
-		this.qName = DomainConvert.decodeDNS(encodedName);
-		System.out.println(qName);
-		
+		this.qName = DomainConvert.decodeDNS(encodedName);	
 		this.qCount =  Qcount.getTypeByCode(new UInt16().loadFromBytes(request[this.endIndex-3],request[this.endIndex-2]));
 		this.qtype = Qtype.getTypeByCode(new UInt16().loadFromBytes(request[this.endIndex-1],request[this.endIndex]));
 		this.size = nameInBytes.length+BYTE_SIZE_OF_QCLASS_AND_QTYPE;
+		LOGGER.info(this.toString());
 		return this;
 	}
 }

@@ -77,7 +77,7 @@ import enums.Tc;
 		@Override
 		public String toString() {
 			return "Header [id=" + id.getValue() + ", qr=" + qr + ", opCode=" + opCode + ", aa=" + aa + ", tc=" + tc + ", rd=" + rd
-					+ ", ra=" + ra + ", cd=" + cd + ", ad=" + ad + ", nonathethicate=" + ", rCode=" + rCode
+					+ ", ra=" + ra + ", cd=" + cd + ", ad=" + ad + ", rCode=" + rCode
 					+ ", QdCount=" + QdCount.getValue() + ", AnCount=" + AnCount.getValue() + ", NsCount=" + NsCount.getValue() + ", ArCount=" + ArCount.getValue()
 					+ "]";
 		}
@@ -113,4 +113,21 @@ import enums.Tc;
 		public static int getSize() {
 			return size;
 		}
+		public UInt16 getId() {
+			return id;
+		}
+		public UInt16 getQdCount() {
+			return QdCount;
+		}
+		public UInt16 getAnCount() {
+			return AnCount;
+		}
+		public UInt16 getNsCount() {
+			return NsCount;
+		}
+		public UInt16 getArCount() {
+			return ArCount;
+		}
+		
+		
 }
