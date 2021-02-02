@@ -8,7 +8,7 @@ public class Response {
 	private byte [] rawMessage;
 	private byte [] name;
 	private String nameAsString;
-	private Qcount qcount;
+	private Qcount qcount;;
 	private Qtype qtype;
 	private UInt16 ttl;
 	private UInt16 rdLenght;
