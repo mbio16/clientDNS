@@ -2,14 +2,14 @@ package models;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
@@ -47,7 +47,7 @@ public class MessageSender {
 			this.application_protocol = application_protocol;
 			this.ip =InetAddress.getByName(resolverIP);
 			this.messagesSent = 0;
-			this.recieveReply = new byte [1024];
+			this.recieveReply = new byte [512];
 	}
 
 	private void addRequests(Qcount [] types, String domain) throws Exception {
@@ -95,15 +95,18 @@ public class MessageSender {
 			DatagramPacket responsePacket = new DatagramPacket(recieveReply, recieveReply.length);
 			DatagramPacket datagramPacket = new DatagramPacket(messageAsBytes, messageAsBytes.length,ip,DNS_PORT);
 			datagramSocket.setSoTimeout(TIME_OUT_MILLIS);
+			Instant start = Instant.now(); 
 			datagramSocket.send(datagramPacket);
 			datagramSocket.receive(responsePacket);
+			Instant finish = Instant.now();
+			timeElapsed = Duration.between(start, finish).toMillis();
 			run = false;
-			//parseResponse(false);
 			}
 			catch (SocketTimeoutException e) {
 	            // timeout exception.
 	            LOGGER.warning("Time out for the: " + (messagesSent+1) + " message");
 	            if(messagesSent==MAX_MESSAGES_SENT) {
+	            	timeElapsed = 0;
 	            	socket.close();
 	            	throw new TimeOutException();
 	            }
@@ -122,17 +125,20 @@ public class MessageSender {
 		output.write(messageAsBytes);
 		InputStream input = socket.getInputStream();
 
-		InputStreamReader reader = new InputStreamReader(input);
-		char character = (char) reader.read();  // reads a single character
-		System.out.println(character);
+		byte [] recieve = input.readAllBytes();
+		removeFirstTwoBytesFromReply(recieve);
 		socket.close();
+		
+		
 	}
-	
-//	private void saveResponse(boolean tcp) {
-//		LOGGER.info("We got some teply for query");
-//		if (!tcp) {			
-//		}
-//	}
+	private void removeFirstTwoBytesFromReply(byte [] recieve) {
+		this.recieveReply = new byte [recieve.length-2];
+		int j=0;
+		for (int i = 2; i < recieve.length; i++) {
+			recieveReply[j] = recieve[i];
+			j++;
+		}
+	}
 	private void messageToBytes() {
 		int curentIndex = 0;
 		if(transport_protocol == TRANSPORT_PROTOCOL.TCP) {
@@ -178,5 +184,9 @@ public class MessageSender {
 		return timeElapsed;
 	}
 	
+	public void printStats() {
+		System.out.println("number of tries: " + this.messagesSent);
+		System.out.println("Time to send: " + this.timeElapsed);
+	}
 	
 }

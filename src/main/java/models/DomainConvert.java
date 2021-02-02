@@ -58,6 +58,24 @@ public class DomainConvert {
 		}
 	}
 	
+	public static String decodeDNS(byte [] encodedDomain, int startIndex) {
+		int passed = startIndex;
+		String result = "";
+		while(true) {
+		int size = (int) encodedDomain[passed];
+		if (size == 0) 
+		{
+			return result.substring(0,result.length()-1);
+		}
+		else {
+		for (int i = passed+1; i < passed+size+1; i++) {
+			result +=(char)encodedDomain[i];
+		}
+		passed += size+1;
+		result += ".";
+		}
+		}
+	}
 	public static int getIndexOfLastByteOfName(byte[] wholeAnswerSection, int start) {
 		 int position = start;
 		 while(true) {

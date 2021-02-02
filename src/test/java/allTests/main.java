@@ -13,10 +13,11 @@ public class main {
 		MessageSender sender;
 		MessageParser parser;
 		try {
-			sender = new MessageSender(true, true, "seznam.cz",a ,TRANSPORT_PROTOCOL.UDP,APPLICATION_PROTOCOL.DNS,"8.8.8.8");
+			sender = new MessageSender(true, true, "seznam.cz",a ,TRANSPORT_PROTOCOL.TCP,APPLICATION_PROTOCOL.DNS,"8.8.8.8");
 			sender.send();
 			parser = new MessageParser(sender.getRecieveReply(),sender.getHeader());
 			parser.parse();
+			System.out.println(parser.toString());
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

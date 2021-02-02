@@ -60,7 +60,7 @@ public class Request {
 
 	public Request parseRequest(byte [] request,int startIndex) {
 		
-		//pøedìlat
+		
 		int nameEndIndex = DomainConvert.getIndexOfLastByteOfName(request, startIndex);
 		
 		this.endIndex = nameEndIndex + BYTE_SIZE_OF_QCLASS_AND_QTYPE;

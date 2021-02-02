@@ -1,5 +1,6 @@
 package models;
 
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import exceptions.QueryIdNotMatchException;
@@ -13,6 +14,8 @@ public class MessageParser {
 	private ArrayList<Response> arcountResponses;
 	private byte [] rawMessage;
 	private int currentIndex; 
+	
+	
 	public MessageParser(byte [] rawMessage, Header queryHeader) {
 	this.rawMessage = rawMessage;
 	this.queryHeader = queryHeader;
@@ -23,7 +26,7 @@ public class MessageParser {
 	this.arcountResponses = new ArrayList<Response>();
 	}
 	
-	public void parse() throws QueryIdNotMatchException {
+	public void parse() throws QueryIdNotMatchException, UnknownHostException {
 		header = new Header().parseHead(rawMessage);
 		checkId();
 		currentIndex += Header.getSize();
@@ -34,16 +37,25 @@ public class MessageParser {
 		}
 		
 		for (int i = 0; i < header.getAnCount().intValue(); i++) {
-			Response r = new Response(rawMessage);
-			r.parseResponse(currentIndex);
+			Response r = new Response().parseResponse(rawMessage, currentIndex);
+			ancountResponses.add(r);
+			currentIndex = r.getEndIndex() + 1;
 		}
-		System.out.println(currentIndex);
-		System.out.println(header.toString());
-		System.out.println(qcountResponses.toString());
 	}
+	
+	
 	private void checkId() throws QueryIdNotMatchException {
 		if(!queryHeader.getId().equals(header.getId())) {
 			throw new QueryIdNotMatchException();
 		}
 	}
+
+	@Override
+	public String toString() {
+		return "MessageParser [queryHeader=" + queryHeader + ", header=" + header + ", qcountResponses="
+				+ qcountResponses + ", ancountResponses=" + ancountResponses + ", nscountResponses=" + nscountResponses
+				+ ", arcountResponses=" + arcountResponses + ", currentIndex=" + currentIndex + "]";
+	}
+	
+	
 }
