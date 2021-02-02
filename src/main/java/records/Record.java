@@ -1,4 +1,4 @@
-package models.records;
+package records;
 
 public class Record {
 	protected int lenght;

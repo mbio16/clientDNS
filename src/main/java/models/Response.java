@@ -5,9 +5,9 @@ import java.nio.ByteBuffer;
 
 import enums.Qcount;
 import enums.Qtype;
-import models.records.Record;
-import models.records.RecordA;
-import models.records.RecordAAAA;
+import records.Record;
+import records.RecordA;
+import records.RecordAAAA;
 
 public class Response {
 

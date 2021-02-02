@@ -85,6 +85,7 @@ public class MessageSender {
 		}
 	}
 
+	@SuppressWarnings("resource")
 	private void dnsOverUDP() throws TimeOutException, IOException {
 		assert size>512 : "Too big  than512";
 		messagesSent = 0;

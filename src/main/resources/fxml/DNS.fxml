@@ -52,7 +52,7 @@
                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
-                        <RadioButton fx:id="ipv4RadioButton" mnemonicParsing="false" text="IPv4">
+                        <RadioButton fx:id="ipv4RadioButton" mnemonicParsing="false" selected="true" text="IPv4">
                            <font>
                               <Font size="15.0" />
                            </font>
@@ -170,7 +170,7 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
-                        <RadioButton fx:id="cloudflareIpv4RadioButton" mnemonicParsing="false" onAction="#onRadioButtonChange" text="1.1.1.1 (Cloudflare)">
+                        <RadioButton fx:id="cloudflareIpv4RadioButton" mnemonicParsing="false" onAction="#onRadioButtonChange" selected="true" text="1.1.1.1 (Cloudflare)">
                            <font>
                               <Font size="15.0" />
                            </font></RadioButton>
@@ -252,7 +252,7 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                      </rowConstraints>
                      <children>
-                        <RadioButton fx:id="udpRadioButton" mnemonicParsing="false" text="UDP">
+                        <RadioButton fx:id="udpRadioButton" mnemonicParsing="false" selected="true" text="UDP">
                            <font>
                               <Font size="15.0" />
                            </font>
@@ -278,7 +278,7 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                      </rowConstraints>
                      <children>
-                        <RadioButton fx:id="dnssecYesRadioButton" mnemonicParsing="false" text="Ano">
+                        <RadioButton fx:id="dnssecYesRadioButton" mnemonicParsing="false" selected="true" text="Ano">
                            <font>
                               <Font size="15.0" />
                            </font>
@@ -304,7 +304,7 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                      </rowConstraints>
                      <children>
-                        <RadioButton fx:id="recursiveQueryRadioButton" mnemonicParsing="false" text="Rekurzivní">
+                        <RadioButton fx:id="recursiveQueryRadioButton" mnemonicParsing="false" selected="true" text="Rekurzivní">
                            <font>
                               <Font size="15.0" />
                            </font>
@@ -369,7 +369,7 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                      </rowConstraints>
                      <children>
-                        <RadioButton fx:id="domainNameTextFieldRadioButton" mnemonicParsing="false" onAction="#onRadioButtonChange">
+                        <RadioButton fx:id="domainNameTextFieldRadioButton" mnemonicParsing="false" onAction="#onRadioButtonChange" selected="true">
                            <font>
                               <Font size="15.0" />
                            </font>

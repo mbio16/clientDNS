@@ -36,7 +36,7 @@ public class Main extends Application {
 			GeneralController controller = (GeneralController) loader.getController();
 			controller.setLanguage(language);
 			controller.setSettings(settings);
-			
+			controller.setLabels();
 			//show scene
 			newStage.show();
 

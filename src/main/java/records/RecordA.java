@@ -1,4 +1,4 @@
-package models.records;
+package records;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
