@@ -35,6 +35,8 @@ public class MessageSender {
 	private static final int MAX_MESSAGES_SENT=3;
 	private static final int TIME_OUT_MILLIS = 3000;
 	
+	//test
+
 	private static Logger LOGGER = Logger.getLogger(DomainConvert.class.getName());
 	public MessageSender(boolean recursion, boolean dnssec, String domain, Qcount[] types,
 			TRANSPORT_PROTOCOL transport_protocol, APPLICATION_PROTOCOL application_protocol,String resolverIP) throws Exception {
