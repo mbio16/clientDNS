@@ -2,7 +2,7 @@ package models;
 
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
-
+import org.json.simple.JSONObject;
 import enums.Qcount;
 import enums.Qtype;
 import records.Record;
@@ -21,6 +21,11 @@ public class Response {
 	private int endIndex;
 	private Record rdata;
 	private static final int  COMPRESS_CONTANT_NUMBER=49152;
+	private static final String DATA_KEY="Data";
+	private static final String NAME_KEY="Name";
+	private static final String TYPE_KEY="Type";
+	private static final String TTL_KEY="Time to Live";
+	private static final String CLASS_KEY="Class";
 	public Response() {
 		
 	}
@@ -79,6 +84,17 @@ public class Response {
 		return "Response [nameAsString=" + nameAsString + ", qcount="
 				+ qcount + ", qtype=" + qtype + ", ttl=" + ttl + ", rdLenght=" + rdLenght + ", byteSize=" + byteSize
 				+ ", endIndex=" + endIndex + ", rdata=" + rdata + "]";
+	}
+	
+	@SuppressWarnings("unchecked")
+	public JSONObject getAsJson() {
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put(NAME_KEY,nameAsString);
+		jsonObject.put(TYPE_KEY,qcount.toString());
+		jsonObject.put(CLASS_KEY, qtype);
+		jsonObject.put(DATA_KEY,rdata.getDataAsString());
+		jsonObject.put(TTL_KEY,ttl);
+		return jsonObject;
 	}
 	
 	public byte[] getRawMessage() {

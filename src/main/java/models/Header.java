@@ -1,5 +1,7 @@
 package models;
 
+import org.json.simple.JSONObject;
+
 import enums.AUTHENTICATE_DATA;
 import enums.Aa;
 import enums.CHECKING_DISABLED;
@@ -28,8 +30,19 @@ import enums.Tc;
 		private UInt16		ArCount;
 		private static final int size = 12;
 		
-		
-
+		private static final String ID_KEY="Id";
+		private static final String QR_KEY="Reply";
+		private static final String OPCODE_KEY="Opcode";
+		private static final String AA_KEY="Authoritative answer";
+		private static final String TC_KEY="Fragmented";
+		private static final String RD_KEY="Recursion";
+		private static final String CHECKING_DISABLED_KEY = "Checking disabled";
+		private static final String AUTHENTICATE_DATA__KEY = "Authenticate data";
+		private static final String RCODE_KEY="Response code";
+		private static final String QDCOUNT_KEY="Number of questions";
+		private static final String ANCOUNT_KEY="Number of answers";
+		private static final String NSCOUNT_KEY="Number of authority answers";
+		private static final String ARCOUNT_KEY="Number of additional records";
 		public Header(boolean recursion, boolean dnssec, int numberOfQueries) {
 			id = new UInt16().generateRandom();
 			//id = new UInt16()
@@ -82,6 +95,23 @@ import enums.Tc;
 					+ "]";
 		}
 		
+		@SuppressWarnings("unchecked")
+		public JSONObject getAsJson() {
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put(ID_KEY,id.getValue());
+			jsonObject.put(QR_KEY,qr.code);
+			jsonObject.put(OPCODE_KEY,opCode);
+			jsonObject.put(AA_KEY,aa.code);
+			jsonObject.put(TC_KEY,tc.code);
+			jsonObject.putRD_KEY="Recursion";
+			private static final String CHECKING_DISABLED_KEY = "Checking disabled";
+			private static final String AUTHENTICATE_DATA__KEY = "Authenticate data";
+			private static final String RCODE_KEY="Response code";
+			private static final String QDCOUNT_KEY="Number of questions";
+			private static final String ANCOUNT_KEY="Number of answers";
+			private static final String NSCOUNT_KEY="Number of authority answers";
+			private static final String ARCOUNT_KEY
+		}
 		public Header parseHead(byte[] byteHead) {
 			//id
 			this.id =  new UInt16().loadFromBytes(byteHead[0],byteHead[1]);

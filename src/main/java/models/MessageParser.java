@@ -3,6 +3,11 @@ package models;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import com.cedarsoftware.util.io.JsonObject;
+
 import exceptions.QueryIdNotMatchException;
 
 public class MessageParser {
@@ -14,6 +19,11 @@ public class MessageParser {
 	private ArrayList<Response> arcountResponses;
 	private byte [] rawMessage;
 	private int currentIndex; 
+	private static final String KEY_HEAD="Head";
+	private static final String KEY_QUESTIONS="Questions";
+	private static final String KEY_ANSWERS="Answers";
+	private static final String KEY_AUTHORITY="Authority";
+	private static final String KEY_ADDITIONAL_RECORDS = "Aditional records";
 	
 	
 	public MessageParser(byte [] rawMessage, Header queryHeader) {
@@ -41,6 +51,17 @@ public class MessageParser {
 			ancountResponses.add(r);
 			currentIndex = r.getEndIndex() + 1;
 		}
+		for (int i = 0; i < header.getNsCount().intValue(); i++) {
+			Response r = new Response().parseResponse(rawMessage, currentIndex);
+			nscountResponses.add(r);
+			currentIndex = r.getEndIndex() + 1;
+		}
+		for (int i = 0; i < header.getArCount().intValue(); i++) {
+			Response r = new Response().parseResponse(rawMessage, currentIndex);
+			arcountResponses.add(r);
+			currentIndex = r.getEndIndex() + 1;
+		}
+		
 	}
 	
 	
@@ -57,5 +78,15 @@ public class MessageParser {
 				+ ", arcountResponses=" + arcountResponses + ", currentIndex=" + currentIndex + "]";
 	}
 	
+	@SuppressWarnings("unchecked")
+	public JSONObject getAsJson() {
+		JSONObject main = new JSONObject();
+		JSONArray ns = new JSONArray();
+		for (Response response: ancountResponses ) {
+			ns.add(response.getAsJson());
+		}
+		main.put("Answers", ns);
+		return main;
+	}
 	
 }

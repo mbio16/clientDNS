@@ -17,7 +17,7 @@ public class main {
 			sender.send();
 			parser = new MessageParser(sender.getRecieveReply(),sender.getHeader());
 			parser.parse();
-			System.out.println(parser.toString());
+			System.out.println(parser.getAsJson().toJSONString());
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

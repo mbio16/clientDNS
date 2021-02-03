@@ -2,11 +2,14 @@ package records;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.HashMap;
+import org.json.simple.JSONObject;
 
 public class RecordA extends Record {
 
 	private InetAddress ipv4Address;
 	private String ipv4AddressAsString;
+	private String DATA_NAME="data";
 	public RecordA(byte[] rawMessage, int lenght, int startIndex) throws UnknownHostException {
 		super(rawMessage, lenght, startIndex);
 		parseRecord();
@@ -27,6 +30,14 @@ public class RecordA extends Record {
 	public String toString() {
 		return "RecordA [ipv4Address=" + ipv4Address + ", ipv4AddressAsString=" + ipv4AddressAsString + "]";
 	}
+	
+	
+	@Override
+	public String getDataAsString() {
+		
+		return ipv4AddressAsString;
+	}
+	
 
 	
 }

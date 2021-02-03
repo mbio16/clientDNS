@@ -1,5 +1,7 @@
 package records;
 
+import org.json.simple.JSONObject;
+
 public class Record {
 	protected int lenght;
 	protected int startIndex;
@@ -27,6 +29,10 @@ public class Record {
 		return rawMessage;
 	}
 	
+	//Has to be overided in the children
+	public String getDataAsString() {
+		return null;
+	}
 	
 	
 	
