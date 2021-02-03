@@ -1,5 +1,6 @@
 package models;
 
+import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import org.json.simple.JSONArray;
@@ -33,7 +34,7 @@ public class MessageParser {
 	this.arcountResponses = new ArrayList<Response>();
 	}
 	
-	public void parse() throws QueryIdNotMatchException, UnknownHostException {
+	public void parse() throws QueryIdNotMatchException, UnknownHostException, UnsupportedEncodingException {
 		header = new Header().parseHead(rawMessage);
 		checkId();
 		currentIndex += Header.getSize();

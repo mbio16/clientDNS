@@ -1,5 +1,6 @@
 package models;
 
+import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import org.json.simple.JSONObject;
@@ -10,6 +11,7 @@ import records.RecordA;
 import records.RecordAAAA;
 import records.RecordCNAME;
 import records.RecordNS;
+import records.RecordTXT;
 
 public class Response {
 
@@ -32,7 +34,7 @@ public class Response {
 		
 	}
 	
-	public Response parseResponse(byte [] rawMessage,int startIndex) throws UnknownHostException {
+	public Response parseResponse(byte [] rawMessage,int startIndex) throws UnknownHostException, UnsupportedEncodingException {
 		this.rawMessage = rawMessage;
 		int currentIndex = startIndex;
 		currentIndex = parseName(currentIndex);
@@ -54,7 +56,9 @@ public class Response {
 		this.rdata = parseRecord(currentIndex);
 		return this;
 	}
-	private int parseName(int startIndex) {
+	
+	private int parseName(int startIndex) {		
+		//Has to be done seperately (not in DomainConvert), because of end index
 		int positionOfNameIndex=startIndex;
 		UInt16 firstTwoBytes = new UInt16().loadFromBytes(rawMessage[startIndex],rawMessage[startIndex+1]);
 		if (firstTwoBytes.getValue()>=COMPRESS_CONTANT_NUMBER) {
@@ -70,7 +74,7 @@ public class Response {
 		return startIndex;
 	}
 	
-	private Record parseRecord(int currentIndex) throws UnknownHostException {
+	private Record parseRecord(int currentIndex) throws UnknownHostException, UnsupportedEncodingException {
 		switch (qcount) {
 		case A:
 			return new RecordA(rawMessage, rdLenght.getValue(),currentIndex);
@@ -80,6 +84,8 @@ public class Response {
 			return new RecordCNAME(rawMessage, rdLenght.getValue(),currentIndex);
 		case NS:
 			return new RecordNS(rawMessage, rdLenght.getValue(),currentIndex);
+		case TXT:
+			return new RecordTXT(rawMessage, rdLenght.getValue(),currentIndex);
 		default:
 			return null;
 		}

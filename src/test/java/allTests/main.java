@@ -9,18 +9,18 @@ import models.MessageSender;
 public class main {
 
 	public static void main(String[] args) {
-		Qcount[] a = {Qcount.NS};
+		Qcount[] a = {Qcount.TXT};
 		MessageSender sender;
 		MessageParser parser;
 		try {
-			sender = new MessageSender(true, true, "seznam.cz",a ,TRANSPORT_PROTOCOL.UDP,APPLICATION_PROTOCOL.DNS,"8.8.8.8");
+			sender = new MessageSender(true, true, "idnes.cz",a ,TRANSPORT_PROTOCOL.UDP,APPLICATION_PROTOCOL.DNS,"8.8.8.8");
 			sender.send();
 			parser = new MessageParser(sender.getRecieveReply(),sender.getHeader());
 			parser.parse();
 			
 			System.out.println(sender.getAsJsonString());
 			System.out.println(parser.getAsJsonString());
-			System.out.println(sender.getTimeElapsed());
+			//System.out.println(sender.getTimeElapsed());
 			//System.out.println(parser.getAsJson().toString());
 			
 		} catch (Exception e) {

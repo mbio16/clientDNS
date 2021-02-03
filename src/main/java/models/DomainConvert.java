@@ -85,7 +85,6 @@ public class DomainConvert {
 	}
 	
 	
-	//HAS TO BE TESTED
 	private static boolean isDnsNameCompressed(byte rawMessage [],int currentPosition) {
 		UInt16 firstTwoBytes = new UInt16().loadFromBytes(rawMessage[currentPosition],rawMessage[currentPosition+1]);
 		if (firstTwoBytes.getValue()>=COMPRESS_CONTANT_NUMBER) {			
@@ -97,12 +96,14 @@ public class DomainConvert {
 		
 	}
 	
-	//HAS TO BE TESTED
+
 	private static String getCompressedName(byte[] rawMessage, int currentPosition) {
 		UInt16 firstTwoBytes = new UInt16().loadFromBytes(rawMessage[currentPosition],rawMessage[currentPosition+1]);
 		UInt16 nameStartByte = new UInt16(firstTwoBytes.getValue()-COMPRESS_CONTANT_NUMBER);
 		return DomainConvert.decodeDNS(rawMessage,nameStartByte.getValue());
 	}
+
+// Original function	
 //	public static String decodeDNS(byte [] encodedDomain, int startIndex) {
 //		int passed = startIndex;
 //		String result = "";
