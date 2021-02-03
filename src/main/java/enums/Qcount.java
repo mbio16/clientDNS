@@ -3,10 +3,10 @@ package enums;
 import models.UInt16;
 
 public enum Qcount {
-	    A(1),
-	    AAAA(28),
+	    A(1), //done
+	    AAAA(28), //done
 		CDNSKEY(60),
-		CNAME(5),
+		CNAME(5),// has to be done -> compression
 		DNSKEY(48),
 		DS(39),
 		PTR(12),
@@ -16,7 +16,8 @@ public enum Qcount {
 		SIG(24),
 		TXT(16),
 		CAA(257),
-		CERT(37);
+		CERT(37),
+		NS(2);
 		
 		public UInt16 code;
 	    private Qcount(UInt16 code) {

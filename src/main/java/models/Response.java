@@ -8,6 +8,8 @@ import enums.Qtype;
 import records.Record;
 import records.RecordA;
 import records.RecordAAAA;
+import records.RecordCNAME;
+import records.RecordNS;
 
 public class Response {
 
@@ -74,6 +76,10 @@ public class Response {
 			return new RecordA(rawMessage, rdLenght.getValue(),currentIndex);
 		case AAAA:
 			return new RecordAAAA(rawMessage,  rdLenght.getValue(),currentIndex);
+		case CNAME:
+			return new RecordCNAME(rawMessage, rdLenght.getValue(),currentIndex);
+		case NS:
+			return new RecordNS(rawMessage, rdLenght.getValue(),currentIndex);
 		default:
 			return null;
 		}
@@ -86,6 +92,7 @@ public class Response {
 				+ ", endIndex=" + endIndex + ", rdata=" + rdata + "]";
 	}
 	
+
 	@SuppressWarnings("unchecked")
 	public JSONObject getAsJson() {
 		JSONObject jsonObject = new JSONObject();

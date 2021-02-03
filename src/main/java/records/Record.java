@@ -1,7 +1,5 @@
 package records;
 
-import org.json.simple.JSONObject;
-
 public class Record {
 	protected int lenght;
 	protected int startIndex;

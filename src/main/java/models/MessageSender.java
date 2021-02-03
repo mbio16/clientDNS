@@ -135,12 +135,13 @@ public class MessageSender {
  
 		InputStream input = socket.getInputStream();
 		byte [] recieve = input.readAllBytes();
+		socket.close();
 		
 		Instant finish = Instant.now();
 		timeElapsed = Duration.between(start,finish).toMillis();
 		
 		removeFirstTwoBytesFromReply(recieve);
-		socket.close();		
+				
 	}
 	private void removeFirstTwoBytesFromReply(byte [] recieve) {
 		this.recieveReply = new byte [recieve.length-2];

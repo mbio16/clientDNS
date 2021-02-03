@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 public class DomainConvert {
 	private static Pattern pDomainNameOnly;
     private static final String DOMAIN_NAME_PATTERN = "^((?!-)[A-Za-z0-9-]{1,63}(?<!-)\\.)+[A-Za-z]{2,6}$";
+    private static final int  COMPRESS_CONTANT_NUMBER=49152;
     static {
         pDomainNameOnly = Pattern.compile(DOMAIN_NAME_PATTERN);
     }
@@ -68,14 +69,60 @@ public class DomainConvert {
 			return result.substring(0,result.length()-1);
 		}
 		else {
-		for (int i = passed+1; i < passed+size+1; i++) {
-			result +=(char)encodedDomain[i];
-		}
-		passed += size+1;
-		result += ".";
+			if(size !=1) {
+				if(isDnsNameCompressed(encodedDomain,passed)) {
+					return result+getCompressedName(encodedDomain, passed); //HAS TO BE TESTED
+				}
+			}
+			
+			for (int i = passed+1; i < passed+size+1; i++) {
+				result +=(char)encodedDomain[i];
+			}
+			passed += size+1;
+			result += ".";
 		}
 		}
 	}
+	
+	
+	//HAS TO BE TESTED
+	private static boolean isDnsNameCompressed(byte rawMessage [],int currentPosition) {
+		UInt16 firstTwoBytes = new UInt16().loadFromBytes(rawMessage[currentPosition],rawMessage[currentPosition+1]);
+		if (firstTwoBytes.getValue()>=COMPRESS_CONTANT_NUMBER) {			
+			return true;
+		}
+		else {
+			return false;
+		}
+		
+	}
+	
+	//HAS TO BE TESTED
+	private static String getCompressedName(byte[] rawMessage, int currentPosition) {
+		UInt16 firstTwoBytes = new UInt16().loadFromBytes(rawMessage[currentPosition],rawMessage[currentPosition+1]);
+		UInt16 nameStartByte = new UInt16(firstTwoBytes.getValue()-COMPRESS_CONTANT_NUMBER);
+		return DomainConvert.decodeDNS(rawMessage,nameStartByte.getValue());
+	}
+//	public static String decodeDNS(byte [] encodedDomain, int startIndex) {
+//		int passed = startIndex;
+//		String result = "";
+//		while(true) {
+//		int size = (int) encodedDomain[passed];
+//		if (size == 0) 
+//		{
+//			return result.substring(0,result.length()-1);
+//		}
+//		else {
+//		for (int i = passed+1; i < passed+size+1; i++) {
+//			result +=(char)encodedDomain[i];
+//		}
+//		passed += size+1;
+//		result += ".";
+//		}
+//		}
+//	}
+	
+	
 	public static int getIndexOfLastByteOfName(byte[] wholeAnswerSection, int start) {
 		 int position = start;
 		 while(true) {
