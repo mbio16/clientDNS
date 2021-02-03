@@ -2,18 +2,15 @@ package models;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-
-import com.cedarsoftware.util.io.JsonObject;
-
+import com.google.gson.GsonBuilder;
 import exceptions.QueryIdNotMatchException;
 
 public class MessageParser {
 	private Header queryHeader;
 	private Header header;
-	private ArrayList<Request> qcountResponses;
+	private ArrayList<Request> qcountRequests;
 	private ArrayList<Response> ancountResponses;
 	private ArrayList<Response> nscountResponses;
 	private ArrayList<Response> arcountResponses;
@@ -30,7 +27,7 @@ public class MessageParser {
 	this.rawMessage = rawMessage;
 	this.queryHeader = queryHeader;
 	this.currentIndex = 0;
-	this.qcountResponses = new ArrayList<Request>();
+	this.qcountRequests = new ArrayList<Request>();
 	this.ancountResponses = new ArrayList<Response>();
 	this.nscountResponses = new ArrayList<Response>();
 	this.arcountResponses = new ArrayList<Response>();
@@ -42,7 +39,7 @@ public class MessageParser {
 		currentIndex += Header.getSize();
 		for (int i = 0; i < header.getQdCount().intValue(); i++) {
 			Request r = new  Request().parseRequest(rawMessage, currentIndex);
-			qcountResponses.add(r);
+			qcountRequests.add(r);
 			currentIndex += r.getSize();
 		}
 		
@@ -74,19 +71,43 @@ public class MessageParser {
 	@Override
 	public String toString() {
 		return "MessageParser [queryHeader=" + queryHeader + ", header=" + header + ", qcountResponses="
-				+ qcountResponses + ", ancountResponses=" + ancountResponses + ", nscountResponses=" + nscountResponses
+				+ qcountRequests + ", ancountResponses=" + ancountResponses + ", nscountResponses=" + nscountResponses
 				+ ", arcountResponses=" + arcountResponses + ", currentIndex=" + currentIndex + "]";
 	}
 	
 	@SuppressWarnings("unchecked")
 	public JSONObject getAsJson() {
 		JSONObject main = new JSONObject();
-		JSONArray ns = new JSONArray();
+		JSONArray qc = new JSONArray();
+		JSONArray an = new JSONArray();
+		JSONArray ns = new JSONArray(); 
+		JSONArray ar = new JSONArray();
+		for (Request request : qcountRequests) {
+			qc.add(request.getAsJson());
+		}
+		
 		for (Response response: ancountResponses ) {
+			an.add(response.getAsJson());
+		}
+		for (Response response : nscountResponses) {
 			ns.add(response.getAsJson());
 		}
-		main.put("Answers", ns);
+		for (Response response: arcountResponses) {
+			ar.add(response.getAsJson());
+		}
+		
+		main.put(KEY_HEAD,header.getAsJson());
+		main.put(KEY_QUESTIONS,qc);
+		main.put(KEY_ANSWERS,an);
+		main.put(KEY_AUTHORITY,ns);
+		main.put(KEY_ADDITIONAL_RECORDS,ar);
+		
 		return main;
 	}
 	
+	public String  getAsJsonString() {
+		return new GsonBuilder().setPrettyPrinting().create().toJson(getAsJson());
+		
+		
+	}
 }

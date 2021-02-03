@@ -12,7 +12,9 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.logging.Logger;
-
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import com.google.gson.GsonBuilder;
 import enums.APPLICATION_PROTOCOL;
 import enums.Qcount;
 import enums.TRANSPORT_PROTOCOL;
@@ -35,6 +37,8 @@ public class MessageSender {
 	private static final int MAX_MESSAGES_SENT=3;
 	private static final int TIME_OUT_MILLIS = 3000;
 	
+	private static final String KEY_HEAD="Head";
+	private static final String KEY_QUERY="Query";
 	//test
 
 	private static Logger LOGGER = Logger.getLogger(DomainConvert.class.getName());
@@ -122,17 +126,21 @@ public class MessageSender {
 
 	private void dnsOverTcp() throws IOException {
 		messageToBytes();
+		messagesSent = 1;
+		Instant start = Instant.now();
 		
 		socket = new Socket(ip,DNS_PORT);
 		OutputStream output = socket.getOutputStream();
 		output.write(messageAsBytes);
+ 
 		InputStream input = socket.getInputStream();
-
 		byte [] recieve = input.readAllBytes();
+		
+		Instant finish = Instant.now();
+		timeElapsed = Duration.between(start,finish).toMillis();
+		
 		removeFirstTwoBytesFromReply(recieve);
-		socket.close();
-		
-		
+		socket.close();		
 	}
 	private void removeFirstTwoBytesFromReply(byte [] recieve) {
 		this.recieveReply = new byte [recieve.length-2];
@@ -171,6 +179,22 @@ public class MessageSender {
 		
 	}
 
+	@SuppressWarnings("unchecked")
+	public JSONObject getAsJson() {
+		JSONObject jsonObject = new JSONObject();
+		JSONArray jsonArray = new JSONArray();
+		jsonObject.put(KEY_HEAD,header.getAsJson());
+		
+		for (Request request : requests) {
+			jsonArray.add(request.getAsJson());
+		}
+		jsonObject.put(KEY_QUERY, jsonArray);
+		return jsonObject;
+	}
+	
+	public String getAsJsonString() {
+		return new GsonBuilder().setPrettyPrinting().create().toJson(getAsJson());
+	}
 	public Header getHeader() {
 		return header;
 	}

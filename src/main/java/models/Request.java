@@ -5,6 +5,8 @@ package models;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
+import org.json.simple.JSONObject;
+
 import enums.Qcount;
 import enums.Qtype;
 
@@ -18,6 +20,9 @@ public class Request {
 	private int size;
 	private int endIndex; 
 	
+	private static final String KEY_NAME="Name";
+	private static final String KEY_QCOUNT="Type";
+	private static final String KEY_QTYPE="Class";
 	private static final Logger LOGGER = Logger.getLogger(Language.class.getName());
 	public Request(String qName,Qcount qCount) throws Exception {
 		this.qName = qName;
@@ -79,5 +84,14 @@ public class Request {
 		this.size = nameInBytes.length+BYTE_SIZE_OF_QCLASS_AND_QTYPE;
 		LOGGER.info(this.toString());
 		return this;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public JSONObject getAsJson() {
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put(KEY_NAME, qName);
+		jsonObject.put(KEY_QCOUNT, qCount);
+		jsonObject.put(KEY_QTYPE, qtype);
+		return jsonObject;
 	}
 }

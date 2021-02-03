@@ -103,14 +103,15 @@ import enums.Tc;
 			jsonObject.put(OPCODE_KEY,opCode);
 			jsonObject.put(AA_KEY,aa.code);
 			jsonObject.put(TC_KEY,tc.code);
-			jsonObject.putRD_KEY="Recursion";
-			private static final String CHECKING_DISABLED_KEY = "Checking disabled";
-			private static final String AUTHENTICATE_DATA__KEY = "Authenticate data";
-			private static final String RCODE_KEY="Response code";
-			private static final String QDCOUNT_KEY="Number of questions";
-			private static final String ANCOUNT_KEY="Number of answers";
-			private static final String NSCOUNT_KEY="Number of authority answers";
-			private static final String ARCOUNT_KEY
+			jsonObject.put(RD_KEY,rd.code);
+			jsonObject.put(CHECKING_DISABLED_KEY,cd.code);
+			jsonObject.put(AUTHENTICATE_DATA__KEY,ad.code);
+			jsonObject.put(RCODE_KEY,rCode);
+			jsonObject.put(QDCOUNT_KEY,QdCount.getValue());
+			jsonObject.put(ANCOUNT_KEY,AnCount.getValue());
+			jsonObject.put(NSCOUNT_KEY,NsCount.getValue());
+			jsonObject.put(ARCOUNT_KEY,ArCount.getValue());
+			return jsonObject;
 		}
 		public Header parseHead(byte[] byteHead) {
 			//id
