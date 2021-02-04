@@ -71,7 +71,7 @@ public class DomainConvert {
 		else {
 			if(size !=1) {
 				if(isDnsNameCompressed(encodedDomain,passed)) {
-					return result+getCompressedName(encodedDomain, passed); //HAS TO BE TESTED
+					return result+getCompressedName(encodedDomain, passed);
 				}
 			}
 			
@@ -131,10 +131,14 @@ public class DomainConvert {
 				return position;
 			}
 			 else {
+				 if((int) wholeAnswerSection[position] !=1) {
+						if(isDnsNameCompressed(wholeAnswerSection,position)) {
+							return position+1;
+							}
 				 position +=(int) wholeAnswerSection[position] +1;
+				 }
 			 }
-		 }
-		 
+	 	}
 	}
 	
     public static boolean isValidDomainName(String domainName) {

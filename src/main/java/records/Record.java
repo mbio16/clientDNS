@@ -1,5 +1,7 @@
 package records;
 
+import org.json.simple.JSONObject;
+
 public class Record {
 	protected int lenght;
 	protected int startIndex;
@@ -12,7 +14,10 @@ public class Record {
 		this.startIndex = startIndex;
 	}
 
-
+	public JSONObject getAsJson() {
+		return new JSONObject();
+	}
+	
 	public int getLenght() {
 		return lenght;
 	}

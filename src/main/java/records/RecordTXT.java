@@ -2,8 +2,11 @@ package records;
 
 import java.io.UnsupportedEncodingException;
 
+import org.json.simple.JSONObject;
+
 public class RecordTXT extends Record{
 
+	private static final String KEY_TEXT="Text";
 	private String stringText;
 	public RecordTXT(byte[] rawMessage, int lenght, int startIndex) throws UnsupportedEncodingException {
 		super(rawMessage, lenght, startIndex);
@@ -13,7 +16,7 @@ public class RecordTXT extends Record{
 	public void parse() throws UnsupportedEncodingException {
 		byte [] textByte = new byte [lenght];
 		int j=0;
-		for (int i = startIndex+1; i < startIndex+lenght-1; i++) {
+		for (int i = startIndex+1; i < startIndex+lenght; i++) {
 			textByte[j] = rawMessage[i];
 			j++;
 		}
@@ -25,6 +28,15 @@ public class RecordTXT extends Record{
 	@Override
 	public String getDataAsString() {
 		return stringText;
+	}
+	
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public JSONObject getAsJson() {
+		JSONObject object = new JSONObject();
+		object.put(KEY_TEXT,stringText);
+		return object;
 	}
 	
 

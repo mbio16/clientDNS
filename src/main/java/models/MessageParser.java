@@ -5,6 +5,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import exceptions.QueryIdNotMatchException;
 

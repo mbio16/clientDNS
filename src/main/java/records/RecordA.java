@@ -3,10 +3,13 @@ package records;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.json.simple.JSONObject;
+
 public class RecordA extends Record {
 
-	private InetAddress ipv4Address;
-	private String ipv4AddressAsString;
+	protected InetAddress ipAddress;
+	protected String ipAddressAsString;
+	private static final String KEY_ADDRESS="Ipv4";
 	public RecordA(byte[] rawMessage, int lenght, int startIndex) throws UnknownHostException {
 		super(rawMessage, lenght, startIndex);
 		parseRecord();
@@ -19,22 +22,29 @@ public class RecordA extends Record {
 			data[j] = rawMessage[i];
 			j++;
 		}
-		ipv4Address = InetAddress.getByAddress(data);
-		ipv4AddressAsString = ipv4Address.getHostAddress();
+		ipAddress = InetAddress.getByAddress(data);
+		ipAddressAsString = ipAddress.getHostAddress();
 	}
 
 	@Override
 	public String toString() {
-		return "RecordA [ipv4Address=" + ipv4Address + ", ipv4AddressAsString=" + ipv4AddressAsString + "]";
+		return "RecordA [ipv4Address=" + ipAddress + ", ipv4AddressAsString=" + ipAddressAsString + "]";
 	}
 	
 	
 	@Override
 	public String getDataAsString() {
 		
-		return ipv4AddressAsString;
+		return ipAddressAsString;
 	}
 	
+	@SuppressWarnings("unchecked")
+	@Override
+	public JSONObject getAsJson() {
+		JSONObject object = new JSONObject();
+		object.put(KEY_ADDRESS, ipAddressAsString);
+		return object;
+	}
 
 	
 }

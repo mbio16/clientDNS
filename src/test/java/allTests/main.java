@@ -9,7 +9,7 @@ import models.MessageSender;
 public class main {
 
 	public static void main(String[] args) {
-		Qcount[] a = {Qcount.TXT};
+		Qcount[] a = {Qcount.SOA};
 		MessageSender sender;
 		MessageParser parser;
 		try {

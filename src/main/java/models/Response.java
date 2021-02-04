@@ -10,7 +10,9 @@ import records.Record;
 import records.RecordA;
 import records.RecordAAAA;
 import records.RecordCNAME;
+import records.RecordMX;
 import records.RecordNS;
+import records.RecordSOA;
 import records.RecordTXT;
 
 public class Response {
@@ -86,6 +88,10 @@ public class Response {
 			return new RecordNS(rawMessage, rdLenght.getValue(),currentIndex);
 		case TXT:
 			return new RecordTXT(rawMessage, rdLenght.getValue(),currentIndex);
+		case MX:
+			return new RecordMX(rawMessage, rdLenght.getValue(),currentIndex);
+		case SOA:
+			return new RecordSOA(rawMessage, rdLenght.getValue(),currentIndex);
 		default:
 			return null;
 		}
@@ -104,9 +110,9 @@ public class Response {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put(NAME_KEY,nameAsString);
 		jsonObject.put(TYPE_KEY,qcount.toString());
-		jsonObject.put(CLASS_KEY, qtype);
-		jsonObject.put(DATA_KEY,rdata.getDataAsString());
+		jsonObject.put(CLASS_KEY, qtype);	
 		jsonObject.put(TTL_KEY,ttl);
+		jsonObject.put(DATA_KEY,rdata.getAsJson());
 		return jsonObject;
 	}
 	
