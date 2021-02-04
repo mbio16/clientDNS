@@ -10,6 +10,7 @@ import records.Record;
 import records.RecordA;
 import records.RecordAAAA;
 import records.RecordCNAME;
+import records.RecordDNSKEY;
 import records.RecordMX;
 import records.RecordNS;
 import records.RecordSOA;
@@ -92,6 +93,8 @@ public class Response {
 			return new RecordMX(rawMessage, rdLenght.getValue(),currentIndex);
 		case SOA:
 			return new RecordSOA(rawMessage, rdLenght.getValue(),currentIndex);
+		case DNSKEY:
+			return new RecordDNSKEY(rawMessage,rdLenght.getValue(), currentIndex);
 		default:
 			return null;
 		}

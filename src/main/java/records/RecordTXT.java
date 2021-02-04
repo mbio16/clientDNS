@@ -14,7 +14,7 @@ public class RecordTXT extends Record{
 	}
 
 	public void parse() throws UnsupportedEncodingException {
-		byte [] textByte = new byte [lenght];
+		byte [] textByte = new byte [lenght-1];
 		int j=0;
 		for (int i = startIndex+1; i < startIndex+lenght; i++) {
 			textByte[j] = rawMessage[i];

@@ -5,10 +5,9 @@ import models.UInt16;
 public enum Qcount {
 	    A(1), //done
 	    AAAA(28), //done
-		CDNSKEY(60),
-		CNAME(5),// has to be done -> compression
+		CNAME(5), //done
 		DNSKEY(48),
-		DS(39),
+		DS(43),
 		PTR(12),
 		SOA(6),
 		MX(15),
