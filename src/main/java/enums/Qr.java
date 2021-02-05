@@ -1,17 +1,17 @@
 package enums;
 
-public enum Qr {
+public enum QR {
 	REQUEST((boolean) false),
 	REPLY((boolean) true);
 	
 	public boolean code;
 	
-    private Qr(boolean code) {
+    private QR(boolean code) {
         this.code = code;
     }
     
-    public static Qr getTypeByCode(boolean code){
-        for(Qr e :Qr.values()){
+    public static QR getTypeByCode(boolean code){
+        for(QR e :QR.values()){
             if(e.code == code) return e;
         }
         return null;

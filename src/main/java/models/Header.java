@@ -3,31 +3,31 @@ package models;
 import org.json.simple.JSONObject;
 
 import enums.AUTHENTICATE_DATA;
-import enums.Aa;
+import enums.AA;
 import enums.CHECKING_DISABLED;
-import enums.OpCode;
-import enums.Qr;
-import enums.Ra;
-import enums.Rcode;
-import enums.Rd;
-import enums.Tc;
+import enums.OP_CODE;
+import enums.QR;
+import enums.RA;
+import enums.R_CODE;
+import enums.RD;
+import enums.TC;
 
 
 	public class Header {
 		private UInt16 				id;
-		private Qr					qr;
-		private OpCode 				opCode;
-		private Aa		 			aa;
-		private Tc					tc;
-		private Rd		 			rd;
-		private Ra 					ra;
+		private QR					qr;
+		private OP_CODE				opCode;
+		private AA		 			aa;
+		private TC					tc;
+		private RD		 			rd;
+		private RA 					ra;
 		private CHECKING_DISABLED 	cd;
 		private AUTHENTICATE_DATA	ad;
-		private Rcode		rCode;
-		private UInt16		QdCount;
-		private UInt16		AnCount;
-		private UInt16		NsCount;
-		private UInt16		ArCount;
+		private R_CODE				rCode;
+		private UInt16				QdCount;
+		private UInt16				AnCount;
+		private UInt16				NsCount;
+		private UInt16				ArCount;
 		private static final int size = 12;
 		
 		private static final String ID_KEY="Id";
@@ -47,15 +47,15 @@ import enums.Tc;
 			id = new UInt16().generateRandom();
 			//id = new UInt16()
 			
-			qr = Qr.REQUEST;
-			opCode = OpCode.QUERY;
-			aa = Aa.NON_AUTHORITATIVE;
-			tc = Tc.NON_FRAGMENTED;
-			rd = Rd.getTypeByCode(recursion);
-			ra = Ra.RECURSION_NON_AVAIBLE;
+			qr = QR.REQUEST;
+			opCode = OP_CODE.QUERY;
+			aa = AA.NON_AUTHORITATIVE;
+			tc = TC.NON_FRAGMENTED;
+			rd = RD.getTypeByCode(recursion);
+			ra = RA.RECURSION_NON_AVAIBLE;
 			ad = AUTHENTICATE_DATA.getTypeByCode(dnssec);
 			cd = CHECKING_DISABLED.getTypeByCode(!dnssec);
-			rCode = Rcode.NO_ERROR;
+			rCode = R_CODE.NO_ERROR;
 			QdCount = new UInt16(numberOfQueries);
 			AnCount = new UInt16(0);
 			NsCount = new UInt16(0);
@@ -119,20 +119,20 @@ import enums.Tc;
 			
 			//second byte - first in flags
 			boolean [] pom1 = DataTypesConverter.byteToBoolArr(byteHead[2], 8);
-			this.rd = Rd.getTypeByCode(pom1[0]);
-			this.tc = Tc.getTypeByCode(pom1[1]);
-			this.aa = Aa.getTypeByCode(pom1[2]);
+			this.rd = RD.getTypeByCode(pom1[0]);
+			this.tc = TC.getTypeByCode(pom1[1]);
+			this.aa = AA.getTypeByCode(pom1[2]);
 			boolean [] opcode = {pom1[3],pom1[4],pom1[5],pom1[6]};
-			this.opCode = OpCode.getTypeByCode(DataTypesConverter.booleanArrayAsbyte(opcode));
-			this.qr = Qr.getTypeByCode(pom1[7]);
+			this.opCode = OP_CODE.getTypeByCode(DataTypesConverter.booleanArrayAsbyte(opcode));
+			this.qr = QR.getTypeByCode(pom1[7]);
 			
 			//second byte in flags
 			boolean [] pom2 = DataTypesConverter.byteToBoolArr(byteHead[3], 8);
 			boolean [] rcodeBoolean = {pom2[0],pom2[1],pom2[2],pom2[3]};
-			this.rCode = Rcode.getTypeByCode(DataTypesConverter.booleanArrayAsbyte(rcodeBoolean));
+			this.rCode = R_CODE.getTypeByCode(DataTypesConverter.booleanArrayAsbyte(rcodeBoolean));
 			this.cd = CHECKING_DISABLED.getTypeByCode(pom2[4]);
 			this.ad = AUTHENTICATE_DATA.getTypeByCode(pom2[5]);
-			this.ra = Ra.getTypeByCode(pom2[7]); 
+			this.ra = RA.getTypeByCode(pom2[7]); 
 			
 			this.QdCount = new UInt16().loadFromBytes(byteHead[4],byteHead[5]);
 			this.AnCount = new UInt16().loadFromBytes(byteHead[6],byteHead[7]);

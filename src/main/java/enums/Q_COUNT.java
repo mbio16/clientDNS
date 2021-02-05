@@ -2,7 +2,7 @@ package enums;
 
 import models.UInt16;
 
-public enum Qcount {
+public enum Q_COUNT {
 	    A(1), //done
 	    AAAA(28), //done
 		CNAME(5), //done
@@ -19,14 +19,14 @@ public enum Qcount {
 		NS(2);
 		
 		public UInt16 code;
-	    private Qcount(UInt16 code) {
+	    private Q_COUNT(UInt16 code) {
 	        this.code = code;
 	    }
-	    private Qcount(int code) {
+	    private Q_COUNT(int code) {
 	    	this.code = new UInt16(code);
 	    }
-	    public static Qcount getTypeByCode(UInt16 code){
-	        for(Qcount type : Qcount.values()){
+	    public static Q_COUNT getTypeByCode(UInt16 code){
+	        for(Q_COUNT type : Q_COUNT.values()){
 	            if(type.code.equals(code)) return type;
 	        }
 	        return null;

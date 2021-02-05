@@ -1,17 +1,17 @@
 package enums;
 
-public enum Tc {
+public enum TC {
 	FRANGMENTED((boolean) true),
 	NON_FRAGMENTED((boolean) false);
 	
 	public boolean code;
 	
-	private Tc(boolean code) {
+	private TC(boolean code) {
 		this.code= code;
 	}
 	
-    public static Tc getTypeByCode(boolean code){
-        for(Tc e :Tc.values()){
+    public static TC getTypeByCode(boolean code){
+        for(TC e :TC.values()){
             if(e.code == code) return e;
         }
         return null;

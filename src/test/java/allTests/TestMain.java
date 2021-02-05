@@ -1,11 +1,7 @@
 package allTests;
 
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
-
 import enums.APPLICATION_PROTOCOL;
-import enums.Qcount;
+import enums.Q_COUNT;
 import enums.TRANSPORT_PROTOCOL;
 import models.MessageParser;
 import models.MessageSender;
@@ -13,11 +9,11 @@ import models.MessageSender;
 public class TestMain {
 
 	public static void main(String[] args) {
-		Qcount[] a = {Qcount.DS};
+		Q_COUNT[] a = {Q_COUNT.A};
 		MessageSender sender;
 		MessageParser parser;
 		try {
-			sender = new MessageSender(true, true, "idnes.cz",a ,TRANSPORT_PROTOCOL.UDP,APPLICATION_PROTOCOL.DNS,"8.8.8.8");
+			sender = new MessageSender(true, true, "h·ËkyË·rky.cz",a ,TRANSPORT_PROTOCOL.UDP,APPLICATION_PROTOCOL.DNS,"8.8.8.8");
 			sender.send();
 			parser = new MessageParser(sender.getRecieveReply(),sender.getHeader());
 			parser.parse();

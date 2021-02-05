@@ -1,17 +1,17 @@
 package enums;
 
-public enum Ra {
+public enum RA {
 	RECURSION_AVAIBLE((boolean) true),
 	RECURSION_NON_AVAIBLE((boolean) false);
 	
 	public boolean code;
 	
-	private Ra(boolean code) {
+	private RA(boolean code) {
 		this.code= code;
 	}
 	
-    public static Ra getTypeByCode(boolean code){
-        for(Ra e :Ra.values()){
+    public static RA getTypeByCode(boolean code){
+        for(RA e :RA.values()){
             if(e.code == code) return e;
         }
         return null;

@@ -7,15 +7,15 @@ import java.util.logging.Logger;
 
 import org.json.simple.JSONObject;
 
-import enums.Qcount;
-import enums.Qtype;
+import enums.Q_COUNT;
+import enums.Q_TYPE;
 
 public class Request {
 
 	private String qName;
 	private byte [] nameInBytes;
-	private Qcount qCount;
-	private Qtype qtype;
+	private Q_COUNT qCount;
+	private Q_TYPE qtype;
 	private static final int BYTE_SIZE_OF_QCLASS_AND_QTYPE = 4;
 	private int size;
 	private int endIndex; 
@@ -24,11 +24,11 @@ public class Request {
 	private static final String KEY_QCOUNT="Type";
 	private static final String KEY_QTYPE="Class";
 	private static final Logger LOGGER = Logger.getLogger(Language.class.getName());
-	public Request(String qName,Qcount qCount) throws Exception {
+	public Request(String qName,Q_COUNT qCount) throws Exception {
 		this.qName = qName;
 		this.nameInBytes = DomainConvert.encodeDNS(qName);
 		this.qCount = qCount;
-		this.qtype = Qtype.IN;
+		this.qtype = Q_TYPE.IN;
 		this.endIndex = 0;
 		this.size = this.nameInBytes.length+BYTE_SIZE_OF_QCLASS_AND_QTYPE;
 	}
@@ -79,8 +79,8 @@ public class Request {
 		}
 		this.nameInBytes = encodedName;
 		this.qName = DomainConvert.decodeDNS(encodedName);	
-		this.qCount =  Qcount.getTypeByCode(new UInt16().loadFromBytes(request[this.endIndex-3],request[this.endIndex-2]));
-		this.qtype = Qtype.getTypeByCode(new UInt16().loadFromBytes(request[this.endIndex-1],request[this.endIndex]));
+		this.qCount = Q_COUNT.getTypeByCode(new UInt16().loadFromBytes(request[this.endIndex-3],request[this.endIndex-2]));
+		this.qtype = Q_TYPE.getTypeByCode(new UInt16().loadFromBytes(request[this.endIndex-1],request[this.endIndex]));
 		this.size = nameInBytes.length+BYTE_SIZE_OF_QCLASS_AND_QTYPE;
 		LOGGER.info(this.toString());
 		return this;

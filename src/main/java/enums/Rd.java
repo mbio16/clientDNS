@@ -1,18 +1,18 @@
 package enums;
 
 
-public enum Rd {
+public enum RD {
 	RECURSIVE((boolean) true),
 	ITERATIVE((boolean) false);
 	
 	public boolean code;
 	
-	private Rd(boolean code) {
+	private RD(boolean code) {
 		this.code= code;
 	}
 	
-    public static Rd getTypeByCode(boolean code){
-        for(Rd e :Rd.values()){
+    public static RD getTypeByCode(boolean code){
+        for(RD e :RD.values()){
             if(e.code == code) return e;
         }
         return null;

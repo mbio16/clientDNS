@@ -16,7 +16,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import com.google.gson.GsonBuilder;
 import enums.APPLICATION_PROTOCOL;
-import enums.Qcount;
+import enums.Q_COUNT;
 import enums.TRANSPORT_PROTOCOL;
 import exceptions.TimeOutException;
 
@@ -42,7 +42,7 @@ public class MessageSender {
 	//test
 
 	private static Logger LOGGER = Logger.getLogger(DomainConvert.class.getName());
-	public MessageSender(boolean recursion, boolean dnssec, String domain, Qcount[] types,
+	public MessageSender(boolean recursion, boolean dnssec, String domain, Q_COUNT[] types,
 			TRANSPORT_PROTOCOL transport_protocol, APPLICATION_PROTOCOL application_protocol,String resolverIP) throws Exception {
 			requests = new ArrayList<Request>();
 			header = new Header(true, true, types.length);
@@ -56,8 +56,8 @@ public class MessageSender {
 			this.recieveReply = new byte [512];
 	}
 
-	private void addRequests(Qcount [] types, String domain) throws Exception {
-		for (Qcount qcount : types) {
+	private void addRequests(Q_COUNT [] types, String domain) throws Exception {
+		for (Q_COUNT qcount : types) {
 			Request r = new Request(domain, qcount);
 			requests.add(r);
 			size += r.getSize();

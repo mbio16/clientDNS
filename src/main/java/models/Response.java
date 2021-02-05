@@ -4,8 +4,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import org.json.simple.JSONObject;
-import enums.Qcount;
-import enums.Qtype;
+import enums.Q_COUNT;
+import enums.Q_TYPE;
 import records.Record;
 import records.RecordA;
 import records.RecordAAAA;
@@ -20,8 +20,8 @@ public class Response {
 
 	private byte [] rawMessage;
 	private String nameAsString;
-	private Qcount qcount;;
-	private Qtype qtype;
+	private Q_COUNT qcount;;
+	private Q_TYPE qtype;
 	private int ttl;
 	private UInt16 rdLenght;
 	private int byteSize;
@@ -41,9 +41,9 @@ public class Response {
 		this.rawMessage = rawMessage;
 		int currentIndex = startIndex;
 		currentIndex = parseName(currentIndex);
-		this.qcount = Qcount.getTypeByCode(new UInt16().loadFromBytes(rawMessage[currentIndex],rawMessage[currentIndex+1]));
+		this.qcount = Q_COUNT.getTypeByCode(new UInt16().loadFromBytes(rawMessage[currentIndex],rawMessage[currentIndex+1]));
 		currentIndex += 2;
-		this.qtype = Qtype.getTypeByCode(new UInt16().loadFromBytes(rawMessage[currentIndex],rawMessage[currentIndex+1]));
+		this.qtype = Q_TYPE.getTypeByCode(new UInt16().loadFromBytes(rawMessage[currentIndex],rawMessage[currentIndex+1]));
 		currentIndex += 2;
 		byte [] ttlBytes = {
 				rawMessage[currentIndex],
@@ -127,11 +127,11 @@ public class Response {
 		return nameAsString;
 	}
 
-	public Qcount getQcount() {
+	public Q_COUNT getQcount() {
 		return qcount;
 	}
 
-	public Qtype getQtype() {
+	public Q_TYPE getQtype() {
 		return qtype;
 	}
 

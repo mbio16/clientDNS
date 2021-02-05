@@ -3,7 +3,7 @@ package ui;
 import java.util.logging.Logger;
 
 import enums.APPLICATION_PROTOCOL;
-import enums.Qcount;
+import enums.Q_COUNT;
 import enums.TRANSPORT_PROTOCOL;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -274,7 +274,7 @@ public class DNSController extends MDNSController {
 		String dnsServer = getDnsServerIp();
 		LOGGER.info("Dns server: " + dnsServer);
 		LOGGER.info("Domain to resolve: " + domain);
-		Qcount types[] = { Qcount.A };
+		Q_COUNT types[] = { Q_COUNT.A };
 		try {
 			MessageSender sender = new MessageSender(true, true, domain, types, TRANSPORT_PROTOCOL.UDP,
 					APPLICATION_PROTOCOL.DNS, dnsServer);

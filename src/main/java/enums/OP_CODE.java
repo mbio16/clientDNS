@@ -1,17 +1,17 @@
 package enums;
 
-public enum OpCode {
+public enum OP_CODE {
     QUERY((byte) 0x00),
     RESPONSE((byte) 0x01),
 	SERVER_STATUS((byte) 0x02);
 	public byte code;
 	
-    private OpCode(Byte code) {
+    private OP_CODE(Byte code) {
         this.code = code;
     }
     
-    public static OpCode getTypeByCode(byte code){
-        for(OpCode e :OpCode.values()){
+    public static OP_CODE getTypeByCode(byte code){
+        for(OP_CODE e :OP_CODE.values()){
             if(e.code == code) return e;
         }
         return null;
