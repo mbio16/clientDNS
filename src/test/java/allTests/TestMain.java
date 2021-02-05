@@ -9,11 +9,11 @@ import models.MessageSender;
 public class TestMain {
 
 	public static void main(String[] args) {
-		Q_COUNT[] a = {Q_COUNT.A};
+		Q_COUNT[] a = {Q_COUNT.CAA};
 		MessageSender sender;
 		MessageParser parser;
 		try {
-			sender = new MessageSender(true, true, "h·ËkyË·rky.cz",a ,TRANSPORT_PROTOCOL.UDP,APPLICATION_PROTOCOL.DNS,"8.8.8.8");
+			sender = new MessageSender(true, true, "nic.cz",a ,TRANSPORT_PROTOCOL.UDP,APPLICATION_PROTOCOL.DNS,"8.8.8.8");
 			sender.send();
 			parser = new MessageParser(sender.getRecieveReply(),sender.getHeader());
 			parser.parse();

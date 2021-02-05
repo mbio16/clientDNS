@@ -9,6 +9,7 @@ import enums.Q_TYPE;
 import records.Record;
 import records.RecordA;
 import records.RecordAAAA;
+import records.RecordCAA;
 import records.RecordCNAME;
 import records.RecordDNSKEY;
 import records.RecordMX;
@@ -95,6 +96,8 @@ public class Response {
 			return new RecordSOA(rawMessage, rdLenght.getValue(),currentIndex);
 		case DNSKEY:
 			return new RecordDNSKEY(rawMessage,rdLenght.getValue(), currentIndex);
+		case CAA:
+			return new RecordCAA(rawMessage, rdLenght.getValue(),currentIndex);
 		default:
 			return null;
 		}
