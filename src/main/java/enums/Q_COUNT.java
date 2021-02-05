@@ -16,6 +16,7 @@ public enum Q_COUNT {
 		TXT(16),
 		CAA(257),
 		CERT(37),
+		OPT(41),
 		NS(2);
 		
 		public UInt16 code;

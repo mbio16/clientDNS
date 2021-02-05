@@ -37,6 +37,15 @@ public class Record {
 		return null;
 	}
 	
+	protected byte [] get4bytes(int currentIndex) {
+		byte [] ttlBytes = {
+				rawMessage[currentIndex],
+				rawMessage[currentIndex+1],
+				rawMessage[currentIndex+2],
+				rawMessage[currentIndex+3]
+		};
+		return ttlBytes;
+	}
 	
 	
 }

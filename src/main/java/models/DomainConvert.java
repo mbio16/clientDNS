@@ -9,6 +9,7 @@ public class DomainConvert {
 	private static Pattern pDomainNameOnly;
     private static final String DOMAIN_NAME_PATTERN = "^((?!-)[A-Za-z0-9-]{1,63}(?<!-)\\.)+[A-Za-z]{2,6}$";
     private static final int  COMPRESS_CONTANT_NUMBER=49152;
+    private static final byte [] ROOT = {(byte) 0x00}; 
     static {
         pDomainNameOnly = Pattern.compile(DOMAIN_NAME_PATTERN);
     }
@@ -16,6 +17,9 @@ public class DomainConvert {
 	//private static Logger LOGGER = Logger.getLogger(DomainConvert.class.getName());
 	
 	public static byte [] encodeDNS(String domain) throws Exception {
+		if (domain.equals(null) || domain.equals("")) {
+			 return ROOT;
+		}
 		if (!Charset.forName("US-ASCII").newEncoder().canEncode(domain)) {
 			domain = Punycode.toPunycode(domain);
 		}

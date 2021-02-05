@@ -14,6 +14,7 @@ import records.RecordCNAME;
 import records.RecordDNSKEY;
 import records.RecordMX;
 import records.RecordNS;
+import records.RecordRRSIG;
 import records.RecordSOA;
 import records.RecordTXT;
 
@@ -44,6 +45,10 @@ public class Response {
 		currentIndex = parseName(currentIndex);
 		this.qcount = Q_COUNT.getTypeByCode(new UInt16().loadFromBytes(rawMessage[currentIndex],rawMessage[currentIndex+1]));
 		currentIndex += 2;
+		if (qcount.equals(Q_COUNT.OPT)) {
+		parseAsOPT(currentIndex);
+		return this;
+		}
 		this.qtype = Q_TYPE.getTypeByCode(new UInt16().loadFromBytes(rawMessage[currentIndex],rawMessage[currentIndex+1]));
 		currentIndex += 2;
 		byte [] ttlBytes = {
@@ -61,6 +66,9 @@ public class Response {
 		return this;
 	}
 	
+	private void parseAsOPT(int currentIndex) {
+		// HAS TO BE DONE
+	}
 	private int parseName(int startIndex) {		
 		//Has to be done seperately (not in DomainConvert), because of end index
 		int positionOfNameIndex=startIndex;
@@ -98,6 +106,9 @@ public class Response {
 			return new RecordDNSKEY(rawMessage,rdLenght.getValue(), currentIndex);
 		case CAA:
 			return new RecordCAA(rawMessage, rdLenght.getValue(),currentIndex);
+		case RRSIG:
+			//HAS TO BE TESTED
+			return new RecordRRSIG(rawMessage, rdLenght.getValue(),currentIndex);
 		default:
 			return null;
 		}

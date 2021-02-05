@@ -73,8 +73,6 @@ public class DNSController extends MDNSController {
 	private CheckBox caaCheckBox;
 	@FXML
 	private CheckBox txtCheckBox;
-	@FXML
-	private CheckBox certCheckBox;
 
 	// titledpane
 	@FXML

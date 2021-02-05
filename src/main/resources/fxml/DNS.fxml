@@ -85,7 +85,6 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
                         <CheckBox fx:id="aaaaCheckBox" mnemonicParsing="false" text="AAAA" GridPane.rowIndex="1">
@@ -139,11 +138,6 @@
                            </font>
                         </CheckBox>
                         <CheckBox fx:id="txtCheckBox" mnemonicParsing="false" text="TXT" GridPane.rowIndex="10">
-                           <font>
-                              <Font size="15.0" />
-                           </font>
-                        </CheckBox>
-                        <CheckBox fx:id="certCheckBox" mnemonicParsing="false" text="CERT" GridPane.rowIndex="11">
                            <font>
                               <Font size="15.0" />
                            </font>
