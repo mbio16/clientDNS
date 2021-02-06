@@ -274,7 +274,7 @@ public class DNSController extends MDNSController {
 		LOGGER.info("Domain to resolve: " + domain);
 		Q_COUNT types[] = { Q_COUNT.A };
 		try {
-			MessageSender sender = new MessageSender(true, true, domain, types, TRANSPORT_PROTOCOL.UDP,
+			MessageSender sender = new MessageSender(true, true, true,domain, types, TRANSPORT_PROTOCOL.UDP,
 					APPLICATION_PROTOCOL.DNS, dnsServer);
 			sender.send();
 			MessageParser parser = new MessageParser(sender.getRecieveReply(), sender.getHeader());

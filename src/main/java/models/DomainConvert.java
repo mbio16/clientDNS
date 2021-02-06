@@ -70,6 +70,7 @@ public class DomainConvert {
 		int size = (int) encodedDomain[passed];
 		if (size == 0) 
 		{
+			if(result.length()==0) return result;
 			return result.substring(0,result.length()-1);
 		}
 		else {

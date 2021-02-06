@@ -3,6 +3,8 @@ package models;
 import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+
 import org.json.simple.JSONObject;
 import enums.Q_COUNT;
 import enums.Q_TYPE;
@@ -14,6 +16,7 @@ import records.RecordCNAME;
 import records.RecordDNSKEY;
 import records.RecordMX;
 import records.RecordNS;
+import records.RecordOPT;
 import records.RecordRRSIG;
 import records.RecordSOA;
 import records.RecordTXT;
@@ -29,12 +32,22 @@ public class Response {
 	private int byteSize;
 	private int endIndex;
 	private Record rdata;
+	private byte rCode;
+	private byte version;
+	private UInt16 doBit;
+	private UInt16 size;
 	private static final int  COMPRESS_CONTANT_NUMBER=49152;
+	private static final int DO_BIT_VALUE=32768;
 	private static final String DATA_KEY="Data";
 	private static final String NAME_KEY="Name";
 	private static final String TYPE_KEY="Type";
 	private static final String TTL_KEY="Time to Live";
 	private static final String CLASS_KEY="Class";
+	
+	private static final String KEY_OPT_UDP_SIZE="Size";
+	private static final String KEY_OPT_RCODE="Rcode";
+	private static final String KEY_OPT_VERSION="EDSN0 version";
+	private static final String KEY_OPT_DO_BIT = "Can handle DNSSEC";
 	public Response() {
 		
 	}
@@ -66,8 +79,18 @@ public class Response {
 		return this;
 	}
 	
-	private void parseAsOPT(int currentIndex) {
-		// HAS TO BE DONE
+	private void parseAsOPT(int currentIndex) throws UnknownHostException, UnsupportedEncodingException {
+		size = new UInt16().loadFromBytes(rawMessage[currentIndex],rawMessage[currentIndex+1]);
+		currentIndex +=2;
+		rCode = rawMessage[currentIndex];
+		currentIndex += 1;
+		version = rawMessage[currentIndex];
+		currentIndex += 1;
+		doBit = new UInt16().loadFromBytes(rawMessage[currentIndex],rawMessage[currentIndex+1]);
+		currentIndex +=2;
+		rdLenght = new UInt16().loadFromBytes(rawMessage[currentIndex],rawMessage[currentIndex+1]);
+		currentIndex += 2;
+		this.rdata = parseRecord(currentIndex);
 	}
 	private int parseName(int startIndex) {		
 		//Has to be done seperately (not in DomainConvert), because of end index
@@ -109,6 +132,8 @@ public class Response {
 		case RRSIG:
 			//HAS TO BE TESTED
 			return new RecordRRSIG(rawMessage, rdLenght.getValue(),currentIndex);
+		case OPT:
+			return new RecordOPT(rawMessage, rdLenght.getValue(),currentIndex);
 		default:
 			return null;
 		}
@@ -124,6 +149,9 @@ public class Response {
 
 	@SuppressWarnings("unchecked")
 	public JSONObject getAsJson() {
+		if (qcount.equals(Q_COUNT.OPT)) {
+			return getOPTAsJson();
+		}
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put(NAME_KEY,nameAsString);
 		jsonObject.put(TYPE_KEY,qcount.toString());
@@ -133,6 +161,38 @@ public class Response {
 		return jsonObject;
 	}
 	
+	@SuppressWarnings("unchecked")
+	private JSONObject getOPTAsJson() {
+		JSONObject json = new JSONObject();
+		json.put(KEY_OPT_UDP_SIZE,size.getValue());
+		json.put(KEY_OPT_RCODE,(int) rCode);
+		json.put(KEY_OPT_VERSION, (int)version);
+		json.put(KEY_OPT_DO_BIT,doBit.getValue() >= DO_BIT_VALUE ? true:false);
+		return json;
+	}
+	
+	
+	public byte [] getDnssecAsBytes() {
+		ArrayList<Byte> bytes = new ArrayList<Byte>();
+		bytes.add((byte) 0x00);
+		bytes.add(Q_COUNT.OPT.code.getAsBytes()[1]);
+		bytes.add(Q_COUNT.OPT.code.getAsBytes()[0]);
+		bytes.add((byte) 0x02);
+		bytes.add((byte) 0x00);
+		bytes.add((byte) 0x00);
+		bytes.add((byte) 0x00);
+		bytes.add((byte) new UInt16(DO_BIT_VALUE).getAsBytes()[1]);
+		bytes.add((byte) new UInt16(DO_BIT_VALUE).getAsBytes()[0]);
+		bytes.add((byte) 0x00);
+		bytes.add((byte) 0x00);
+		
+		byte [] returnArray = new byte [bytes.size()];
+		
+		for (int i = 0; i < returnArray.length; i++) {
+			returnArray[i] = bytes.get(i);
+		}
+		return returnArray;
+	}
 	public byte[] getRawMessage() {
 		return rawMessage;
 	}

@@ -34,6 +34,7 @@ public class MessageSender {
 	private int messagesSent;
 	private byte  [] recieveReply;
 	private long timeElapsed;
+	private boolean rrRecords;
 	private static final int MAX_MESSAGES_SENT=3;
 	private static final int TIME_OUT_MILLIS = 3000;
 	
@@ -42,10 +43,10 @@ public class MessageSender {
 	//test
 
 	private static Logger LOGGER = Logger.getLogger(DomainConvert.class.getName());
-	public MessageSender(boolean recursion, boolean dnssec, String domain, Q_COUNT[] types,
+	public MessageSender(boolean recursion, boolean dnssec,boolean rrRecords, String domain, Q_COUNT[] types,
 			TRANSPORT_PROTOCOL transport_protocol, APPLICATION_PROTOCOL application_protocol,String resolverIP) throws Exception {
 			requests = new ArrayList<Request>();
-			header = new Header(true, true, types.length);
+			header = new Header(true, true, types.length, rrRecords);
 			size = Header.getSize();
 			addRequests(types, domain);
 			//this.resolverIP = resolverIP;
@@ -54,6 +55,7 @@ public class MessageSender {
 			this.ip =InetAddress.getByName(resolverIP);
 			this.messagesSent = 0;
 			this.recieveReply = new byte [512];
+			this.rrRecords = rrRecords;
 	}
 
 	private void addRequests(Q_COUNT [] types, String domain) throws Exception {
@@ -153,7 +155,11 @@ public class MessageSender {
 	}
 	private void messageToBytes() {
 		int curentIndex = 0;
+		if (rrRecords) {
+			size += new Response().getDnssecAsBytes().length;
+		}
 		if(transport_protocol == TRANSPORT_PROTOCOL.TCP) {
+			
 			this.messageAsBytes = new byte [size+2];
 			UInt16 tcpSize = new UInt16(size);
 			curentIndex = 2;
@@ -177,6 +183,13 @@ public class MessageSender {
 				curentIndex++;
 			}
 		}
+		byte opt [] = new Response().getDnssecAsBytes();
+		int j = 0;
+		for (int i = curentIndex; i < size; i++) {
+			this.messageAsBytes[i] = opt[j];
+			j++;
+		}
+		
 		
 	}
 

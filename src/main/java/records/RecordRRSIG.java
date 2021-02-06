@@ -1,6 +1,8 @@
 package records;
 
 import java.nio.ByteBuffer;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.json.simple.JSONObject;
@@ -30,7 +32,7 @@ public class RecordRRSIG extends Record {
 	private static final String		KEY_TAG="Key tag";
 	private static final String		KEY_NAME="Signature name";
 	private static final String		KEY_SIGNATURE="Signature";
-	
+	private static final String 	TIME_FORMAT="dd-MM-yyyy hh:mm:ss";
 	public RecordRRSIG(byte[] rawMessage, int lenght, int startIndex) {
 		super(rawMessage, lenght, startIndex);
 		name = "";
@@ -53,10 +55,10 @@ public class RecordRRSIG extends Record {
 		orriginalTTL = ByteBuffer.wrap(get4bytes(currentIndex)).getInt();
 		currentIndex +=4;
 		
-		signatureExpiration = new Date(ByteBuffer.wrap(get4bytes(currentIndex)).getLong()*1000);
+		signatureExpiration = new Date((long) ByteBuffer.wrap(get4bytes(currentIndex)).getInt()*1000);
 		currentIndex += 4;
 		
-		signatureInception = new Date(ByteBuffer.wrap(get4bytes(currentIndex)).getLong()*1000);
+		signatureInception = new Date((long) ByteBuffer.wrap(get4bytes(currentIndex)).getInt()*1000);
 		currentIndex +=4;
 		
 		keyTag = new UInt16().loadFromBytes(rawMessage[currentIndex],rawMessage[currentIndex+1]);
@@ -66,20 +68,21 @@ public class RecordRRSIG extends Record {
 		currentIndex = DomainConvert.getIndexOfLastByteOfName(rawMessage, currentIndex) +1;
 		
 		for (int i = currentIndex; i < startIndex+lenght; i++) {
-			signature += (char) rawMessage[i];
+			signature += String.format("%02x", rawMessage[i]);
 		}
 	
 	}
 	@SuppressWarnings("unchecked")
 	public JSONObject getAsJson() {
+		DateFormat dateFormat = new SimpleDateFormat(TIME_FORMAT); 
 		JSONObject object = new JSONObject();
 		object.put(KEY_QCOUNT,qcount);
 		object.put(KEY_ALGORITHM,algorithmType);
 		object.put(KEY_LABEL, label);
 		object.put(KEY_TTL,orriginalTTL);
-		object.put(KEY_EXPIRATION,signatureExpiration );
-		object.put(KEY_INCEPTION,signatureInception);
-		object.put(KEY_TAG,keyTag);
+		object.put(KEY_EXPIRATION,dateFormat.format(signatureExpiration));
+		object.put(KEY_INCEPTION,dateFormat.format(signatureInception));
+		object.put(KEY_TAG,keyTag.getValue());
 		object.put(KEY_NAME,name);
 		object.put(KEY_SIGNATURE, signature);
 		return object;

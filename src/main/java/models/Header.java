@@ -43,7 +43,7 @@ import enums.TC;
 		private static final String ANCOUNT_KEY="Number of answers";
 		private static final String NSCOUNT_KEY="Number of authority answers";
 		private static final String ARCOUNT_KEY="Number of additional records";
-		public Header(boolean recursion, boolean dnssec, int numberOfQueries) {
+		public Header(boolean recursion, boolean dnssec, int numberOfQueries, boolean rrRecord) {
 			id = new UInt16().generateRandom();
 			//id = new UInt16()
 			
@@ -59,7 +59,13 @@ import enums.TC;
 			QdCount = new UInt16(numberOfQueries);
 			AnCount = new UInt16(0);
 			NsCount = new UInt16(0);
-			ArCount = new UInt16(0);
+			if (rrRecord) {
+				ArCount = new UInt16(1);
+			}
+			else {
+				ArCount = new UInt16(0);
+			}
+			
 		}
 		public Header() {};
 		public byte[] getHaderAsBytes(){

@@ -10,7 +10,7 @@ class byteToBitArray {
 
 	@Test
 	void test() {
-		Header h = new Header(false, true, 1);
+		Header h = new Header(true,true, 1,true);
 		byte [] res = h.getHaderAsBytes();
 		h.toString();
 		for (byte b : res) {
