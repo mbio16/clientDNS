@@ -17,6 +17,7 @@ import records.RecordDNSKEY;
 import records.RecordMX;
 import records.RecordNS;
 import records.RecordOPT;
+import records.RecordPTR;
 import records.RecordRRSIG;
 import records.RecordSOA;
 import records.RecordTXT;
@@ -130,10 +131,11 @@ public class Response {
 		case CAA:
 			return new RecordCAA(rawMessage, rdLenght.getValue(),currentIndex);
 		case RRSIG:
-			//HAS TO BE TESTED
 			return new RecordRRSIG(rawMessage, rdLenght.getValue(),currentIndex);
 		case OPT:
 			return new RecordOPT(rawMessage, rdLenght.getValue(),currentIndex);
+		case PTR:
+			return new RecordPTR(rawMessage,rdLenght.getValue(),currentIndex);
 		default:
 			return null;
 		}

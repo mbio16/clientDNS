@@ -1,9 +1,12 @@
 package models;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 //import java.util.logging.Logger;
 import java.util.regex.Pattern;
+
+import exceptions.NotValidDomainNameException;
 
 public class DomainConvert {
 	private static Pattern pDomainNameOnly;
@@ -16,7 +19,7 @@ public class DomainConvert {
 	
 	//private static Logger LOGGER = Logger.getLogger(DomainConvert.class.getName());
 	
-	public static byte [] encodeDNS(String domain) throws Exception {
+	public static byte [] encodeDNS(String domain) throws UnsupportedEncodingException, NotValidDomainNameException {
 		if (domain.equals(null) || domain.equals("")) {
 			 return ROOT;
 		}
@@ -24,7 +27,7 @@ public class DomainConvert {
 			domain = Punycode.toPunycode(domain);
 		}
 		if(!isValidDomainName(domain)) {
-			throw new Exception("Domain not valid");
+			throw new NotValidDomainNameException();
 		}
 		ArrayList<Byte> resultByte = new ArrayList<Byte>();
 		String splited [] = domain.split("\\.");
@@ -140,8 +143,13 @@ public class DomainConvert {
 						if(isDnsNameCompressed(wholeAnswerSection,position)) {
 							return position+1;
 							}
-				 position +=(int) wholeAnswerSection[position] +1;
+
+				 position +=(int) wholeAnswerSection[position] +1; 
 				 }
+					else {
+						position +=(int) wholeAnswerSection[position] +1;
+					}
+				 
 			 }
 	 	}
 	}

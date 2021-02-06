@@ -2,6 +2,7 @@ package models;
 
 
 
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
@@ -9,6 +10,8 @@ import org.json.simple.JSONObject;
 
 import enums.Q_COUNT;
 import enums.Q_TYPE;
+import exceptions.NotValidDomainNameException;
+import exceptions.NotValidIPException;
 
 public class Request {
 
@@ -24,9 +27,12 @@ public class Request {
 	private static final String KEY_QCOUNT="Type";
 	private static final String KEY_QTYPE="Class";
 	private static final Logger LOGGER = Logger.getLogger(Language.class.getName());
-	public Request(String qName,Q_COUNT qCount) throws Exception {
+	public Request(String qName,Q_COUNT qCount) throws  NotValidIPException, UnsupportedEncodingException, NotValidDomainNameException{
 		this.qName = qName;
-		this.nameInBytes = DomainConvert.encodeDNS(qName);
+		if (qCount.equals(Q_COUNT.PTR)){
+			ipAddressToPTRFormat();
+		}
+		this.nameInBytes = DomainConvert.encodeDNS(this.qName);
 		this.qCount = qCount;
 		this.qtype = Q_TYPE.IN;
 		this.endIndex = 0;
@@ -50,7 +56,9 @@ public class Request {
 		return result;
 	}
 	
-	
+	private void ipAddressToPTRFormat() throws NotValidIPException {
+		this.qName = Ip.getIpReversed(qName);
+	}
 
 
 	@Override

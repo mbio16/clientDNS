@@ -2,6 +2,8 @@ package models;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.logging.Logger;
+
+import exceptions.NotValidIPException;
 import inet.ipaddr.IPAddress;
 import inet.ipaddr.IPAddressString;
 
@@ -36,12 +38,12 @@ public class Ip {
 		return (a||b);
 	}
 	
-	public static String getIpReversed(String stringAddress) throws Exception{
+	public static String getIpReversed(String stringAddress) throws NotValidIPException{
 		if(Ip.isIpValid(stringAddress)) {
 			return  new IPAddressString(stringAddress).getAddress().toReverseDNSLookupString();
 		}
 		else {
-			throw new Exception("Not valid IP");
+			throw new NotValidIPException();
 		}
 	}
 	
