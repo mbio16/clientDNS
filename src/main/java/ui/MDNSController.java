@@ -19,6 +19,7 @@ import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.TreeView;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 import models.Language;
@@ -82,6 +83,8 @@ public class MDNSController extends GeneralController {
 	
 	@FXML protected ChoiceBox<String> savedDomainNamesChoiseBox;
 	
+	@FXML protected TreeView<String> requestTreeView;
+	@FXML protected TreeView<String> responseTreeView;
 	
 	public MDNSController() {
 		super();

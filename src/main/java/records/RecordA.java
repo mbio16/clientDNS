@@ -2,8 +2,10 @@ package records;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
 import org.json.simple.JSONObject;
+import javafx.scene.control.TreeItem;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 
 public class RecordA extends Record {
 
@@ -28,9 +30,13 @@ public class RecordA extends Record {
 
 	@Override
 	public String toString() {
-		return "RecordA [ipv4Address=" + ipAddress + ", ipv4AddressAsString=" + ipAddressAsString + "]";
+		return KEY_ADDRESS +": " + ipAddressAsString;
 	}
 	
+	@Override
+	public String getStringToTreeView() {
+		return "\t" +KEY_ADDRESS +": " + ipAddressAsString;
+	}
 	
 	@Override
 	public String getDataAsString() {
@@ -46,5 +52,13 @@ public class RecordA extends Record {
 		return object;
 	}
 
-	
+	public TreeItem<TextFlow> getAsTreeItemFlow(){
+		TextFlow flow = new TextFlow();
+		Text key = new Text("Ipv4: ");
+		Text value = new Text(ipAddressAsString);
+		value.setStyle("fx-font-weight: bold");
+		flow.getChildren().addAll(key,value);
+		return new TreeItem<TextFlow>(flow);
+		//main.getChildren().add(new TreeItem<String>(toString()));
+	}
 }

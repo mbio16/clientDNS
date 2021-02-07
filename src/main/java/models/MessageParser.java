@@ -7,6 +7,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import com.google.gson.GsonBuilder;
 import exceptions.QueryIdNotMatchException;
+import javafx.scene.control.TreeItem;
 
 public class MessageParser {
 	private Header queryHeader;
@@ -60,6 +61,27 @@ public class MessageParser {
 			currentIndex = r.getEndIndex() + 1;
 		}
 		
+	}
+	
+	
+	public TreeItem<String> getAsTreeItem(){
+	TreeItem<String> main = new TreeItem<String>("Records");
+		TreeItem<String> ans = new TreeItem<String>(KEY_ANSWERS);
+		for (Response response : ancountResponses) {
+			ans.getChildren().add(response.getAsTreeItem());
+		}
+		TreeItem<String> auth = new TreeItem<String>(KEY_AUTHORITY);
+		for (Response response : nscountResponses) {
+			auth.getChildren().add(response.getAsTreeItem());
+		}
+		TreeItem<String> ar = new TreeItem<String>(KEY_ADDITIONAL_RECORDS);
+		for (Response response : arcountResponses) {
+			ar.getChildren().add(response.getAsTreeItem());
+		}
+		main.getChildren().add(ans);
+		main.getChildren().add(auth);
+		main.getChildren().add(ar);
+		return main;
 	}
 	
 	

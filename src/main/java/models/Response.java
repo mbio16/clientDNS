@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import org.json.simple.JSONObject;
 import enums.Q_COUNT;
 import enums.Q_TYPE;
+import javafx.scene.control.TreeItem;
 import records.Record;
 import records.RecordA;
 import records.RecordAAAA;
@@ -21,7 +22,6 @@ import records.RecordPTR;
 import records.RecordRRSIG;
 import records.RecordSOA;
 import records.RecordTXT;
-
 public class Response {
 
 	private byte [] rawMessage;
@@ -141,13 +141,18 @@ public class Response {
 		}
 	}
 
-	@Override
-	public String toString() {
-		return "Response [nameAsString=" + nameAsString + ", qcount="
-				+ qcount + ", qtype=" + qtype + ", ttl=" + ttl + ", rdLenght=" + rdLenght + ", byteSize=" + byteSize
-				+ ", endIndex=" + endIndex + ", rdata=" + rdata + "]";
-	}
 	
+	public TreeItem<String> getAsTreeItem(){
+
+		return new TreeItem<String>(
+				NAME_KEY + ": " +nameAsString + "\n" +
+				TYPE_KEY + ": " + qcount + "\n" + 
+				TTL_KEY + ": " + ttl +  "\n" +
+				CLASS_KEY + ": " + qtype +  "\n"  +
+				DATA_KEY + ": " +   "\n" +
+				rdata.getStringToTreeView()
+				);
+	}
 
 	@SuppressWarnings("unchecked")
 	public JSONObject getAsJson() {

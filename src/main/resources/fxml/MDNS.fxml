@@ -149,12 +149,12 @@
             </Button>
             <TitledPane fx:id="queryTitledPane" animated="false" layoutX="647.0" layoutY="27.0" prefHeight="673.0" prefWidth="330.0" text="Dotaz">
                <content>
-                  <TreeView prefHeight="734.0" prefWidth="328.0" />
+                  <TreeView fx:id="requestTreeView" prefHeight="734.0" prefWidth="328.0" />
                </content>
             </TitledPane>
             <TitledPane fx:id="responseTitledPane" animated="false" layoutX="1001.0" layoutY="27.0" prefHeight="674.0" prefWidth="330.0" text="Odpověď">
                <content>
-                  <TreeView prefHeight="697.0" prefWidth="328.0" />
+                  <TreeView fx:id="responseTreeView" prefHeight="697.0" prefWidth="328.0" />
                </content>
             </TitledPane>
             <Line endX="-14.0" endY="40.0" layoutX="599.0" layoutY="785.0" startX="-14.0" startY="-785.0" />

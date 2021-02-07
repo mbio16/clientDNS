@@ -2,6 +2,8 @@ package records;
 
 import org.json.simple.JSONObject;
 
+import javafx.scene.control.TreeItem;
+
 public class Record {
 	protected int lenght;
 	protected int startIndex;
@@ -16,6 +18,14 @@ public class Record {
 
 	public JSONObject getAsJson() {
 		return new JSONObject();
+	}
+	
+	public TreeItem<String> getAsTreeItem(){
+		return new TreeItem<String>("null");
+	}
+	
+	public String getStringToTreeView() {
+		return null;
 	}
 	
 	public int getLenght() {

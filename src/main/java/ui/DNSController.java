@@ -274,14 +274,14 @@ public class DNSController extends MDNSController {
 		LOGGER.info("Domain to resolve: " + domain);
 		Q_COUNT types[] = { Q_COUNT.A };
 		try {
-			MessageSender sender = new MessageSender(true, true, true,domain, types, TRANSPORT_PROTOCOL.UDP,
-					APPLICATION_PROTOCOL.DNS, dnsServer);
+			MessageSender sender = new MessageSender(true, true, false,"seznam.cz", types, TRANSPORT_PROTOCOL.UDP,
+					APPLICATION_PROTOCOL.DNS, "1.1.1.1");
 			sender.send();
 			MessageParser parser = new MessageParser(sender.getRecieveReply(), sender.getHeader());
 			parser.parse();
-			System.out.println(parser.toString());
 			responseTimeValueLabel.setText("" + sender.getTimeElapsed());
 			numberOfMessagesValueLabel.setText("" + sender.getMessagesSent());
+			responseTreeView.setRoot(parser.getAsTreeItem());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
