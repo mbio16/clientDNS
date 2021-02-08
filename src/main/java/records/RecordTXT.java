@@ -1,8 +1,8 @@
 package records;
 
 import java.io.UnsupportedEncodingException;
-
 import org.json.simple.JSONObject;
+
 
 public class RecordTXT extends Record{
 
@@ -39,5 +39,16 @@ public class RecordTXT extends Record{
 		return object;
 	}
 	
-
+	@Override
+	public String [] getValesForTreeItem(){
+		String [] pole = {
+				KEY_TEXT + ": " + stringText
+		};
+		return pole;
+	}
+	
+	@Override
+	public String getDataForTreeViewName() {
+		return stringText;
+	}
 }

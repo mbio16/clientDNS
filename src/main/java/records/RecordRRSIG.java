@@ -88,4 +88,25 @@ public class RecordRRSIG extends Record {
 		return object;
 	}
 
+	@Override
+	public String [] getValesForTreeItem(){
+		DateFormat dateFormat = new SimpleDateFormat(TIME_FORMAT);
+		String [] pole = {
+						KEY_QCOUNT + ": "+ qcount,
+						KEY_ALGORITHM + ": "+ algorithmType,
+						KEY_LABEL + ": "+ label,
+						KEY_TTL + ": "+ orriginalTTL,
+						KEY_EXPIRATION + ": " + dateFormat.format(signatureExpiration),
+						KEY_INCEPTION + ": " + dateFormat.format(signatureInception), 
+						KEY_TAG + ": " + keyTag.getValue(),
+						KEY_NAME + ": " + name,
+						KEY_SIGNATURE + ": " + signature
+		};
+		return pole;
+	}
+	
+	@Override
+	public String getDataForTreeViewName() {
+		return algorithmType + " " + qcount + " " + label + " ...";
+	}
 }

@@ -11,12 +11,12 @@ public enum DNSSEC_ALGORITHM_TYPE {
 	RSASHA1_NSEC3_SHA1((byte) 0x07),
 	RSA_SHA256((byte) 0x08),
 	RSA_SHA512((byte) 0x09),
-	RESERVED3((byte) 0x10),
-	ECC_GOST((byte) 0x11),
-	ECDSA_P256_SHA256((byte) 0x12),
-	ECDSA_P384_SHA384((byte) 0x13),
-	ED25519((byte)0x14),
-	ED448((byte) 0x15);
+	RESERVED3((byte) 0x0a),
+	ECC_GOST((byte) 0x0b),
+	ECDSA_P256_SHA256((byte) 0x0c),
+	ECDSA_P384_SHA384((byte) 0x0d),
+	ED25519((byte)0x0e),
+	ED448((byte) 0x0f);
 	
 	private byte code;
 	

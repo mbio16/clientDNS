@@ -1,7 +1,6 @@
 package records;
 
 import org.json.simple.JSONObject;
-
 import enums.CERTIFICATE_FLAG;
 
 public class RecordCAA extends Record {
@@ -41,5 +40,27 @@ public class RecordCAA extends Record {
 		json.put(KEY_TAG, tag);
 		json.put(KEY_VALUE, value);
 		return json;
+	}
+	
+	@Override
+	public String toString() {
+		return KEY_CERTIFICATE_FLAG+ ": " + flag  + "\n "+
+		KEY_TAG +  ": " +  ": " + tag + "\n" +
+		KEY_VALUE +  ": " +  ": " + value; 
+	}
+	
+	@Override
+	public String[] getValesForTreeItem(){	
+		String [] pole= {
+			KEY_CERTIFICATE_FLAG+ ": " + flag,
+			KEY_TAG +  ": " +  ": " + tag,
+			KEY_VALUE+  ": " +  ": " + value 
+		};
+		return pole;
+	}
+	
+	@Override
+	public String getDataForTreeViewName() {
+		return flag +" " +  tag + " " + value ;
 	}
 }

@@ -16,4 +16,17 @@ public class RecordNS extends RecordCNAME{
 		object.put(KEY_NAMESERVER, name);
 		return object;
 	}
+	
+	@Override
+	public String [] getValesForTreeItem(){
+		String [] pole = {
+				KEY_NAMESERVER + ": " + name,
+		};
+		return pole;
+	}
+	
+	@Override
+	public String getDataForTreeViewName() {
+		return name;
+	}
 }

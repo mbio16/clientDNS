@@ -18,4 +18,5 @@ public class RecordAAAA extends RecordA {
 		object.put(KEY_ADDRESS, ipAddressAsString);
 		return object;
 	}
+
 }

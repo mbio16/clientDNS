@@ -39,5 +39,18 @@ public class RecordMX extends Record {
 		return object;
 	}
 	
+	@Override
+	public String [] getValesForTreeItem(){
+		String [] pole = {
+				KEY_PRIORITY+ ": " + priority.getValue(),
+				KEY_MAIL_EXCHANGE + ": " + nameServer
+		};
+		return pole;
+	}
+	
+	@Override
+	public String getDataForTreeViewName() {
+		return priority.getValue()  +" "+ nameServer;
+	}
 	
 }

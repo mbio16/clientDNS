@@ -19,21 +19,12 @@ public class RecordCNAME extends Record{
 	private  void parseRecord() {
 		name = 	DomainConvert.decodeDNS(rawMessage, startIndex);
 	}
-
-	
-	
 	
 	@Override
 	public String toString() {
-		return "RecordCname [name=" + name + "]";
+		return KEY_CNAME + ": " + name;
 	}
-
-
-
-	@Override
-	public String getDataAsString() {		
-		return name;
-	}
+	
 	
 	@Override
 	@SuppressWarnings("unchecked")
@@ -43,4 +34,18 @@ public class RecordCNAME extends Record{
 		return object;
 	}
 	
+	
+	@Override
+	public String [] getValesForTreeItem(){
+		String [] pole = {
+				KEY_CNAME + ": " + name
+		};
+		return pole;
+	}
+	
+	@Override
+	public String getDataForTreeViewName() {
+		return KEY_CNAME + " " + name;
+	}
+
 }

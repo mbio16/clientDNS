@@ -15,6 +15,7 @@ import records.RecordAAAA;
 import records.RecordCAA;
 import records.RecordCNAME;
 import records.RecordDNSKEY;
+import records.RecordDS;
 import records.RecordMX;
 import records.RecordNS;
 import records.RecordOPT;
@@ -136,6 +137,8 @@ public class Response {
 			return new RecordOPT(rawMessage, rdLenght.getValue(),currentIndex);
 		case PTR:
 			return new RecordPTR(rawMessage,rdLenght.getValue(),currentIndex);
+		case DS:
+			return new RecordDS(rawMessage,rdLenght.getValue(),currentIndex);
 		default:
 			return null;
 		}
@@ -144,14 +147,36 @@ public class Response {
 	
 	public TreeItem<String> getAsTreeItem(){
 
-		return new TreeItem<String>(
-				NAME_KEY + ": " +nameAsString + "\n" +
-				TYPE_KEY + ": " + qcount + "\n" + 
-				TTL_KEY + ": " + ttl +  "\n" +
-				CLASS_KEY + ": " + qtype +  "\n"  +
-				DATA_KEY + ": " +   "\n" +
-				rdata.getStringToTreeView()
-				);
+//		return new TreeItem<String>(
+//				NAME_KEY + ": " +nameAsString + "\n" +
+//				TYPE_KEY + ": " + qcount + "\n" + 
+//				TTL_KEY + ": " + ttl +  "\n" +
+//				CLASS_KEY + ": " + qtype +  "\n"  +
+//				DATA_KEY + ": " +   "\n" +
+//				rdata.getStringToTreeView()
+//				);
+//		
+		TreeItem<String>  main = new TreeItem<String>(nameAsString + " " + qcount + " " + rdata.getDataForTreeViewName());
+		main.getChildren().add(new TreeItem<String>(NAME_KEY + ": " +nameAsString));
+		main.getChildren().add(new TreeItem<String>(TYPE_KEY + ": " + qcount));
+		if(qcount.code != Q_COUNT.OPT.code) {
+		main.getChildren().add(new TreeItem<String>(TTL_KEY + ": " + ttl));
+		main.getChildren().add(new TreeItem<String>(CLASS_KEY + ": " + qtype));
+		for (String item : rdata.getValesForTreeItem()) {
+			main.getChildren().add(new TreeItem<String>(item));
+			}
+		}
+		else {
+		main.setValue(nameAsString + " " + qcount);
+
+		main.getChildren().add(new TreeItem<String>(KEY_OPT_RCODE + ": "+ (int) rCode));
+		main.getChildren().add(new TreeItem<String>(KEY_OPT_VERSION + ": " + (int)version));
+		main.getChildren().add(new TreeItem<String>(KEY_OPT_UDP_SIZE + ": " + size.getValue()));
+		String doBitString = doBit.getValue() >= DO_BIT_VALUE ? "Can handle DNSSEC":"Can not handle DNSSEC";
+		main.getChildren().add(new TreeItem<String>(KEY_OPT_DO_BIT + ": "+  doBitString));
+		}
+		
+		return main;
 	}
 
 	@SuppressWarnings("unchecked")

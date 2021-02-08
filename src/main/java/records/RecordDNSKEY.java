@@ -50,4 +50,20 @@ public class RecordDNSKEY extends Record {
 		return object;
 	}
 	
+	@Override
+	public String [] getValesForTreeItem(){
+		String [] pole = {
+				JSON_KEY_TYPE + ": " + keyType,
+				JSON_KEY_USAGE + ": " + keyUsage,
+				JSON_KEY_PROTOCOL + ": " + keyProtocol,
+				JSON_KEY_ALGORITHM_TYPE + ": " + dnssecAlgorithmType,
+				JSON_PUBLIC_KEY + ": " + key
+		};
+		return pole;
+	}
+	
+	@Override
+	public String getDataForTreeViewName() {
+		return keyType + " " + keyUsage + " " +keyProtocol + "  ...";
+	}
 }

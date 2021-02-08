@@ -92,4 +92,23 @@ public class RecordSOA extends Record{
 		return object;
 	}
 
+	
+	@Override
+	public String [] getValesForTreeItem(){
+		String [] pole = {
+				KEY_MNAME + ": " + mname,
+				KEY_RNAME+ ": " +rname,
+				KEY_SERIAL + ": "+ serial,
+				KEY_REFRESH + ": " + refresh,
+				KEY_RETRY + ": " + retry,
+				KEY_EXPIRY + ": " + expire,
+				KEY_MINIMUM + ": " + minimun
+		};
+		return pole;
+	}
+	
+	@Override
+	public String getDataForTreeViewName() {
+		return mname + " " + rname + " "  +" ...";
+	}
 }

@@ -20,8 +20,8 @@ public class Record {
 		return new JSONObject();
 	}
 	
-	public TreeItem<String> getAsTreeItem(){
-		return new TreeItem<String>("null");
+	public String [] getValesForTreeItem(){
+		return null;
 	}
 	
 	public String getStringToTreeView() {
@@ -30,6 +30,10 @@ public class Record {
 	
 	public int getLenght() {
 		return lenght;
+	}
+	
+	public String getDataForTreeViewName() {
+		return "";
 	}
 
 
