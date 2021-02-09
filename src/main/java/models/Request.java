@@ -8,10 +8,12 @@ import java.util.logging.Logger;
 
 import org.json.simple.JSONObject;
 
+import application.Main;
 import enums.Q_COUNT;
 import enums.Q_TYPE;
 import exceptions.NotValidDomainNameException;
 import exceptions.NotValidIPException;
+import javafx.scene.control.TreeItem;
 
 public class Request {
 
@@ -22,7 +24,7 @@ public class Request {
 	private static final int BYTE_SIZE_OF_QCLASS_AND_QTYPE = 4;
 	private int size;
 	private int endIndex; 
-	
+	private TreeItem<String> root;
 	private static final String KEY_NAME="Name";
 	private static final String KEY_QCOUNT="Type";
 	private static final String KEY_QTYPE="Class";
@@ -37,6 +39,7 @@ public class Request {
 		this.qtype = Q_TYPE.IN;
 		this.endIndex = 0;
 		this.size = this.nameInBytes.length+BYTE_SIZE_OF_QCLASS_AND_QTYPE;
+		
 	}
 	
 	public Request() {};
@@ -54,6 +57,14 @@ public class Request {
 		result[lenghtOfName+2] =qtype.code.getAsBytes()[1];
 		result[lenghtOfName+3] = qtype.code.getAsBytes()[0];
 		return result;
+	}
+	
+	public TreeItem<String> getAsTreeItem(){
+		root = new TreeItem<String>(qName + " " + qCount + " " + qtype);
+		root.getChildren().add(new TreeItem<String>(KEY_NAME + ": "+ qName));
+		root.getChildren().add(new TreeItem<String>(KEY_QCOUNT + ": " + qCount));
+		root.getChildren().add(new TreeItem<String>(KEY_QTYPE + ": " + qtype));
+		return root;
 	}
 	
 	private void ipAddressToPTRFormat() throws NotValidIPException {

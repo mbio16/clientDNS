@@ -19,6 +19,7 @@ import enums.APPLICATION_PROTOCOL;
 import enums.Q_COUNT;
 import enums.TRANSPORT_PROTOCOL;
 import exceptions.TimeOutException;
+import javafx.scene.control.TreeItem;
 
 public class MessageSender {
 	private Header header;
@@ -35,13 +36,14 @@ public class MessageSender {
 	private byte  [] recieveReply;
 	private long timeElapsed;
 	private boolean rrRecords;
+	private TreeItem<String> root;
+	
 	private static final int MAX_MESSAGES_SENT=3;
 	private static final int TIME_OUT_MILLIS = 3000;
 	
 	private static final String KEY_HEAD="Head";
-	private static final String KEY_QUERY="Query";
-	//test
-
+	private static final String KEY_QUERY="Questions";
+	private static final String KEY_REQUEST = "Request";
 	private static Logger LOGGER = Logger.getLogger(DomainConvert.class.getName());
 	public MessageSender(boolean recursion, boolean dnssec,boolean rrRecords, String domain, Q_COUNT[] types,
 			TRANSPORT_PROTOCOL transport_protocol, APPLICATION_PROTOCOL application_protocol,String resolverIP) throws Exception {
@@ -57,7 +59,30 @@ public class MessageSender {
 			this.recieveReply = new byte [512];
 			this.rrRecords = rrRecords;
 	}
-
+	
+	public TreeItem<String> getAsTreeItem() {
+		root = new TreeItem<String>(KEY_REQUEST);
+		root.getChildren().add(header.getAsTreeItem());
+		addRequestToTreeItem();
+		if (rrRecords) {
+			TreeItem<String> optRecord = new TreeItem<String>(MessageParser.KEY_ADDITIONAL_RECORDS);
+			optRecord.getChildren().add(Response.getOptAsTreeItem());
+			root.getChildren().add(optRecord);
+		}
+		return root;
+	}
+	
+	private void addRequestToTreeItem() {
+		TreeItem<String> subRequest = new TreeItem<String>(KEY_QUERY);
+		if(requests.size()>0) {
+			for (Request request: requests) {
+				subRequest.getChildren().add(request.getAsTreeItem());
+			}
+			root.getChildren().add(subRequest);
+		}
+	}
+	
+	
 	private void addRequests(Q_COUNT [] types, String domain) throws Exception {
 		for (Q_COUNT qcount : types) {
 			Request r = new Request(domain, qcount);

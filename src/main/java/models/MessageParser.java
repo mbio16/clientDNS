@@ -20,10 +20,10 @@ public class MessageParser {
 	private int currentIndex; 
 	private static final String KEY_HEAD="Head";
 	private static final String KEY_QUESTIONS="Questions";
-	private static final String KEY_ANSWERS="Answers";
+	private static final String KEY_ANSWERS="Answer";
 	private static final String KEY_AUTHORITY="Authority";
-	private static final String KEY_ADDITIONAL_RECORDS = "Aditional records";
-	
+	public static final String KEY_ADDITIONAL_RECORDS = "Aditional records";
+	private TreeItem<String> main;
 	
 	public MessageParser(byte [] rawMessage, Header queryHeader) {
 	this.rawMessage = rawMessage;
@@ -33,6 +33,7 @@ public class MessageParser {
 	this.ancountResponses = new ArrayList<Response>();
 	this.nscountResponses = new ArrayList<Response>();
 	this.arcountResponses = new ArrayList<Response>();
+	this.main = new TreeItem<String>(KEY_ANSWERS);
 	}
 	
 	public void parse() throws QueryIdNotMatchException, UnknownHostException, UnsupportedEncodingException {
@@ -65,25 +66,32 @@ public class MessageParser {
 	
 	
 	public TreeItem<String> getAsTreeItem(){
-	TreeItem<String> main = new TreeItem<String>("Records");
-		TreeItem<String> ans = new TreeItem<String>(KEY_ANSWERS);
-		for (Response response : ancountResponses) {
-			ans.getChildren().add(response.getAsTreeItem());
-		}
-		TreeItem<String> auth = new TreeItem<String>(KEY_AUTHORITY);
-		for (Response response : nscountResponses) {
-			auth.getChildren().add(response.getAsTreeItem());
-		}
-		TreeItem<String> ar = new TreeItem<String>(KEY_ADDITIONAL_RECORDS);
-		for (Response response : arcountResponses) {
-			ar.getChildren().add(response.getAsTreeItem());
-		}
-		main.getChildren().add(ans);
-		main.getChildren().add(auth);
-		main.getChildren().add(ar);
+		main.getChildren().add(header.getAsTreeItem());
+		addRequestToTreeItem();
+		addResponsToTreeItem(ancountResponses,KEY_ANSWERS);
+		addResponsToTreeItem(nscountResponses, KEY_AUTHORITY);
+		addResponsToTreeItem(arcountResponses, KEY_ADDITIONAL_RECORDS);
 		return main;
 	}
-	
+	private void addRequestToTreeItem() {
+		TreeItem<String> questionTreeItem = new TreeItem<String>(KEY_QUESTIONS);
+		if (header.getQdCount().getValue()>0) {
+			for (Request request:qcountRequests) {
+				questionTreeItem.getChildren().add(request.getAsTreeItem());
+			}
+			main.getChildren().add(questionTreeItem);
+		}
+		
+	}
+	private void addResponsToTreeItem(ArrayList<Response> responses, String treeItemName) {
+		TreeItem<String> item = new TreeItem<String>(treeItemName); 
+		if(responses.size() != 0) {
+			for (Response response : responses) {
+				item.getChildren().add(response.getAsTreeItem());
+			}
+			main.getChildren().add(item);
+		}
+	}
 	
 	private void checkId() throws QueryIdNotMatchException {
 		if(!queryHeader.getId().equals(header.getId())) {

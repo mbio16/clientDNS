@@ -18,9 +18,6 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.control.TreeItem;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 import models.DomainConvert;
@@ -288,7 +285,7 @@ public class DNSController extends MDNSController {
 			responseTimeValueLabel.setText("" + sender.getTimeElapsed());
 			numberOfMessagesValueLabel.setText("" + sender.getMessagesSent());
 			responseTreeView.setRoot(parser.getAsTreeItem());
-			
+			requestTreeView.setRoot(sender.getAsTreeItem());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

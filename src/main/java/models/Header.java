@@ -11,6 +11,7 @@ import enums.RA;
 import enums.R_CODE;
 import enums.RD;
 import enums.TC;
+import javafx.scene.control.TreeItem;
 
 
 	public class Header {
@@ -28,6 +29,7 @@ import enums.TC;
 		private UInt16				AnCount;
 		private UInt16				NsCount;
 		private UInt16				ArCount;
+		private TreeItem<String> 	root;
 		private static final int size = 12;
 		
 		private static final String ID_KEY="Id";
@@ -46,7 +48,7 @@ import enums.TC;
 		public Header(boolean recursion, boolean dnssec, int numberOfQueries, boolean rrRecord) {
 			id = new UInt16().generateRandom();
 			//id = new UInt16()
-			
+			root = new TreeItem<String>("Head");
 			qr = QR.REQUEST;
 			opCode = OP_CODE.QUERY;
 			aa = AA.NON_AUTHORITATIVE;
@@ -67,7 +69,10 @@ import enums.TC;
 			}
 			
 		}
-		public Header() {};
+		public Header() {
+			root = new TreeItem<String>("Head");
+		}
+		
 		public byte[] getHaderAsBytes(){
 			boolean opcodeBoolean [] = DataTypesConverter.byteToBoolArr(opCode.code, 4);
 			boolean sub1 [] = {rd.code,tc.code,aa.code,opcodeBoolean[0],opcodeBoolean[1],opcodeBoolean[2],opcodeBoolean[3],qr.code};
@@ -119,6 +124,47 @@ import enums.TC;
 			jsonObject.put(ARCOUNT_KEY,ArCount.getValue());
 			return jsonObject;
 		}
+		
+		public TreeItem<String> getAsTreeItem(){
+			root.getChildren().add(new TreeItem<String>(ID_KEY + ": " +id.getValue()));
+			root.getChildren().add(getFlagsAsTreeView());
+			root.getChildren().add(new TreeItem<String>(QDCOUNT_KEY + ": " + QdCount.toString()));
+			root.getChildren().add(new TreeItem<String>(ANCOUNT_KEY + ": " + AnCount.toString()));
+			root.getChildren().add(new TreeItem<String>(NSCOUNT_KEY + ": " + NsCount.toString()));
+			root.getChildren().add(new TreeItem<String>(ARCOUNT_KEY + ": " + ArCount.toString()));
+			return root;
+		}
+		
+		private TreeItem<String> getFlagsAsTreeView(){
+			String flagsKeys [] = {
+					QR_KEY,
+					OPCODE_KEY,
+					AA_KEY,
+					TC_KEY,
+					RD_KEY,
+					CHECKING_DISABLED_KEY,
+					AUTHENTICATE_DATA__KEY,
+					RCODE_KEY
+			};
+			String flagsValue [] = {
+					opCode.toString(),
+					qr.toString(),
+					aa.toString(),
+					tc.toString(),
+					rd.toString(),
+					cd.toString(),
+					ad.toString(),
+					rCode.toString(),
+					
+			};
+			TreeItem<String> main = new TreeItem<String>("Flags");
+			for (int i = 0; i < flagsValue.length; i++) {
+				main.getChildren().add(new TreeItem<String>(flagsKeys[i] + ": " + flagsValue[i]));
+			}
+			return main;
+		}
+		
+		
 		public Header parseHead(byte[] byteHead) {
 			//id
 			this.id =  new UInt16().loadFromBytes(byteHead[0],byteHead[1]);

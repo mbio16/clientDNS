@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import org.json.simple.JSONObject;
 import enums.Q_COUNT;
 import enums.Q_TYPE;
+import enums.R_CODE;
 import javafx.scene.control.TreeItem;
 import records.Record;
 import records.RecordA;
@@ -50,6 +51,7 @@ public class Response {
 	private static final String KEY_OPT_RCODE="Rcode";
 	private static final String KEY_OPT_VERSION="EDSN0 version";
 	private static final String KEY_OPT_DO_BIT = "Can handle DNSSEC";
+	public static final String ROOT_DOMAIN = ". (ROOT)";
 	public Response() {
 		
 	}
@@ -93,6 +95,7 @@ public class Response {
 		rdLenght = new UInt16().loadFromBytes(rawMessage[currentIndex],rawMessage[currentIndex+1]);
 		currentIndex += 2;
 		this.rdata = parseRecord(currentIndex);
+		nameAsString = ". (ROOT)";
 	}
 	private int parseName(int startIndex) {		
 		//Has to be done seperately (not in DomainConvert), because of end index
@@ -145,17 +148,7 @@ public class Response {
 	}
 
 	
-	public TreeItem<String> getAsTreeItem(){
-
-//		return new TreeItem<String>(
-//				NAME_KEY + ": " +nameAsString + "\n" +
-//				TYPE_KEY + ": " + qcount + "\n" + 
-//				TTL_KEY + ": " + ttl +  "\n" +
-//				CLASS_KEY + ": " + qtype +  "\n"  +
-//				DATA_KEY + ": " +   "\n" +
-//				rdata.getStringToTreeView()
-//				);
-//		
+	public TreeItem<String> getAsTreeItem(){		
 		TreeItem<String>  main = new TreeItem<String>(nameAsString + " " + qcount + " " + rdata.getDataForTreeViewName());
 		main.getChildren().add(new TreeItem<String>(NAME_KEY + ": " +nameAsString));
 		main.getChildren().add(new TreeItem<String>(TYPE_KEY + ": " + qcount));
@@ -172,11 +165,22 @@ public class Response {
 		main.getChildren().add(new TreeItem<String>(KEY_OPT_RCODE + ": "+ (int) rCode));
 		main.getChildren().add(new TreeItem<String>(KEY_OPT_VERSION + ": " + (int)version));
 		main.getChildren().add(new TreeItem<String>(KEY_OPT_UDP_SIZE + ": " + size.getValue()));
-		String doBitString = doBit.getValue() >= DO_BIT_VALUE ? "Can handle DNSSEC":"Can not handle DNSSEC";
+		String doBitString = doBit.getValue() >= DO_BIT_VALUE ? "true":"false";
 		main.getChildren().add(new TreeItem<String>(KEY_OPT_DO_BIT + ": "+  doBitString));
 		}
 		
 		return main;
+	}
+	
+	public static TreeItem<String> getOptAsTreeItem() {
+		TreeItem<String> root= new  TreeItem<String>(ROOT_DOMAIN + " " + Q_COUNT.OPT);
+		root.getChildren().add(new TreeItem<String>(NAME_KEY + ": " + ROOT_DOMAIN ));
+		root.getChildren().add(new TreeItem<String>(TYPE_KEY + ": " + Q_COUNT.OPT));
+		root.getChildren().add(new TreeItem<String>(KEY_OPT_RCODE + ": "+ 0));
+		root.getChildren().add(new TreeItem<String>(KEY_OPT_VERSION + ": " + 0));
+		root.getChildren().add(new TreeItem<String>(KEY_OPT_UDP_SIZE + ": " + 512));
+		root.getChildren().add(new TreeItem<String>(KEY_OPT_DO_BIT + ": " +  "true"));
+		return root;
 	}
 
 	@SuppressWarnings("unchecked")
