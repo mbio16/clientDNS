@@ -6,6 +6,8 @@ import java.util.logging.Logger;
 import enums.APPLICATION_PROTOCOL;
 import enums.Q_COUNT;
 import enums.TRANSPORT_PROTOCOL;
+import exceptions.MoreRecordsTypesWithPTRException;
+import exceptions.NonRecordSelectedException;
 import exceptions.NotValidDomainNameException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -171,21 +173,17 @@ public class DNSController extends MDNSController {
 			englishRadioButton.setSelected(true);
 		}
 
+		dnssecRecordsRequestCheckBox.setText(language.getLanguageBundle().getString(dnssecRecordsRequestCheckBox.getId()));	
+		
 		// set system dns
 		systemDNSRadioButton.setText(Ip.getPrimaryDNSIp());
 
 		// setUserData
 		String ip = Ip.getPrimaryDNSIp();
 		systemDNSRadioButton.setText(ip);
-		systemDNSRadioButton.setUserData(ip);
-		cloudflareIpv4RadioButton.setUserData("1.1.1.1");
-		googleIpv4RadioButton.setUserData("8.8.8.8");
-		cznicIpv4RadioButton.setUserData("193.14.47.1");
-		cloudflareIpv6RadioButton.setUserData("2606:4700:4700::1111");
-		googleIpv6RadioButton.setUserData("2001:4860:4860::8888");
-		cznicIpv6RadioButton.setUserData("2001:148f:ffff::1");
-
+		setUserDataDnsServers(ip);
 		setUserDataRecords();
+		setUserDataTransportProtocol();
 		// permform radio buttons actions
 		onRadioButtonChange(null);
 		
@@ -196,7 +194,19 @@ public class DNSController extends MDNSController {
 		copyResponseJsonButton.setText(language.getLanguageBundle().getString(copyResponseJsonButton.getId()));
 	}
 
-	
+	private void setUserDataTransportProtocol() {
+		tcpRadioButton.setUserData(TRANSPORT_PROTOCOL.TCP);
+		udpRadioButton.setUserData(TRANSPORT_PROTOCOL.UDP);
+	}
+	private void setUserDataDnsServers(String ip) {
+		systemDNSRadioButton.setUserData(ip);
+		cloudflareIpv4RadioButton.setUserData("1.1.1.1");
+		googleIpv4RadioButton.setUserData("8.8.8.8");
+		cznicIpv4RadioButton.setUserData("193.14.47.1");
+		cloudflareIpv6RadioButton.setUserData("2606:4700:4700::1111");
+		googleIpv6RadioButton.setUserData("2001:4860:4860::8888");
+		cznicIpv6RadioButton.setUserData("2001:148f:ffff::1");
+	}
 	private void setUserDataRecords() {
 		aCheckBox.setUserData(Q_COUNT.A);
 		aaaaCheckBox.setUserData(Q_COUNT.AAAA);
@@ -304,50 +314,87 @@ public class DNSController extends MDNSController {
 		}
 	}
 	
-//	private Q_COUNT [] getRecordTypes() {
-//		ArrayList<Q_COUNT> list = new ArrayList<Q_COUNT>();
-//		CheckBox [] checkBoxArray= {
-//				soaCheckBox,
-//				dnskeyCheckBox,
-//				txtCheckBox,
-//				dsCheckBox,
-//				caaCheckBox,
-//				txtCheckBox
-//		};
-//		
-//		//HAS TO BE DONE
-//	}
+	private Q_COUNT [] getRecordTypes() throws MoreRecordsTypesWithPTRException, NonRecordSelectedException {
+		ArrayList<Q_COUNT> list = new ArrayList<Q_COUNT>();
+		CheckBox [] checkBoxArray= {
+				aCheckBox,
+				aaaaCheckBox,
+				nsCheckBox,
+				mxCheckBox,
+				soaCheckBox,
+				cnameCheckBox,
+				ptrCheckBox,
+				dnskeyCheckBox,
+				dsCheckBox,
+				caaCheckBox,
+				txtCheckBox
+		};
+		for (int i = 0; i < checkBoxArray.length; i++) {
+			if (checkBoxArray[i].isSelected()) {
+				list.add((Q_COUNT) checkBoxArray[i].getUserData());
+			}
+		}
+		if(list.contains(Q_COUNT.PTR) && list.size()>1) {
+			throw new MoreRecordsTypesWithPTRException();
+		}
+		if(list.size()==0) {
+			throw new NonRecordSelectedException();
+		}
+		Q_COUNT returnList[] = new Q_COUNT [list.size()];
+		for (int i = 0; i < returnList.length; i++) {
+			returnList[i] = list.get(i);
+		}
+		return returnList;
+	}
 
+	private TRANSPORT_PROTOCOL getTransportProtocol() {
+		if(udpRadioButton.isSelected()) {
+			return TRANSPORT_PROTOCOL.UDP;
+		}
+		else {
+			return TRANSPORT_PROTOCOL.TCP;
+		}
+	}
+	private boolean isRecursiveSet() {
+		return recursiveQueryRadioButton.isSelected();
+	}
+	private boolean isDNSSECSet() {
+		return dnssecYesRadioButton.isSelected();
+	}
+	private void setResponseControls(MessageSender sender) {
+		responseTimeValueLabel.setText(""+sender.getTimeElapsed());
+		numberOfMessagesValueLabel.setText(""+sender.getMessagesSent());
+	}
+	
 	@FXML
 	public void sendButtonFired(ActionEvent event) {
-		Q_COUNT[] a = {Q_COUNT.A,Q_COUNT.AAAA};
 		MessageSender sender;
 		MessageParser parser;
-
-		String dnsServer = getDnsServerIp();
-		LOGGER.info(dnsServer);
 		try {
+			String dnsServer = getDnsServerIp();
+			LOGGER.info(dnsServer);
+			Q_COUNT [] records = getRecordTypes();
+			TRANSPORT_PROTOCOL transport = getTransportProtocol();
 			String domain = getDomain();
-			sender = new MessageSender(true, true,true,domain,a ,TRANSPORT_PROTOCOL.UDP,APPLICATION_PROTOCOL.DNS,"1.1.1.1");
+			sender = new MessageSender(
+					isRecursiveSet(),
+					isDNSSECSet(),
+					dnssecRecordsRequestCheckBox.isSelected(),
+					domain,
+					records,
+					transport,
+					APPLICATION_PROTOCOL.DNS,
+					"1.1.1.1");
 			sender.send();
 			parser = new MessageParser(sender.getRecieveReply(),sender.getHeader());
 			parser.parse();
-			
-			//System.out.println(sender.getAsJsonString());
-			//System.out.println(parser.getAsJsonString());
-			
 			responseTreeView.setRoot(parser.getAsTreeItem());
 			requestTreeView.setRoot(sender.getAsTreeItem());
+			setResponseControls(sender);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		/*
-		 * if(domainNameTextFieldRadioButton.isSelected()) {
-		 * settings.addDNSDomain(domainNameTextField.getText()); }
-		 */
-
 	}
 
 }
