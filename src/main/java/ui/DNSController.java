@@ -97,9 +97,6 @@ public class DNSController extends MDNSController {
 	}
 
 	public void initialize() {
-		ipToggleGroup = new ToggleGroup();
-		ipv4RadioButton.setToggleGroup(ipToggleGroup);
-		ipv6RadioButton.setToggleGroup(ipToggleGroup);
 
 		transportToggleGroup = new ToggleGroup();
 		tcpRadioButton.setToggleGroup(transportToggleGroup);
@@ -133,7 +130,7 @@ public class DNSController extends MDNSController {
 
 	public void setLabels() {
 		// define group to iterate over it
-		TitledPane titlePaneArray[] = new TitledPane[] { domainNameTitledPane, ipTitledPane, transportTitledPane,
+		TitledPane titlePaneArray[] = new TitledPane[] { domainNameTitledPane, transportTitledPane,
 				dnssecTitledPane, recordTypeTitledPane, dnsServerTitledPane, iterativeTitledPane, responseTitledPane,
 				queryTitledPane };
 
@@ -190,6 +187,9 @@ public class DNSController extends MDNSController {
 		
 		responseTreeView.setStyle("-fx-font-size: 14");
 		requestTreeView.setStyle("-fx-font-size: 14");
+		
+		copyRequestJsonButton.setText(language.getLanguageBundle().getString(copyRequestJsonButton.getId()));
+		copyResponseJsonButton.setText(language.getLanguageBundle().getString(copyResponseJsonButton.getId()));
 	}
 
 	public void loadDataFromSettings() {
@@ -271,19 +271,22 @@ public class DNSController extends MDNSController {
 
 	@FXML
 	public void sendButtonFired(ActionEvent event) {
+		Q_COUNT[] a = {Q_COUNT.A,Q_COUNT.AAAA};
+		MessageSender sender;
+		MessageParser parser;
 		String domain = getDomain();
 		String dnsServer = getDnsServerIp();
-		LOGGER.info("Dns server: " + dnsServer);
-		LOGGER.info("Domain to resolve: " + domain);
-		Q_COUNT types[] = { Q_COUNT.DS };
+		LOGGER.info(domain);
+		LOGGER.info(dnsServer);
 		try {
-			MessageSender sender = new MessageSender(true, true, true,"nic.cz", types, TRANSPORT_PROTOCOL.UDP,
-					APPLICATION_PROTOCOL.DNS, "1.1.1.1");
+			sender = new MessageSender(true, true,true,domain,a ,TRANSPORT_PROTOCOL.UDP,APPLICATION_PROTOCOL.DNS,"1.1.1.1");
 			sender.send();
-			MessageParser parser = new MessageParser(sender.getRecieveReply(), sender.getHeader());
+			parser = new MessageParser(sender.getRecieveReply(),sender.getHeader());
 			parser.parse();
-			responseTimeValueLabel.setText("" + sender.getTimeElapsed());
-			numberOfMessagesValueLabel.setText("" + sender.getMessagesSent());
+			
+			//System.out.println(sender.getAsJsonString());
+			//System.out.println(parser.getAsJsonString());
+			
 			responseTreeView.setRoot(parser.getAsTreeItem());
 			requestTreeView.setRoot(sender.getAsTreeItem());
 		} catch (Exception e) {

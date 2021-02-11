@@ -97,7 +97,7 @@ public class Request {
 			j++;
 		}
 		this.nameInBytes = encodedName;
-		this.qName = DomainConvert.decodeDNS(encodedName);	
+		this.qName = DomainConvert.decodeDNS(request,startIndex);	
 		this.qCount = Q_COUNT.getTypeByCode(new UInt16().loadFromBytes(request[this.endIndex-3],request[this.endIndex-2]));
 		this.qtype = Q_TYPE.getTypeByCode(new UInt16().loadFromBytes(request[this.endIndex-1],request[this.endIndex]));
 		this.size = nameInBytes.length+BYTE_SIZE_OF_QCLASS_AND_QTYPE;

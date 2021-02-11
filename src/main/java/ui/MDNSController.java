@@ -35,9 +35,12 @@ public class MDNSController extends GeneralController {
 	@FXML protected Menu languageMenu;
 	@FXML protected RadioMenuItem czechRadioButton;
 	@FXML protected RadioMenuItem englishRadioButton;
-	
+	@FXML protected Button copyRequestJsonButton;
+	@FXML protected Button copyResponseJsonButton;
 	//butons
 	@FXML protected Button sendButton;
+
+	
 	
 	//text fields
 	@FXML protected TextField domainNameTextField;
@@ -57,7 +60,7 @@ public class MDNSController extends GeneralController {
 	@FXML protected CheckBox mxCheckBox;
 	@FXML protected CheckBox cnameCheckBox;
 	@FXML protected CheckBox ptrCheckBox;
-	
+	@FXML protected CheckBox dnssecRecordsRequestCheckBox;
 	//titledpane
 	
 	@FXML protected TitledPane domainNameTitledPane;
@@ -128,6 +131,7 @@ public class MDNSController extends GeneralController {
 				numberOfMessagesLabel
 		};
 		
+		dnssecRecordsRequestCheckBox.setText(language.getLanguageBundle().getString(dnssecRecordsRequestCheckBox.getId()));
 		//set labels to current language in menu
 		backMenuItem.setText(language.getLanguageBundle().getString(backMenuItem.getId()));
 		actionMenu.setText(language.getLanguageBundle().getString(actionMenu.getId()));
@@ -148,7 +152,8 @@ public class MDNSController extends GeneralController {
 		
 		//set sendButton
 		sendButton.setText(language.getLanguageBundle().getString(sendButton.getId()));
-		
+		copyResponseJsonButton.setText(language.getLanguageBundle().getString(copyResponseJsonButton.getId()));
+		copyRequestJsonButton.setText(language.getLanguageBundle().getString(copyRequestJsonButton.getId()));
 		if (language.getCurrentLanguage().equals(Language.CZECH)) {
 			czechRadioButton.setSelected(true);
 			englishRadioButton.setSelected(false);
@@ -161,6 +166,10 @@ public class MDNSController extends GeneralController {
 		savedDomainNamesChoiseBox.getItems().addAll(settings.getDomainNamesMDNS());
 	}
 	
+	public void setDisableJSonButtons(boolean disable) {
+		copyRequestJsonButton.setDisable(disable);
+		copyResponseJsonButton.setDisable(disable);
+	}
 	
 	@FXML public void czechSelected(ActionEvent event) {
 		language.changeLanguageBundle(true);
