@@ -1,10 +1,12 @@
 package ui;
 
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import enums.APPLICATION_PROTOCOL;
 import enums.Q_COUNT;
 import enums.TRANSPORT_PROTOCOL;
+import exceptions.NotValidDomainNameException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -25,6 +27,7 @@ import models.Ip;
 import models.Language;
 import models.MessageParser;
 import models.MessageSender;
+import records.RecordRRSIG;
 
 public class DNSController extends MDNSController {
 
@@ -182,6 +185,7 @@ public class DNSController extends MDNSController {
 		googleIpv6RadioButton.setUserData("2001:4860:4860::8888");
 		cznicIpv6RadioButton.setUserData("2001:148f:ffff::1");
 
+		setUserDataRecords();
 		// permform radio buttons actions
 		onRadioButtonChange(null);
 		
@@ -192,6 +196,21 @@ public class DNSController extends MDNSController {
 		copyResponseJsonButton.setText(language.getLanguageBundle().getString(copyResponseJsonButton.getId()));
 	}
 
+	
+	private void setUserDataRecords() {
+		aCheckBox.setUserData(Q_COUNT.A);
+		aaaaCheckBox.setUserData(Q_COUNT.AAAA);
+		cnameCheckBox.setUserData(Q_COUNT.CNAME);
+		mxCheckBox.setUserData(Q_COUNT.MX);
+		nsCheckBox.setUserData(Q_COUNT.NS);
+		caaCheckBox.setUserData(Q_COUNT.CAA);
+		ptrCheckBox.setUserData(Q_COUNT.PTR);
+		txtCheckBox.setUserData(Q_COUNT.TXT);
+		dnskeyCheckBox.setUserData(Q_COUNT.DNSKEY);
+		soaCheckBox.setUserData(Q_COUNT.SOA);
+		dsCheckBox.setUserData(Q_COUNT.DS);
+		
+	}
 	public void loadDataFromSettings() {
 		savedDomainNamesChoiseBox.getItems().addAll(settings.getDomainNamesDNS());
 		savedDNSChoiceBox.getItems().addAll(settings.getDnsServers());
@@ -259,26 +278,56 @@ public class DNSController extends MDNSController {
 		}
 	}
 
-	private String getDomain() {
+	private String getDomain() throws NotValidDomainNameException {
+		try {
 		if (domainNameTextFieldRadioButton.isSelected()) {
-			if (DomainConvert.isValidDomainName(domainNameTextField.getText())) {
-				settings.addDNSDomain(domainNameTextField.getText());
+			String domain = (domainNameTextField.getText());
+			LOGGER.info("Domain name: " + domain);
+			if((Ip.isIPv4Address(domain) || Ip.isIpv6Address(domain)) && ptrCheckBox.isSelected()) {
+				LOGGER.info("PTR record request");
+				return domain;
+			}	
+			if (DomainConvert.isValidDomainName(domain)) {
+				settings.addDNSDomain(domain);
 				return domainNameTextField.getText();
+			}
+			else
+			{
+				throw new NotValidDomainNameException();
 			}
 		}
 		return savedDomainNamesChoiseBox.getValue();
+		}
+		catch (Exception e) {
+			LOGGER.warning(e.toString());
+			throw new NotValidDomainNameException();
+		}
 	}
+	
+//	private Q_COUNT [] getRecordTypes() {
+//		ArrayList<Q_COUNT> list = new ArrayList<Q_COUNT>();
+//		CheckBox [] checkBoxArray= {
+//				soaCheckBox,
+//				dnskeyCheckBox,
+//				txtCheckBox,
+//				dsCheckBox,
+//				caaCheckBox,
+//				txtCheckBox
+//		};
+//		
+//		//HAS TO BE DONE
+//	}
 
 	@FXML
 	public void sendButtonFired(ActionEvent event) {
 		Q_COUNT[] a = {Q_COUNT.A,Q_COUNT.AAAA};
 		MessageSender sender;
 		MessageParser parser;
-		String domain = getDomain();
+
 		String dnsServer = getDnsServerIp();
-		LOGGER.info(domain);
 		LOGGER.info(dnsServer);
 		try {
+			String domain = getDomain();
 			sender = new MessageSender(true, true,true,domain,a ,TRANSPORT_PROTOCOL.UDP,APPLICATION_PROTOCOL.DNS,"1.1.1.1");
 			sender.send();
 			parser = new MessageParser(sender.getRecieveReply(),sender.getHeader());

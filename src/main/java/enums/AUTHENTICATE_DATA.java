@@ -2,8 +2,8 @@ package enums;
 
 
 public enum AUTHENTICATE_DATA{
-	AUTHENTICATED((boolean) true),
-	NON_AUTHENTICATED((boolean) false);
+	NON_AUTHENTICATED_ACCEPTED((boolean) true),
+	NON_AUTHENTICATED_NOT_ACCEPTED((boolean) false);
 	
 	public boolean code;
 	
