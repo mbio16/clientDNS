@@ -1,7 +1,6 @@
 package ui;
 
 import java.util.logging.Logger;
-
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -20,9 +19,13 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.TreeView;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 import models.Language;
+import models.MessageParser;
+import models.MessageSender;
 
 public class MDNSController extends GeneralController {
 	
@@ -89,6 +92,8 @@ public class MDNSController extends GeneralController {
 	@FXML protected TreeView<String> requestTreeView;
 	@FXML protected TreeView<String> responseTreeView;
 	
+	protected MessageParser parser;
+	protected MessageSender sender;
 	public MDNSController() {
 		super();
 		LOGGER = Logger.getLogger(MDNSController.class.getName());
@@ -213,7 +218,19 @@ public class MDNSController extends GeneralController {
 		
 	}
 	
-	
+	private void copyDataToClipBoard(String data) {
+		final Clipboard clipboard = Clipboard.getSystemClipboard();
+		final ClipboardContent content = new ClipboardContent();
+		content.putString(data);
+		clipboard.setContent(content);
+	}
+	@FXML public void copyJsonRequestDataFired(ActionEvent event) {
+		copyDataToClipBoard(sender.getAsJsonString());
+
+	}
+	@FXML public void copyJsonResponseDataFired(ActionEvent event) {
+		copyDataToClipBoard(parser.getAsJsonString());
+	}
 	
 	
 }

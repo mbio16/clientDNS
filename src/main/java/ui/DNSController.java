@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import enums.APPLICATION_PROTOCOL;
 import enums.Q_COUNT;
 import enums.TRANSPORT_PROTOCOL;
+import exceptions.DnsServerIpIsNotValidException;
 import exceptions.MoreRecordsTypesWithPTRException;
 import exceptions.NonRecordSelectedException;
 import exceptions.NotValidDomainNameException;
@@ -40,52 +41,32 @@ public class DNSController extends MDNSController {
 	private TextField dnsServerTextField;
 
 	// radio buttons
-	@FXML
-	private RadioButton tcpRadioButton;
-	@FXML
-	private RadioButton udpRadioButton;
-	@FXML
-	private RadioButton recursiveQueryRadioButton;
-	@FXML
-	private RadioButton iterativeQueryRadioButton;
-	@FXML
-	private RadioButton cloudflareIpv4RadioButton;
-	@FXML
-	private RadioButton googleIpv4RadioButton;
-	@FXML
-	private RadioButton cznicIpv4RadioButton;
-	@FXML
-	private RadioButton cloudflareIpv6RadioButton;
-	@FXML
-	private RadioButton googleIpv6RadioButton;
-	@FXML
-	private RadioButton cznicIpv6RadioButton;
-	@FXML
-	private RadioButton otherDNSServerRadioButton;
-	@FXML
-	private RadioButton systemDNSRadioButton;
-	@FXML
-	private RadioButton savedDNSRadioButton;
+	@FXML private RadioButton tcpRadioButton;
+	@FXML private RadioButton udpRadioButton;
+	@FXML private RadioButton recursiveQueryRadioButton;
+	@FXML private RadioButton iterativeQueryRadioButton;
+	@FXML private RadioButton cloudflareIpv4RadioButton;
+	@FXML private RadioButton googleIpv4RadioButton;
+	@FXML private RadioButton cznicIpv4RadioButton;
+	@FXML private RadioButton cloudflareIpv6RadioButton;
+	@FXML private RadioButton googleIpv6RadioButton;
+	@FXML private RadioButton cznicIpv6RadioButton;
+	@FXML private RadioButton otherDNSServerRadioButton;
+	@FXML private RadioButton systemDNSRadioButton;
+	@FXML private RadioButton savedDNSRadioButton;
 
 	// checkboxes
-	@FXML
-	private CheckBox soaCheckBox;
-	@FXML
-	private CheckBox dnskeyCheckBox;
-	@FXML
-	private CheckBox dsCheckBox;
-	@FXML
-	private CheckBox caaCheckBox;
-	@FXML
-	private CheckBox txtCheckBox;
+	@FXML private CheckBox soaCheckBox;
+	@FXML private CheckBox dnskeyCheckBox;
+	@FXML private CheckBox dsCheckBox;
+	@FXML private CheckBox caaCheckBox;
+	@FXML private CheckBox txtCheckBox;
+	@FXML private CheckBox rrsigCheckBox;
 
 	// titledpane
-	@FXML
-	private TitledPane transportTitledPane;
-	@FXML
-	private TitledPane dnsServerTitledPane;
-	@FXML
-	private TitledPane iterativeTitledPane;
+	@FXML private TitledPane transportTitledPane;
+	@FXML private TitledPane dnsServerTitledPane;
+	@FXML private TitledPane iterativeTitledPane;
 
 	// toogleGroup
 	private ToggleGroup transportToggleGroup;
@@ -93,8 +74,8 @@ public class DNSController extends MDNSController {
 	private ToggleGroup dnsserverToggleGroup;
 
 	// choice box
-	@FXML
-	private ChoiceBox<String> savedDNSChoiceBox;
+	@FXML private ChoiceBox<String> savedDNSChoiceBox;
+
 
 	public DNSController() {
 		super();
@@ -102,7 +83,6 @@ public class DNSController extends MDNSController {
 	}
 
 	public void initialize() {
-
 		transportToggleGroup = new ToggleGroup();
 		tcpRadioButton.setToggleGroup(transportToggleGroup);
 		udpRadioButton.setToggleGroup(transportToggleGroup);
@@ -202,7 +182,7 @@ public class DNSController extends MDNSController {
 		systemDNSRadioButton.setUserData(ip);
 		cloudflareIpv4RadioButton.setUserData("1.1.1.1");
 		googleIpv4RadioButton.setUserData("8.8.8.8");
-		cznicIpv4RadioButton.setUserData("193.14.47.1");
+		cznicIpv4RadioButton.setUserData("193.17.47.1");
 		cloudflareIpv6RadioButton.setUserData("2606:4700:4700::1111");
 		googleIpv6RadioButton.setUserData("2001:4860:4860::8888");
 		cznicIpv6RadioButton.setUserData("2001:148f:ffff::1");
@@ -219,6 +199,7 @@ public class DNSController extends MDNSController {
 		dnskeyCheckBox.setUserData(Q_COUNT.DNSKEY);
 		soaCheckBox.setUserData(Q_COUNT.SOA);
 		dsCheckBox.setUserData(Q_COUNT.DS);
+		rrsigCheckBox.setUserData(Q_COUNT.RRSIG);
 		
 	}
 	public void loadDataFromSettings() {
@@ -275,8 +256,11 @@ public class DNSController extends MDNSController {
 		}
 	}
 
-	private String getDnsServerIp() {
-		if (otherDNSServerRadioButton.isSelected() && Ip.isIpValid(dnsServerTextField.getText())) {
+	private String getDnsServerIp() throws DnsServerIpIsNotValidException {
+		if (otherDNSServerRadioButton.isSelected()) {
+			if (Ip.isIpValid(dnsServerTextField.getText())) {
+				throw new DnsServerIpIsNotValidException();
+			}
 			settings.addDNSServer(dnsServerTextField.getText());
 			return dnsServerTextField.getText();
 		} else {
@@ -327,7 +311,8 @@ public class DNSController extends MDNSController {
 				dnskeyCheckBox,
 				dsCheckBox,
 				caaCheckBox,
-				txtCheckBox
+				txtCheckBox,
+				rrsigCheckBox
 		};
 		for (int i = 0; i < checkBoxArray.length; i++) {
 			if (checkBoxArray[i].isSelected()) {
@@ -361,40 +346,55 @@ public class DNSController extends MDNSController {
 	private boolean isDNSSECSet() {
 		return dnssecYesRadioButton.isSelected();
 	}
-	private void setResponseControls(MessageSender sender) {
+	private void logMessage(String dnsServer, String domain, Q_COUNT[] records, boolean recursive, boolean dnssec, TRANSPORT_PROTOCOL transport, boolean dnssecRRsig) {
+		LOGGER.info(
+				 "DNS server: " + dnsServer + "\n"
+				+ "Domain: " + domain + "\n"
+				+ "Records: " + records.toString() + "\n"
+				+ "Recursive:" + recursive + "\n"
+				+ "DNSSEC: " + dnssec + "\n"
+				+ "DNSSEC sig records" + dnssecRRsig + "\n"
+				+ "Transport protocol: " + transport + "\n"
+				+ "Application protocol: " + APPLICATION_PROTOCOL.DNS
+				);
+	}
+	private void setControls() {
+		responseTreeView.setRoot(parser.getAsTreeItem());
+		requestTreeView.setRoot(sender.getAsTreeItem());
 		responseTimeValueLabel.setText(""+sender.getTimeElapsed());
 		numberOfMessagesValueLabel.setText(""+sender.getMessagesSent());
+		setDisableJSonButtons(false);
 	}
-	
 	@FXML
 	public void sendButtonFired(ActionEvent event) {
-		MessageSender sender;
-		MessageParser parser;
 		try {
 			String dnsServer = getDnsServerIp();
 			LOGGER.info(dnsServer);
 			Q_COUNT [] records = getRecordTypes();
 			TRANSPORT_PROTOCOL transport = getTransportProtocol();
 			String domain = getDomain();
+			boolean recursive = isRecursiveSet();
+			boolean dnssec = isDNSSECSet();
+			boolean dnssecRRSig = dnssecRecordsRequestCheckBox.isSelected();
+			logMessage(dnsServer, domain, records, recursive, dnssec, transport,dnssecRRSig);
 			sender = new MessageSender(
-					isRecursiveSet(),
-					isDNSSECSet(),
-					dnssecRecordsRequestCheckBox.isSelected(),
+					recursive,
+					dnssec,
+					dnssecRRSig,
 					domain,
 					records,
 					transport,
 					APPLICATION_PROTOCOL.DNS,
-					"1.1.1.1");
+					dnsServer);
 			sender.send();
 			parser = new MessageParser(sender.getRecieveReply(),sender.getHeader());
 			parser.parse();
-			responseTreeView.setRoot(parser.getAsTreeItem());
-			requestTreeView.setRoot(sender.getAsTreeItem());
-			setResponseControls(sender);
+			setControls();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
+
 
 }

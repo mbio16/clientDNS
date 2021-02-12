@@ -60,6 +60,7 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
                         <CheckBox fx:id="aaaaCheckBox" mnemonicParsing="false" text="AAAA" GridPane.rowIndex="1">
@@ -113,6 +114,11 @@
                            </font>
                         </CheckBox>
                         <CheckBox fx:id="txtCheckBox" mnemonicParsing="false" text="TXT" GridPane.rowIndex="10">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </CheckBox>
+                        <CheckBox fx:id="rrsigCheckBox" mnemonicParsing="false" text="RRSIG" GridPane.rowIndex="11">
                            <font>
                               <Font size="15.0" />
                            </font>
@@ -359,8 +365,8 @@
                   </GridPane>
                </content>
             </TitledPane>
-            <Button fx:id="copyRequestJsonButton" disable="true" layoutX="864.0" layoutY="738.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="183.0" text="Kopírovat dotaz jako JSON" />
-            <Button fx:id="copyResponseJsonButton" disable="true" layoutX="1288.0" layoutY="738.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="183.0" text="Kopírovat odpověď jako JSON" />
+            <Button fx:id="copyRequestJsonButton" disable="true" layoutX="864.0" layoutY="738.0" mnemonicParsing="false" onAction="#copyJsonRequestDataFired" prefHeight="40.0" prefWidth="183.0" text="Kopírovat dotaz jako JSON" />
+            <Button fx:id="copyResponseJsonButton" disable="true" layoutX="1288.0" layoutY="738.0" mnemonicParsing="false" onAction="#copyJsonResponseDataFired" prefHeight="40.0" prefWidth="183.0" text="Kopírovat odpověď jako JSON" />
          </children>
       </AnchorPane>
    </center>
