@@ -35,6 +35,7 @@
 						<RadioButton fx:id="englishLangRadioButton" layoutY="4.0" mnemonicParsing="false" onAction="#languageChanged" />
 					</children>
 				</Group>
+            <Button fx:id="reportBugButton" layoutX="432.0" layoutY="18.0" mnemonicParsing="false" onAction="#reportBugButtonFired" prefHeight="25.0" prefWidth="104.0" text="Nahlásit chybu" />
 			</children>
 		</Pane>
 		<Pane layoutX="25.0" layoutY="93.0" prefHeight="295.0" prefWidth="150.0" style="-fx-background-color: #7F8688;">

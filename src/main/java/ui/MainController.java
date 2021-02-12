@@ -1,8 +1,13 @@
 package ui;
 
+import java.awt.Desktop;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.logging.Logger;
 
 import application.Main;
+import javafx.application.HostServices;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -30,6 +35,7 @@ public class MainController extends GeneralController {
 	@FXML private Button mdnsButton;
 	@FXML private Button dohButton;
 	@FXML private Button dotButton;
+	@FXML private Button reportBugButton;
 	//labels for protocol group
 	@FXML private Label	basicDNSLabel;
 	@FXML private Label multicastDNSLabel;
@@ -41,7 +47,7 @@ public class MainController extends GeneralController {
 	@FXML private ImageView dohButtonHelp;
 	@FXML private ImageView dotButtonHelp;
 
-	
+	private static final String BUG_URL="https://github.com/mbio16/clientDNS/issues";
  	private ToggleGroup languagegroup;
  	
 	public static final String FXML_FILE_NAME="/fxml/Main.fxml";
@@ -97,7 +103,15 @@ public class MainController extends GeneralController {
 		alert.showAndWait();
 		
 	}
-	
+	@FXML private void reportBugButtonFired(ActionEvent event) {
+		final Desktop desktop = Desktop.getDesktop();
+		try {
+			desktop.browse(new URI(BUG_URL));
+		} catch (Exception e) {
+			Alert alert = new Alert(AlertType.ERROR,language.getLanguageBundle().getString("bugButtonError"));
+			alert.showAndWait();
+		}
+	}
 	public void setSettings(Settings settings) {
 		this.settings = settings;
 	}
@@ -106,5 +120,6 @@ public class MainController extends GeneralController {
 		basicDNSLabel.setText(language.getLanguageBundle().getString(basicDNSLabel.getId()));
 		multicastDNSLabel.setText(language.getLanguageBundle().getString(multicastDNSLabel.getId()));
 		encryptedDNSLabel.setText(language.getLanguageBundle().getString(encryptedDNSLabel.getId()));
+		reportBugButton.setText(language.getLanguageBundle().getString(reportBugButton.getId()));
 	}
 }
