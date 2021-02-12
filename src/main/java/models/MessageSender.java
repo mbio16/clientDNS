@@ -3,11 +3,13 @@ package models;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -18,6 +20,8 @@ import com.google.gson.GsonBuilder;
 import enums.APPLICATION_PROTOCOL;
 import enums.Q_COUNT;
 import enums.TRANSPORT_PROTOCOL;
+import exceptions.NotValidDomainNameException;
+import exceptions.NotValidIPException;
 import exceptions.TimeOutException;
 import javafx.scene.control.TreeItem;
 
@@ -46,7 +50,7 @@ public class MessageSender {
 	private static final String KEY_REQUEST = "Request";
 	private static Logger LOGGER = Logger.getLogger(DomainConvert.class.getName());
 	public MessageSender(boolean recursion, boolean dnssec,boolean rrRecords, String domain, Q_COUNT[] types,
-			TRANSPORT_PROTOCOL transport_protocol, APPLICATION_PROTOCOL application_protocol,String resolverIP) throws Exception {
+			TRANSPORT_PROTOCOL transport_protocol, APPLICATION_PROTOCOL application_protocol,String resolverIP)throws  NotValidIPException, UnsupportedEncodingException, NotValidDomainNameException, UnknownHostException   {
 			requests = new ArrayList<Request>();
 			header = new Header(true, true, types.length, rrRecords);
 			size = Header.getSize();
@@ -83,14 +87,14 @@ public class MessageSender {
 	}
 	
 	
-	private void addRequests(Q_COUNT [] types, String domain) throws Exception {
+	private void addRequests(Q_COUNT [] types, String domain)  throws NotValidIPException, UnsupportedEncodingException, NotValidDomainNameException{
 		for (Q_COUNT qcount : types) {
 			Request r = new Request(domain, qcount);
 			requests.add(r);
 			size += r.getSize();
 		}
 	}
-	public void send() throws Exception {
+	public void send() throws TimeOutException, IOException {
 		switch (application_protocol) {
 		case DNS:
 			switch (transport_protocol) {

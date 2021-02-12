@@ -1,5 +1,8 @@
 package ui;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
@@ -10,6 +13,9 @@ import exceptions.DnsServerIpIsNotValidException;
 import exceptions.MoreRecordsTypesWithPTRException;
 import exceptions.NonRecordSelectedException;
 import exceptions.NotValidDomainNameException;
+import exceptions.NotValidIPException;
+import exceptions.QueryIdNotMatchException;
+import exceptions.TimeOutException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -390,10 +396,30 @@ public class DNSController extends MDNSController {
 			parser = new MessageParser(sender.getRecieveReply(),sender.getHeader());
 			parser.parse();
 			setControls();
+		} catch (NotValidDomainNameException e) {
+			//create allert
+		} catch (NotValidIPException e) {
+			//create allert
+		} catch (TimeOutException e) {
+			//create allert
+		} catch (DnsServerIpIsNotValidException e) {
+			//create allert
+		} catch (MoreRecordsTypesWithPTRException e) {
+			//create allert
+		} catch (NonRecordSelectedException e) {
+			//create allert
+		} catch (UnsupportedEncodingException e) {
+			//create allert
+		} catch (UnknownHostException e) {
+			//create allert
+		} catch (IOException e) {
+			//create allert
+		} catch (QueryIdNotMatchException e) {
+			//create allert
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
 		}
+
 	}
 
 
