@@ -1,8 +1,6 @@
 package ui;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
@@ -36,7 +34,6 @@ import models.Ip;
 import models.Language;
 import models.MessageParser;
 import models.MessageSender;
-import records.RecordRRSIG;
 
 public class DNSController extends MDNSController {
 
@@ -371,6 +368,10 @@ public class DNSController extends MDNSController {
 		numberOfMessagesValueLabel.setText(""+sender.getMessagesSent());
 		setDisableJSonButtons(false);
 	}
+	private void showAller(String exceptionName) {
+		Alert alert = new Alert(AlertType.ERROR,language.getLanguageBundle().getString(exceptionName));
+		alert.show();
+	}
 	@FXML
 	public void sendButtonFired(ActionEvent event) {
 		try {
@@ -396,28 +397,20 @@ public class DNSController extends MDNSController {
 			parser = new MessageParser(sender.getRecieveReply(),sender.getHeader());
 			parser.parse();
 			setControls();
-		} catch (NotValidDomainNameException e) {
-			//create allert
-		} catch (NotValidIPException e) {
-			//create allert
-		} catch (TimeOutException e) {
-			//create allert
-		} catch (DnsServerIpIsNotValidException e) {
-			//create allert
-		} catch (MoreRecordsTypesWithPTRException e) {
-			//create allert
-		} catch (NonRecordSelectedException e) {
-			//create allert
-		} catch (UnsupportedEncodingException e) {
-			//create allert
-		} catch (UnknownHostException e) {
-			//create allert
-		} catch (IOException e) {
-			//create allert
-		} catch (QueryIdNotMatchException e) {
-			//create allert
-		} catch (Exception e) {
-			
+		} catch (	NotValidDomainNameException | 
+					NotValidIPException |
+					TimeOutException |
+					DnsServerIpIsNotValidException |
+					MoreRecordsTypesWithPTRException |
+					NonRecordSelectedException | 
+					IOException |
+					QueryIdNotMatchException e) {
+			String fullClassName =e.getClass().getSimpleName();
+			LOGGER.info(fullClassName);
+			showAller(fullClassName);
+		} 
+		catch(Exception e) {
+			showAller("Exception");
 		}
 
 	}

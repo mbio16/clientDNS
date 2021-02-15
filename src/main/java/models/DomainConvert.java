@@ -157,7 +157,7 @@ public class DomainConvert {
 		try {
 			domain.getBytes("UTF-8");
 			String domainEncoded = Punycode.toPunycode(domain);
-			return isValidDomainName(domainEncoded);
+			return pDomainNameOnly.matcher(domainEncoded).find();
 		} catch (Exception e) {
 			return false;
 		}
