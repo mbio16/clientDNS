@@ -153,9 +153,23 @@ public class DomainConvert {
 			 }
 	 	}
 	}
+	private static boolean isUTF8Domain(String domain) {
+		try {
+			domain.getBytes("UTF-8");
+			String domainEncoded = Punycode.toPunycode(domain);
+			return isValidDomainName(domainEncoded);
+		} catch (Exception e) {
+			return false;
+		}
+	}
 	
     public static boolean isValidDomainName(String domainName) {
-        return pDomainNameOnly.matcher(domainName).find();
-        
+         boolean asciiName = pDomainNameOnly.matcher(domainName).find();
+         if (asciiName) {
+			return true;
+		}
+         else {
+        	 return isUTF8Domain(domainName);
+         }
     }
 }
