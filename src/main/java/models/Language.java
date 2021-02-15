@@ -9,7 +9,7 @@ public class Language {
 
 	public static final String CZECH = "cz";
 	public static final String ENGLISH = "en";
-	public static final String INTERNATIONAL_BUNDLE_PATH = "models.Lang";
+	public static final String INTERNATIONAL_BUNDLE_PATH = "locale.Lang";
 	private ResourceBundle languageBundle;
 	private Locale locale;
 	private String currentLanguage;
