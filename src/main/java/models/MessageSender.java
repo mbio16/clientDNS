@@ -127,9 +127,12 @@ public class MessageSender {
 		messageToBytes();
 		DatagramSocket datagramSocket = new DatagramSocket();
 		boolean run = true;
+		boolean exception = false;
 		while (run) {
 			try {
-				if(messagesSent==MAX_MESSAGES_SENT) return;
+				if(messagesSent==MAX_MESSAGES_SENT) {
+					throw new TimeOutException();
+				}
 			DatagramPacket responsePacket = new DatagramPacket(recieveReply, recieveReply.length);
 			DatagramPacket datagramPacket = new DatagramPacket(messageAsBytes, messageAsBytes.length,ip,DNS_PORT);
 			datagramSocket.setSoTimeout(TIME_OUT_MILLIS);
@@ -138,20 +141,20 @@ public class MessageSender {
 			datagramSocket.receive(responsePacket);
 			Instant finish = Instant.now();
 			timeElapsed = Duration.between(start, finish).toMillis();
-			run = false;
+			run = false;	
 			}
 			catch (SocketTimeoutException e) {
-	            // timeout exception.
 	            LOGGER.warning("Time out for the: " + (messagesSent+1) + " message");
 	            if(messagesSent==MAX_MESSAGES_SENT) {
 	            	timeElapsed = 0;
 	            	socket.close();
-	            	throw new TimeOutException();
 	            }
 	        }
 			messagesSent++;
 		}
-		
+		if(exception) {
+			throw new TimeOutException();
+		}
 		
 	}
 
