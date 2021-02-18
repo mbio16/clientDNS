@@ -3,7 +3,6 @@
   <groupId>net.biolek.martin</groupId>
   <artifactId>clientDNS</artifactId>
   <version>0.0.1</version>
-  <packaging>jar</packaging>
    <dependencies>
   		<!--javafx-->
 	    <dependency>
