@@ -20,6 +20,7 @@ import com.google.gson.GsonBuilder;
 import enums.APPLICATION_PROTOCOL;
 import enums.Q_COUNT;
 import enums.TRANSPORT_PROTOCOL;
+import exceptions.MessageTooBigForUDPException;
 import exceptions.NotValidDomainNameException;
 import exceptions.NotValidIPException;
 import exceptions.TimeOutException;
@@ -44,7 +45,7 @@ public class MessageSender {
 	
 	private static final int MAX_MESSAGES_SENT=3;
 	private static final int TIME_OUT_MILLIS = 3000;
-	
+	public static final int MAX_UDP_SIZE = 1232;
 	private static final String KEY_HEAD="Head";
 	private static final String KEY_QUERY="Questions";
 	private static final String KEY_REQUEST = "Request";
@@ -94,7 +95,7 @@ public class MessageSender {
 			size += r.getSize();
 		}
 	}
-	public void send() throws TimeOutException, IOException {
+	public void send() throws TimeOutException, IOException, MessageTooBigForUDPException {
 		switch (application_protocol) {
 		case DNS:
 			switch (transport_protocol) {
@@ -121,8 +122,8 @@ public class MessageSender {
 	}
 
 	@SuppressWarnings("resource")
-	private void dnsOverUDP() throws TimeOutException, IOException {
-		assert size>512 : "Too big  than512";
+	private void dnsOverUDP() throws TimeOutException, IOException, MessageTooBigForUDPException {
+		if(size>MAX_UDP_SIZE) throw new MessageTooBigForUDPException();
 		messagesSent = 0;
 		messageToBytes();
 		DatagramSocket datagramSocket = new DatagramSocket();

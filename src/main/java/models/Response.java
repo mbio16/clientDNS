@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import org.json.simple.JSONObject;
 import enums.Q_COUNT;
 import enums.Q_TYPE;
-import enums.R_CODE;
 import javafx.scene.control.TreeItem;
 import records.Record;
 import records.RecordA;
@@ -213,8 +212,8 @@ public class Response {
 		bytes.add((byte) 0x00);
 		bytes.add(Q_COUNT.OPT.code.getAsBytes()[1]);
 		bytes.add(Q_COUNT.OPT.code.getAsBytes()[0]);
-		bytes.add((byte) 0x02);
-		bytes.add((byte) 0x00);
+		bytes.add((byte) new UInt16(MessageSender.MAX_UDP_SIZE).getAsBytes()[1]);
+		bytes.add((byte) new UInt16(MessageSender.MAX_UDP_SIZE).getAsBytes()[0]);
 		bytes.add((byte) 0x00);
 		bytes.add((byte) 0x00);
 		bytes.add((byte) new UInt16(DO_BIT_VALUE).getAsBytes()[1]);

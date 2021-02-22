@@ -68,7 +68,7 @@
                               <Font size="15.0" />
                            </font>
                         </CheckBox>
-                        <CheckBox fx:id="aCheckBox" mnemonicParsing="false" text="A">
+                        <CheckBox fx:id="aCheckBox" mnemonicParsing="false" selected="true" text="A">
                            <font>
                               <Font size="15.0" />
                            </font>
@@ -207,7 +207,7 @@
                               <ChoiceBox fx:id="savedDNSChoiceBox" prefHeight="25.0" prefWidth="238.0" GridPane.columnIndex="1" />
                            </children>
                         </GridPane>
-                        <RadioButton fx:id="systemDNSRadioButton" mnemonicParsing="false" onAction="#onRadioButtonChange" text="System" GridPane.rowIndex="6">
+                        <RadioButton fx:id="systemDNSRadioButton" mnemonicParsing="false" onAction="#onRadioButtonChange" selected="true" text="System" GridPane.rowIndex="6">
                            <font>
                               <Font size="15.0" />
                            </font>
@@ -253,12 +253,12 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                      </rowConstraints>
                      <children>
-                        <RadioButton fx:id="dnssecYesRadioButton" mnemonicParsing="false" selected="true" text="Ano">
+                        <RadioButton fx:id="dnssecYesRadioButton" mnemonicParsing="false" text="Ano">
                            <font>
                               <Font size="15.0" />
                            </font>
                         </RadioButton>
-                        <RadioButton fx:id="dnssecNoRadioButton" mnemonicParsing="false" text="Ne" GridPane.rowIndex="1">
+                        <RadioButton fx:id="dnssecNoRadioButton" mnemonicParsing="false" selected="true" text="Ne" GridPane.rowIndex="1">
                            <font>
                               <Font size="15.0" />
                            </font>

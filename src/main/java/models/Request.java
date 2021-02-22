@@ -7,8 +7,6 @@ import java.util.Arrays;
 import java.util.logging.Logger;
 
 import org.json.simple.JSONObject;
-
-import application.Main;
 import enums.Q_COUNT;
 import enums.Q_TYPE;
 import exceptions.NotValidDomainNameException;

@@ -8,6 +8,7 @@ import enums.APPLICATION_PROTOCOL;
 import enums.Q_COUNT;
 import enums.TRANSPORT_PROTOCOL;
 import exceptions.DnsServerIpIsNotValidException;
+import exceptions.MessageTooBigForUDPException;
 import exceptions.MoreRecordsTypesWithPTRException;
 import exceptions.NonRecordSelectedException;
 import exceptions.NotValidDomainNameException;
@@ -404,7 +405,8 @@ public class DNSController extends MDNSController {
 					MoreRecordsTypesWithPTRException |
 					NonRecordSelectedException | 
 					IOException |
-					QueryIdNotMatchException e) {
+					QueryIdNotMatchException |
+					MessageTooBigForUDPException e) {
 			String fullClassName =e.getClass().getSimpleName();
 			LOGGER.info(fullClassName);
 			showAller(fullClassName);

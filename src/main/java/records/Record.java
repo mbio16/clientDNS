@@ -2,7 +2,6 @@ package records;
 
 import org.json.simple.JSONObject;
 
-import javafx.scene.control.TreeItem;
 
 public class Record {
 	protected int lenght;
