@@ -53,7 +53,7 @@ public class MessageSender {
 	public MessageSender(boolean recursion, boolean dnssec,boolean rrRecords, String domain, Q_COUNT[] types,
 			TRANSPORT_PROTOCOL transport_protocol, APPLICATION_PROTOCOL application_protocol,String resolverIP)throws  NotValidIPException, UnsupportedEncodingException, NotValidDomainNameException, UnknownHostException   {
 			requests = new ArrayList<Request>();
-			header = new Header(true, true, types.length, rrRecords);
+			header = new Header(recursion, dnssec, types.length, rrRecords);
 			size = Header.getSize();
 			addRequests(types, domain);
 			//this.resolverIP = resolverIP;
