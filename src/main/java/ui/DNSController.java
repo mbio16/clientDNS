@@ -220,6 +220,7 @@ public class DNSController extends MDNSController {
 			GeneralController controller = (GeneralController) loader.getController();
 			controller.setLanguage(language);
 			controller.setSettings(settings);
+			newStage.setTitle(APP_TITTLE);
 			newStage.show();
 			Stage mainStage = (Stage) sendButton.getScene().getWindow();
 			mainStage.close();

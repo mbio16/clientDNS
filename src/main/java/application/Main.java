@@ -31,7 +31,7 @@ public class Main extends Application {
 			Stage newStage = new Stage();
 			newStage.getIcons().add(new Image(ICON_URI));
 			newStage.setScene(new Scene((Parent) loader.load()));
-			
+			newStage.setTitle(GeneralController.APP_TITTLE);
 			//pass objects
 			GeneralController controller = (GeneralController) loader.getController();
 			controller.setLanguage(language);

@@ -190,6 +190,7 @@ public class MDNSController extends GeneralController {
 				FXMLLoader loader = new FXMLLoader(getClass().getResource(MainController.FXML_FILE_NAME));
 				Stage newStage = new Stage();
 				newStage.setScene(new Scene((Parent) loader.load()));
+				newStage.setTitle(APP_TITTLE);
 				GeneralController controller = (GeneralController) loader.getController();
 				controller.setLanguage(language);
 				controller.setSettings(settings);

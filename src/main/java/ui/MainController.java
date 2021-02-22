@@ -75,6 +75,7 @@ public class MainController extends GeneralController {
 				FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml_file));
 				Stage newStage = new Stage();
 				newStage.setScene(new Scene((Parent) loader.load()));
+				newStage.setTitle(APP_TITTLE);
 				GeneralController controller = (GeneralController) loader.getController();
 				controller.setLanguage(language);
 				controller.setSettings(settings);

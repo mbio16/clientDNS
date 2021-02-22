@@ -8,7 +8,7 @@ import models.Settings;
 public class GeneralController {
 	
 	protected Language language;
-	
+	public static final String APP_TITTLE="DNS klient";
 	protected Settings settings;
 	
 	protected Logger LOGGER;
