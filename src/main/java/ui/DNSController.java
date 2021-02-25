@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
+import org.controlsfx.control.textfield.TextFields;
+
+import com.sun.javafx.scene.control.behavior.TextFieldBehavior;
+
 import enums.APPLICATION_PROTOCOL;
 import enums.Q_COUNT;
 import enums.TRANSPORT_PROTOCOL;
@@ -29,6 +33,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.skin.TextFieldSkin;
 import javafx.stage.Stage;
 import models.DomainConvert;
 import models.Ip;
@@ -126,14 +131,13 @@ public class DNSController extends MDNSController {
 		// same for radio buttons
 		RadioButton[] radioButtonArray = new RadioButton[] { dnssecYesRadioButton, dnssecNoRadioButton,
 				iterativeQueryRadioButton, recursiveQueryRadioButton };
-
+		
 		Label[] labelsArray = new Label[] { responseTimeLabel, numberOfMessagesLabel };
 
 		// set labels to current language in menu
 		backMenuItem.setText(language.getLanguageBundle().getString(backMenuItem.getId()));
 		actionMenu.setText(language.getLanguageBundle().getString(actionMenu.getId()));
 		languageMenu.setText(language.getLanguageBundle().getString(languageMenu.getId()));
-
 		for (TitledPane titledPane : titlePaneArray) {
 			titledPane.setText(language.getLanguageBundle().getString(titledPane.getId()));
 		}
@@ -146,6 +150,7 @@ public class DNSController extends MDNSController {
 			label.setText(language.getLanguageBundle().getString(label.getId()));
 		}
 
+		
 		// set sendButton
 		sendButton.setText(language.getLanguageBundle().getString(sendButton.getId()));
 

@@ -55,7 +55,7 @@ public class MessageSender {
 			requests = new ArrayList<Request>();
 			header = new Header(recursion, dnssec, types.length, rrRecords);
 			size = Header.getSize();
-			addRequests(types, domain);
+			addRequests(types, checkAndStripFullyQualifyName(domain));
 			//this.resolverIP = resolverIP;
 			this.transport_protocol = transport_protocol;
 			this.application_protocol = application_protocol;
@@ -65,6 +65,15 @@ public class MessageSender {
 			this.rrRecords = rrRecords;
 	}
 	
+	private String checkAndStripFullyQualifyName(String domain) {
+		if(domain.endsWith(".")) {
+			System.out.println("Striping .");
+			return domain.substring(0,domain.length()-1);
+		}
+		else {
+			return domain;
+		}
+	}
 	public TreeItem<String> getAsTreeItem() {
 		root = new TreeItem<String>(KEY_REQUEST);
 		root.getChildren().add(header.getAsTreeItem());

@@ -164,6 +164,9 @@ public class DomainConvert {
 	}
 	
     public static boolean isValidDomainName(String domainName) {
+    	if(domainName.split("\\.").length==1 && domainName.length()>=2) {
+    		return true;
+    	};
          boolean asciiName = pDomainNameOnly.matcher(domainName).find();
          if (asciiName) {
 			return true;

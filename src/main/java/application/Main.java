@@ -18,7 +18,6 @@ public class Main extends Application {
 	
 	public static String MAIN_STAGE_FXML_FILE = "/fxml/Main.fxml";
 	public static String ICON_URI = "/images/icon.png";
-	public static Ip ipDns;
 	@Override
 	public void start(Stage primaryStage) {
 		try {
@@ -26,7 +25,7 @@ public class Main extends Application {
 			this.settings = new Settings();
 			this.language = new Language();
 			this.language.changeLanguageBundle(true);
-			this.ipDns = new Ip();
+			Ip ipDns = new Ip();
 			// loading fxml 
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(MAIN_STAGE_FXML_FILE));
 			Stage newStage = new Stage();
@@ -39,8 +38,7 @@ public class Main extends Application {
 			controller.setSettings(settings);
 			controller.setIpDns(ipDns);
 			controller.setLabels();
-			System.out.println(ipDns.getIpv4DnsServer());
-						//show scene
+			//show scene
 			newStage.show();
 		
 		} catch(Exception e) {
