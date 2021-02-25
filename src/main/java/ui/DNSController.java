@@ -269,7 +269,7 @@ public class DNSController extends MDNSController {
 
 	private String getDnsServerIp() throws DnsServerIpIsNotValidException {
 		if (otherDNSServerRadioButton.isSelected()) {
-			if (Ip.isIpValid(dnsServerTextField.getText())) {
+			if (!Ip.isIpValid(dnsServerTextField.getText())) {
 				throw new DnsServerIpIsNotValidException();
 			}
 			settings.addDNSServer(dnsServerTextField.getText());
