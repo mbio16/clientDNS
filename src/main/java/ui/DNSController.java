@@ -160,11 +160,12 @@ public class DNSController extends MDNSController {
 		dnssecRecordsRequestCheckBox.setText(language.getLanguageBundle().getString(dnssecRecordsRequestCheckBox.getId()));	
 		
 		// set system dns
-		systemDNSRadioButton.setText(Ip.getPrimaryDNSIp());
+		systemDNSRadioButton.setText(ipDns.getIpv4DnsServer());
 
 		// setUserData
+	//	Ip ipObject = new Ip();
 		String ip = Ip.getPrimaryDNSIp();
-		systemDNSRadioButton.setText(ip);
+		//systemDNSRadioButton.setText(ip);
 		setUserDataDnsServers(ip);
 		setUserDataRecords();
 		setUserDataTransportProtocol();
