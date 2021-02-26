@@ -2,11 +2,14 @@ package ui;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.logging.Logger;
 
+import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
-
-import com.sun.javafx.scene.control.behavior.TextFieldBehavior;
 
 import enums.APPLICATION_PROTOCOL;
 import enums.Q_COUNT;
@@ -19,6 +22,7 @@ import exceptions.NotValidDomainNameException;
 import exceptions.NotValidIPException;
 import exceptions.QueryIdNotMatchException;
 import exceptions.TimeOutException;
+import impl.org.controlsfx.autocompletion.AutoCompletionTextFieldBinding;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -33,8 +37,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.skin.TextFieldSkin;
 import javafx.stage.Stage;
+import javafx.util.Callback;
+import models.AutoCompleteTextField;
 import models.DomainConvert;
 import models.Ip;
 import models.Language;
@@ -81,12 +86,11 @@ public class DNSController extends MDNSController {
 	private ToggleGroup transportToggleGroup;
 	private ToggleGroup iterativeToggleGroup;
 	private ToggleGroup dnsserverToggleGroup;
-
 	// choice box
 	@FXML private ChoiceBox<String> savedDNSChoiceBox;
 
-
 	public DNSController() {
+
 		super();
 		LOGGER = Logger.getLogger(DNSController.class.getName());
 	}
@@ -168,8 +172,7 @@ public class DNSController extends MDNSController {
 		systemDNSRadioButton.setText(ipDns.getIpv4DnsServer());
 
 		// setUserData
-	//	Ip ipObject = new Ip();
-		String ip = Ip.getPrimaryDNSIp();
+		String ip = ipDns.getIpv4DnsServer();
 		//systemDNSRadioButton.setText(ip);
 		setUserDataDnsServers(ip);
 		setUserDataRecords();

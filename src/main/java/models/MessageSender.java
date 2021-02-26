@@ -42,7 +42,6 @@ public class MessageSender {
 	private long timeElapsed;
 	private boolean rrRecords;
 	private TreeItem<String> root;
-	
 	private static final int MAX_MESSAGES_SENT=3;
 	private static final int TIME_OUT_MILLIS = 3000;
 	public static final int MAX_UDP_SIZE = 1232;
