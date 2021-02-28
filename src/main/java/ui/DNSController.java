@@ -36,6 +36,8 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -90,12 +92,15 @@ public class DNSController extends MDNSController {
 	@FXML private ChoiceBox<String> savedDNSChoiceBox;
 
 	public DNSController() {
-
+		
 		super();
 		LOGGER = Logger.getLogger(DNSController.class.getName());
+		
+		
 	}
 
 	public void initialize() {
+		
 		transportToggleGroup = new ToggleGroup();
 		tcpRadioButton.setToggleGroup(transportToggleGroup);
 		udpRadioButton.setToggleGroup(transportToggleGroup);
@@ -119,10 +124,6 @@ public class DNSController extends MDNSController {
 		otherDNSServerRadioButton.setToggleGroup(dnsserverToggleGroup);
 		savedDNSRadioButton.setToggleGroup(dnsserverToggleGroup);
 		systemDNSRadioButton.setToggleGroup(dnsserverToggleGroup);
-
-		domainNameToggleGroup = new ToggleGroup();
-		domainNameChoiseBoxRadioButton.setToggleGroup(domainNameToggleGroup);
-		domainNameTextFieldRadioButton.setToggleGroup(domainNameToggleGroup);
 
 	}
 
@@ -245,7 +246,6 @@ public class DNSController extends MDNSController {
 	public void onRadioButtonChange(ActionEvent event) {
 		otherDNSServerCheck();
 		savedDNSServerCheck();
-		domainNameRadioButtonChanged(event);
 	}
 
 	private void otherDNSServerCheck() {
@@ -288,7 +288,6 @@ public class DNSController extends MDNSController {
 
 	private String getDomain() throws NotValidDomainNameException {
 		try {
-		if (domainNameTextFieldRadioButton.isSelected()) {
 			String domain = (domainNameTextField.getText());
 			LOGGER.info("Domain name: " + domain);
 			if((Ip.isIPv4Address(domain) || Ip.isIpv6Address(domain)) && ptrCheckBox.isSelected()) {
@@ -303,8 +302,6 @@ public class DNSController extends MDNSController {
 			{
 				throw new NotValidDomainNameException();
 			}
-		}
-		return savedDomainNamesChoiseBox.getValue();
 		}
 		catch (Exception e) {
 			LOGGER.warning(e.toString());
@@ -426,6 +423,24 @@ public class DNSController extends MDNSController {
 		}
 
 	}
-
+	@FXML public void onEnter(ActionEvent e) {
+		System.out.println("enter");
+		//System.out.println(savedDomainNamesChoiseBox.get);
+	}
+	
+	@FXML public void domainNameKeyPressed(KeyEvent event) {
+System.out.println(event.getCharacter());
+		String textFromTextField = domainNameTextField.getText();
+		ArrayList<String>  result= autobindingsStringsArray(textFromTextField, settings.getDomainNamesDNS());
+		if (result.size()==0) {
+			savedDomainNamesChoiseBox.hide();
+			savedDomainNamesChoiseBox.getItems().removeAll(savedDomainNamesChoiseBox.getItems());
+			savedDomainNamesChoiseBox.getItems().addAll(settings.getDomainNamesDNS());
+		}else {
+			savedDomainNamesChoiseBox.getItems().removeAll(savedDomainNamesChoiseBox.getItems());
+			savedDomainNamesChoiseBox.getItems().setAll(result);
+			savedDomainNamesChoiseBox.show();
+		}
+	}
 
 }

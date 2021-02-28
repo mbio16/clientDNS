@@ -1,5 +1,6 @@
 package ui;
 
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import javafx.event.ActionEvent;
@@ -54,8 +55,6 @@ public class MDNSController extends GeneralController {
 	@FXML protected RadioButton ipv6RadioButton;
 	@FXML protected RadioButton dnssecYesRadioButton;
 	@FXML protected RadioButton dnssecNoRadioButton;
-	@FXML protected RadioButton domainNameTextFieldRadioButton;
-	@FXML protected RadioButton domainNameChoiseBoxRadioButton;
 	
 	//checkboxes
 	@FXML protected CheckBox aCheckBox;
@@ -109,12 +108,7 @@ public class MDNSController extends GeneralController {
 		dnssecYesRadioButton.setToggleGroup(dnssecToggleGroup);
 		dnssecNoRadioButton.setToggleGroup(dnssecToggleGroup);
 		
-		domainNameToggleGroup = new ToggleGroup();
-		domainNameChoiseBoxRadioButton.setToggleGroup(domainNameToggleGroup);
-		domainNameTextFieldRadioButton.setToggleGroup(domainNameToggleGroup);
-		
-		
-		domainNameRadioButtonChanged(null);
+	
 	}
 	
 	public void setLabels() {	
@@ -206,16 +200,6 @@ public class MDNSController extends GeneralController {
 			alert.showAndWait();
 		}
 	}
-	@FXML public void domainNameRadioButtonChanged(ActionEvent event) {
-		if(domainNameChoiseBoxRadioButton.isSelected()) {
-			domainNameTextField.setDisable(true);
-			savedDomainNamesChoiseBox.setDisable(false);
-		}
-		else {	
-			savedDomainNamesChoiseBox.setDisable(true);
-			domainNameTextField.setDisable(false);
-		}
-	}
 	@FXML public void sendButtonFired(ActionEvent event) {
 		
 	}
@@ -234,5 +218,14 @@ public class MDNSController extends GeneralController {
 		copyDataToClipBoard(parser.getAsJsonString());
 	}
 	
+	
+	protected ArrayList<String> autobindingsStringsArray(String textToFind, ArrayList<String> arrayToCompare) {
+		ArrayList<String> result= new ArrayList<String>();
+		for (String string : arrayToCompare) {
+			if(string.contains(textToFind)) result.add(string);
+		}
+		
+		return result;
+	}
 	
 }

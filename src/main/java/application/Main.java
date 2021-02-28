@@ -40,7 +40,7 @@ public class Main extends Application {
 			controller.setLabels();
 			//show scene
 			newStage.show();
-		
+
 		} catch(Exception e) {
 			e.printStackTrace();
 		}

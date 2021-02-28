@@ -17,11 +17,13 @@
 	    <version>15.0.1</version>
 		</dependency>
 	    
-	    <dependency>
+		<!-- https://mvnrepository.com/artifact/org.controlsfx/controlsfx -->
+		<dependency>
 		    <groupId>org.controlsfx</groupId>
 		    <artifactId>controlsfx</artifactId>
-		    <version>11.0.3</version>
+		    <version>11.1.0</version>
 		</dependency>
+
 	    
 		 <!-- https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple -->
 		<dependency>
@@ -75,6 +77,10 @@
         <version>0.0.3</version>
         <configuration>
           <mainClass>application.Main</mainClass>
+          <options>
+                    <option>--add-exports</option>
+                    <option>javafx.base/com.sun.javafx.event=org.controlsfx.controls</option>
+                 </options>
         </configuration>
       </plugin>
       <plugin>
