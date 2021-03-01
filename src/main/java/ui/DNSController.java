@@ -1,17 +1,8 @@
 package ui;
 
 import java.io.IOException;
-import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.logging.Logger;
-
-import org.controlsfx.control.textfield.AutoCompletionBinding;
-import org.controlsfx.control.textfield.TextFields;
-
 import enums.APPLICATION_PROTOCOL;
 import enums.Q_COUNT;
 import enums.TRANSPORT_PROTOCOL;
@@ -23,10 +14,6 @@ import exceptions.NotValidDomainNameException;
 import exceptions.NotValidIPException;
 import exceptions.QueryIdNotMatchException;
 import exceptions.TimeOutException;
-import impl.org.controlsfx.autocompletion.AutoCompletionTextFieldBinding;
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -40,12 +27,9 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
-import javafx.util.Callback;
-import models.AutoCompleteTextField;
 import models.DomainConvert;
 import models.Ip;
 import models.Language;
@@ -57,8 +41,7 @@ public class DNSController extends MDNSController {
 	public static final String FXML_FILE_NAME = "/fxml/DNS.fxml";
 
 	// text fields
-	@FXML
-	private TextField dnsServerTextField;
+	@FXML private TextField dnsServerTextField;
 
 	// radio buttons
 	@FXML private RadioButton tcpRadioButton;
@@ -71,10 +54,8 @@ public class DNSController extends MDNSController {
 	@FXML private RadioButton cloudflareIpv6RadioButton;
 	@FXML private RadioButton googleIpv6RadioButton;
 	@FXML private RadioButton cznicIpv6RadioButton;
-	@FXML private RadioButton otherDNSServerRadioButton;
 	@FXML private RadioButton systemIpv4DNSRadioButton;
 	@FXML private RadioButton systemIpv6DNSRadioButton;
-	@FXML private RadioButton savedDNSRadioButton;
 
 	// checkboxes
 	@FXML private CheckBox soaCheckBox;
@@ -127,8 +108,6 @@ public class DNSController extends MDNSController {
 		googleIpv6RadioButton.setToggleGroup(dnsserverToggleGroup);
 		cznicIpv4RadioButton.setToggleGroup(dnsserverToggleGroup);
 		cznicIpv6RadioButton.setToggleGroup(dnsserverToggleGroup);
-		otherDNSServerRadioButton.setToggleGroup(dnsserverToggleGroup);
-		savedDNSRadioButton.setToggleGroup(dnsserverToggleGroup);
 		systemIpv4DNSRadioButton.setToggleGroup(dnsserverToggleGroup);	  
 		systemIpv6DNSRadioButton.setToggleGroup(dnsserverToggleGroup);
 	}
@@ -270,50 +249,31 @@ public class DNSController extends MDNSController {
 
 	@FXML
 	public void onRadioButtonChange(ActionEvent event) {
-		otherDNSServerCheck();
-		savedDNSServerCheck();
 		if (dnsserverToggleGroup.getSelectedToggle().getUserData() != null) {
+			dnsServerTextField.setText("");
 			copyDataToClipBoard(dnsserverToggleGroup.getSelectedToggle().getUserData().toString());
 		}
 		
 	}
 
-	private void otherDNSServerCheck() {
 
-		if (otherDNSServerRadioButton.isSelected()) {
-			LOGGER.info("Other DNS server is enabled");
-			dnsServerTextField.setDisable(false);
-		} else {
-			LOGGER.info("Other DNS server is not enabled");
-			dnsServerTextField.setDisable(true);
-		}
-
-	}
-
-	private void savedDNSServerCheck() {
-		if (savedDNSRadioButton.isSelected()) {
-			LOGGER.info("Saved DNS server is enabled");
-			savedDNSChoiceBox.setDisable(false);
-		} else {
-			LOGGER.info("Saved DNS server is not enabled");
-			savedDNSChoiceBox.setDisable(true);
-		}
-	}
 
 	private String getDnsServerIp() throws DnsServerIpIsNotValidException {
-		if (otherDNSServerRadioButton.isSelected()) {
-			if (!Ip.isIpValid(dnsServerTextField.getText())) {
+		if(!dnsServerTextField.getText().equals("")) {
+			if (Ip.isIpValid(dnsServerTextField.getText())) {
+				System.out.println(dnsServerTextField);
+				settings.addDNSServer(dnsServerTextField.getText());
+				return dnsServerTextField.getText();
+			}
+			else {
 				throw new DnsServerIpIsNotValidException();
 			}
-			settings.addDNSServer(dnsServerTextField.getText());
-			return dnsServerTextField.getText();
-		} else {
-			if (savedDNSRadioButton.isSelected() && savedDNSChoiceBox.getValue() != null) {
-				return savedDNSChoiceBox.getValue();
-			} else {
-				return (String) dnsserverToggleGroup.getSelectedToggle().getUserData().toString();
-			}
 		}
+		else {
+			return dnsserverToggleGroup.getSelectedToggle().getUserData().toString();
+		}
+		
+		
 	}
 
 	private String getDomain() throws NotValidDomainNameException {
@@ -463,18 +423,19 @@ public class DNSController extends MDNSController {
 			sendButtonFired(e);
 		}
 	}
-	@FXML public void domainNameKeyPressed(KeyEvent event) {
-		String textFromTextField = domainNameTextField.getText();
-		ArrayList<String>  result= autobindingsStringsArray(textFromTextField, settings.getDomainNamesDNS());
-		if (result.size()==0) {
-			savedDomainNamesChoiseBox.hide();
-			savedDomainNamesChoiseBox.getItems().removeAll(savedDomainNamesChoiseBox.getItems());
-			savedDomainNamesChoiseBox.getItems().addAll(settings.getDomainNamesDNS());
-		}else {
-			savedDomainNamesChoiseBox.getItems().removeAll(savedDomainNamesChoiseBox.getItems());
-			savedDomainNamesChoiseBox.getItems().setAll(result);
-			savedDomainNamesChoiseBox.show();
+	@FXML public void onDnsServerNameChoiseBoxAction(ActionEvent e) {
+		if(!savedDNSChoiceBox.getValue().equals(null) && !savedDNSChoiceBox.getValue().equals("")) {
+			dnsServerTextField.setText(savedDNSChoiceBox.getValue());
 		}
 	}
+	@FXML public void domainNameKeyPressed(KeyEvent event) {		
+		autobinging(domainNameTextField.getText(), settings.getDomainNamesDNS(), savedDomainNamesChoiseBox);
+	}
+	
+	@FXML public void dnsServerKeyPressed(KeyEvent event) {
+		autobinging(dnsServerTextField.getText(),settings.getDnsServers(), savedDNSChoiceBox);
+	}
+	
+	
 
 }

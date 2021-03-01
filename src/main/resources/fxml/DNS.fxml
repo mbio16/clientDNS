@@ -170,44 +170,6 @@
                            <font>
                               <Font size="15.0" />
                            </font></RadioButton>
-                        <GridPane GridPane.rowIndex="8">
-                          <columnConstraints>
-                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="126.0" minWidth="10.0" prefWidth="23.0" />
-                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="239.0" minWidth="10.0" prefWidth="239.0" />
-                          </columnConstraints>
-                          <rowConstraints>
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                          </rowConstraints>
-                           <children>
-                              <RadioButton fx:id="otherDNSServerRadioButton" mnemonicParsing="false" onAction="#onRadioButtonChange">
-                                 <font>
-                                    <Font size="15.0" />
-                                 </font>
-                              </RadioButton>
-                              <TextField fx:id="dnsServerTextField" disable="true" prefHeight="29.0" prefWidth="233.0" GridPane.columnIndex="1">
-                                 <font>
-                                    <Font size="13.0" />
-                                 </font>
-                              </TextField>
-                           </children>
-                        </GridPane>
-                        <GridPane GridPane.rowIndex="9">
-                          <columnConstraints>
-                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="126.0" minWidth="10.0" prefWidth="23.0" />
-                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="245.0" minWidth="10.0" prefWidth="239.0" />
-                          </columnConstraints>
-                          <rowConstraints>
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                          </rowConstraints>
-                           <children>
-                              <RadioButton fx:id="savedDNSRadioButton" mnemonicParsing="false" onAction="#onRadioButtonChange">
-                                 <font>
-                                    <Font size="15.0" />
-                                 </font>
-                              </RadioButton>
-                              <ChoiceBox fx:id="savedDNSChoiceBox" prefHeight="25.0" prefWidth="238.0" GridPane.columnIndex="1" />
-                           </children>
-                        </GridPane>
                         <RadioButton fx:id="systemIpv4DNSRadioButton" mnemonicParsing="false" onAction="#onRadioButtonChange" selected="true" text="System ipv4" GridPane.rowIndex="6">
                            <font>
                               <Font size="15.0" />
@@ -218,6 +180,12 @@
                               <Font size="15.0" />
                            </font>
                         </RadioButton>
+                        <TextField fx:id="dnsServerTextField" onKeyPressed="#dnsServerKeyPressed" prefHeight="29.0" prefWidth="243.0" GridPane.rowIndex="8">
+                           <font>
+                              <Font size="13.0" />
+                           </font>
+                        </TextField>
+                        <ChoiceBox fx:id="savedDNSChoiceBox" onAction="#onDnsServerNameChoiseBoxAction" prefHeight="25.0" prefWidth="263.0" GridPane.rowIndex="9" />
                      </children>
                   </GridPane>
                </content>

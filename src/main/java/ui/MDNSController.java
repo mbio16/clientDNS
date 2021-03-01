@@ -227,5 +227,17 @@ public class MDNSController extends GeneralController {
 		
 		return result;
 	}
+	protected void autobinging(String textFromField, ArrayList<String> fullArray, ChoiceBox<String> box) {
+		ArrayList<String>  result = autobindingsStringsArray(textFromField, fullArray);
+		if (result.size()==0) {
+			box.hide();
+			box.getItems().removeAll(box.getItems());
+			box.getItems().addAll(settings.getDomainNamesDNS());
+		}else {
+			box.getItems().removeAll(savedDomainNamesChoiseBox.getItems());
+			box.getItems().setAll(result);
+			box.show();
+		}
+	}
 	
 }
