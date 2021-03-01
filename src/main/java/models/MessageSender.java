@@ -1,7 +1,10 @@
 package models;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
@@ -171,19 +174,31 @@ public class MessageSender {
 		messageToBytes();
 		messagesSent = 1;
 		Instant start = Instant.now();
-		
+		try {
 		socket = new Socket(ip,DNS_PORT);
-		OutputStream output = socket.getOutputStream();
+		DataOutputStream output = new DataOutputStream(socket.getOutputStream());
 		output.write(messageAsBytes);
  
 		InputStream input = socket.getInputStream();
-		byte [] recieve = input.readAllBytes();
+		byte [] recieve = input.readNBytes(1232);
+		Instant finish = Instant.now();
+		output.close();
+		input.close();
 		socket.close();
 		
-		Instant finish = Instant.now();
 		timeElapsed = Duration.between(start,finish).toMillis();
 		
 		removeFirstTwoBytesFromReply(recieve);
+		}
+		catch (IOException e) {
+			throw new IOException();
+		}
+		finally {
+
+			socket.close();
+			System.out.println(socket.isConnected());
+			socket = null;	
+		}
 				
 	}
 	private void removeFirstTwoBytesFromReply(byte [] recieve) {

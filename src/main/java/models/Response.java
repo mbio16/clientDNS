@@ -18,6 +18,7 @@ import records.RecordDNSKEY;
 import records.RecordDS;
 import records.RecordMX;
 import records.RecordNS;
+import records.RecordNSEC3;
 import records.RecordOPT;
 import records.RecordPTR;
 import records.RecordRRSIG;
@@ -141,6 +142,8 @@ public class Response {
 			return new RecordPTR(rawMessage,rdLenght.getValue(),currentIndex);
 		case DS:
 			return new RecordDS(rawMessage,rdLenght.getValue(),currentIndex);
+		case NSEC3:
+			return new RecordNSEC3(rawMessage, rdLenght.getValue(),currentIndex);
 		default:
 			return null;
 		}
