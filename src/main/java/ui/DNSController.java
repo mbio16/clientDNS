@@ -1,6 +1,7 @@
 package ui;
 
 import java.io.IOException;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,6 +24,9 @@ import exceptions.NotValidIPException;
 import exceptions.QueryIdNotMatchException;
 import exceptions.TimeOutException;
 import impl.org.controlsfx.autocompletion.AutoCompletionTextFieldBinding;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -68,7 +72,8 @@ public class DNSController extends MDNSController {
 	@FXML private RadioButton googleIpv6RadioButton;
 	@FXML private RadioButton cznicIpv6RadioButton;
 	@FXML private RadioButton otherDNSServerRadioButton;
-	@FXML private RadioButton systemDNSRadioButton;
+	@FXML private RadioButton systemIpv4DNSRadioButton;
+	@FXML private RadioButton systemIpv6DNSRadioButton;
 	@FXML private RadioButton savedDNSRadioButton;
 
 	// checkboxes
@@ -98,9 +103,10 @@ public class DNSController extends MDNSController {
 		
 		
 	}
+	
+	
 
 	public void initialize() {
-		
 		transportToggleGroup = new ToggleGroup();
 		tcpRadioButton.setToggleGroup(transportToggleGroup);
 		udpRadioButton.setToggleGroup(transportToggleGroup);
@@ -123,10 +129,33 @@ public class DNSController extends MDNSController {
 		cznicIpv6RadioButton.setToggleGroup(dnsserverToggleGroup);
 		otherDNSServerRadioButton.setToggleGroup(dnsserverToggleGroup);
 		savedDNSRadioButton.setToggleGroup(dnsserverToggleGroup);
-		systemDNSRadioButton.setToggleGroup(dnsserverToggleGroup);
-
+		systemIpv4DNSRadioButton.setToggleGroup(dnsserverToggleGroup);	  
+		systemIpv6DNSRadioButton.setToggleGroup(dnsserverToggleGroup);
 	}
-
+	
+	private void setSystemDNS() {
+		System.out.println(ipDns.getIpv4DnsServer().toString());
+		System.out.print(ipDns.getIpv6DnsServer().toString());
+		if(ipDns.getIpv4DnsServer().equals("")) {
+			systemIpv4DNSRadioButton.setSelected(false);
+			systemIpv4DNSRadioButton.setText(language.getLanguageBundle().getString("ipv4SystemDNSIsNotEnabled"));
+			systemIpv4DNSRadioButton.setDisable(true);
+		}
+		else {
+			systemIpv4DNSRadioButton.setText(ipDns.getIpv4DnsServer());
+			systemIpv4DNSRadioButton.setUserData(ipDns.getIpv4DnsServer());
+		}
+		if(ipDns.getIpv6DnsServer().equals("")) {
+			systemIpv6DNSRadioButton.setSelected(false);
+			systemIpv6DNSRadioButton.setText(language.getLanguageBundle().getString("ipv6SystemDNSIsNotEnabled"));
+			systemIpv6DNSRadioButton.setDisable(true);
+		}
+		else {
+			systemIpv6DNSRadioButton.setText(ipDns.getIpv6DnsServer());
+			systemIpv6DNSRadioButton.setUserData(ipDns.getIpv6DnsServer());
+		}
+	}
+	
 	public void setLabels() {
 		// define group to iterate over it
 		TitledPane titlePaneArray[] = new TitledPane[] { domainNameTitledPane, transportTitledPane,
@@ -170,12 +199,10 @@ public class DNSController extends MDNSController {
 		dnssecRecordsRequestCheckBox.setText(language.getLanguageBundle().getString(dnssecRecordsRequestCheckBox.getId()));	
 		
 		// set system dns
-		systemDNSRadioButton.setText(ipDns.getIpv4DnsServer());
-
+		setSystemDNS();
 		// setUserData
-		String ip = ipDns.getIpv4DnsServer();
-		//systemDNSRadioButton.setText(ip);
-		setUserDataDnsServers(ip);
+		
+		setUserDataDnsServers();
 		setUserDataRecords();
 		setUserDataTransportProtocol();
 		// permform radio buttons actions
@@ -192,8 +219,7 @@ public class DNSController extends MDNSController {
 		tcpRadioButton.setUserData(TRANSPORT_PROTOCOL.TCP);
 		udpRadioButton.setUserData(TRANSPORT_PROTOCOL.UDP);
 	}
-	private void setUserDataDnsServers(String ip) {
-		systemDNSRadioButton.setUserData(ip);
+	private void setUserDataDnsServers() {
 		cloudflareIpv4RadioButton.setUserData("1.1.1.1");
 		googleIpv4RadioButton.setUserData("8.8.8.8");
 		cznicIpv4RadioButton.setUserData("193.17.47.1");
@@ -246,6 +272,10 @@ public class DNSController extends MDNSController {
 	public void onRadioButtonChange(ActionEvent event) {
 		otherDNSServerCheck();
 		savedDNSServerCheck();
+		if (dnsserverToggleGroup.getSelectedToggle().getUserData() != null) {
+			copyDataToClipBoard(dnsserverToggleGroup.getSelectedToggle().getUserData().toString());
+		}
+		
 	}
 
 	private void otherDNSServerCheck() {
@@ -423,13 +453,17 @@ public class DNSController extends MDNSController {
 		}
 
 	}
-	@FXML public void onEnter(ActionEvent e) {
-		System.out.println("enter");
-		//System.out.println(savedDomainNamesChoiseBox.get);
+	@FXML public void onDomainNameAction(ActionEvent e) {
+		sendButtonFired(e);
 	}
 	
+	@FXML public void onDomainNameChoiseBoxAction(ActionEvent e) {
+		if(!savedDomainNamesChoiseBox.getValue().equals(null) && !savedDomainNamesChoiseBox.getValue().equals("")) {
+			domainNameTextField.setText(savedDomainNamesChoiseBox.getValue());
+			sendButtonFired(e);
+		}
+	}
 	@FXML public void domainNameKeyPressed(KeyEvent event) {
-System.out.println(event.getCharacter());
 		String textFromTextField = domainNameTextField.getText();
 		ArrayList<String>  result= autobindingsStringsArray(textFromTextField, settings.getDomainNamesDNS());
 		if (result.size()==0) {

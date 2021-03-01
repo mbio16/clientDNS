@@ -127,9 +127,9 @@
                   </GridPane>
                </content>
             </TitledPane>
-            <TitledPane fx:id="dnsServerTitledPane" animated="false" layoutX="245.0" layoutY="351.0" prefHeight="360.0" prefWidth="284.0" text="DNS server">
+            <TitledPane fx:id="dnsServerTitledPane" animated="false" layoutX="245.0" layoutY="351.0" prefHeight="393.0" prefWidth="284.0" text="DNS server">
                <content>
-                  <GridPane>
+                  <GridPane prefHeight="373.0" prefWidth="282.0">
                     <columnConstraints>
                       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                     </columnConstraints>
@@ -143,9 +143,10 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
-                        <RadioButton fx:id="cloudflareIpv4RadioButton" mnemonicParsing="false" onAction="#onRadioButtonChange" selected="true" text="1.1.1.1 (Cloudflare)">
+                        <RadioButton fx:id="cloudflareIpv4RadioButton" mnemonicParsing="false" onAction="#onRadioButtonChange" text="1.1.1.1 (Cloudflare)">
                            <font>
                               <Font size="15.0" />
                            </font></RadioButton>
@@ -190,7 +191,7 @@
                               </TextField>
                            </children>
                         </GridPane>
-                        <GridPane GridPane.rowIndex="7">
+                        <GridPane GridPane.rowIndex="9">
                           <columnConstraints>
                             <ColumnConstraints hgrow="SOMETIMES" maxWidth="126.0" minWidth="10.0" prefWidth="23.0" />
                             <ColumnConstraints hgrow="SOMETIMES" maxWidth="245.0" minWidth="10.0" prefWidth="239.0" />
@@ -207,7 +208,12 @@
                               <ChoiceBox fx:id="savedDNSChoiceBox" prefHeight="25.0" prefWidth="238.0" GridPane.columnIndex="1" />
                            </children>
                         </GridPane>
-                        <RadioButton fx:id="systemDNSRadioButton" mnemonicParsing="false" onAction="#onRadioButtonChange" selected="true" text="System" GridPane.rowIndex="6">
+                        <RadioButton fx:id="systemIpv4DNSRadioButton" mnemonicParsing="false" onAction="#onRadioButtonChange" selected="true" text="System ipv4" GridPane.rowIndex="6">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </RadioButton>
+                        <RadioButton fx:id="systemIpv6DNSRadioButton" mnemonicParsing="false" onAction="#onRadioButtonChange" text="System ipv6" GridPane.rowIndex="7">
                            <font>
                               <Font size="15.0" />
                            </font>
@@ -298,7 +304,7 @@
                   </GridPane>
                </content>
             </TitledPane>
-            <Button fx:id="sendButton" layoutX="244.0" layoutY="721.0" mnemonicParsing="false" onAction="#sendButtonFired" prefHeight="50.0" prefWidth="285.0" text="Odeslat">
+            <Button fx:id="sendButton" layoutX="245.0" layoutY="752.0" mnemonicParsing="false" onAction="#sendButtonFired" prefHeight="50.0" prefWidth="285.0" text="Odeslat">
                <font>
                   <Font size="25.0" />
                </font>
@@ -347,8 +353,8 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                      </rowConstraints>
                      <children>
-                        <TextField fx:id="domainNameTextField" onKeyTyped="#domainNameKeyPressed" GridPane.columnIndex="1" onAction="#onEnter"/>
-                        <ChoiceBox fx:id="savedDomainNamesChoiseBox" prefHeight="25.0" prefWidth="212.0" GridPane.columnIndex="3" />
+                        <TextField fx:id="domainNameTextField" onAction="#onDomainNameAction" onKeyTyped="#domainNameKeyPressed" GridPane.columnIndex="1" />
+                        <ChoiceBox fx:id="savedDomainNamesChoiseBox" onAction="#onDomainNameChoiseBoxAction" prefHeight="25.0" prefWidth="212.0" GridPane.columnIndex="3" />
                      </children>
                   </GridPane>
                </content>

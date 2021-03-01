@@ -204,7 +204,7 @@ public class MDNSController extends GeneralController {
 		
 	}
 	
-	private void copyDataToClipBoard(String data) {
+	protected void copyDataToClipBoard(String data) {
 		final Clipboard clipboard = Clipboard.getSystemClipboard();
 		final ClipboardContent content = new ClipboardContent();
 		content.putString(data);

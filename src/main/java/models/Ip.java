@@ -36,19 +36,30 @@ public class Ip {
 		  while ((line = stdout.readLine()) != null) {
 		  if (isIPv4Address(line)) {ipv4DnsServers.add(line);}
 		  else {
-		  if (isIpv6Address(line)) ipv6DnsServers.add(line);
+		  if (isIpv6Address(line) && !line.startsWith("fe")) ipv6DnsServers.add(line);
 		  }
 		   }
 		  stdout.close();
 }
 	
 	public String getIpv4DnsServer() {
+		if (ipv4DnsServers.size()==0) {
+			return "";
+		}
+		else {
 		return ipv4DnsServers.get(0);
-	}
+		}
+		}
 	
 	public String getIpv6DnsServer() {
+		if(ipv6DnsServers.size()==0) {
+		return "";
+		}
+		else
+		{
 		return ipv6DnsServers.get(0);
-	}
+		}
+		}
 	public static boolean isIPv4Address(String stringAddress) {
 	try {
 	IPAddress ip = new IPAddressString(stringAddress).getAddress();
