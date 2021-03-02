@@ -15,6 +15,7 @@ import exceptions.NotValidIPException;
 import exceptions.QueryIdNotMatchException;
 import exceptions.TimeOutException;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -455,5 +456,19 @@ public class DNSController extends MDNSController {
 		}
 		autobinging(dnsServerTextField.getText(), settings.getDnsServers(), savedDNSChoiceBox);
 	}
+	
+	@FXML public void deleteDomainNameHistoryFired(Event event) {
+		settings.eraseDomainNames();
+		savedDomainNamesChoiseBox.getItems().removeAll(savedDomainNamesChoiseBox.getItems());
+		loadDataFromSettings();
+	}
+	
+	@FXML public void deleteDNSServerHistoryFired(Event event) {
+		settings.eraseDNSServers();
+		savedDNSChoiceBox.getItems().removeAll(savedDNSChoiceBox.getItems());
+		loadDataFromSettings();
+		
+	}
+	
 
 }

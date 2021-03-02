@@ -155,6 +155,13 @@ public class Settings {
 		LOGGER.info("Setting written in file");
 	}
 	
+	public void eraseDomainNames() {
+		this.domainNamesDNS = new ArrayList<String>();
+	}
+	
+	public void eraseDNSServers() {
+		this.dnsServers = new ArrayList<String>();
+	}
 	public ArrayList<String> getDnsServers() {
 		return dnsServers;
 	}
