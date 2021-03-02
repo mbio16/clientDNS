@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -23,6 +24,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 import models.Language;
@@ -239,5 +241,30 @@ public class MDNSController extends GeneralController {
 			box.show();
 		}
 	}
+	@FXML
+	protected void expandAllRequestOnClick(Event event) {
+		expandAll(requestTreeView);
+	}
 	
+	@FXML 
+	protected void expandAllResponseOnClick(Event event) {
+		expandAll(responseTreeView);
+	}
+	private void expandAll(TreeView<String> t) {
+		try {
+		int i = 0;
+		while (true) {
+			if(t.getTreeItem(i).getValue() == null) {
+				break;
+			}
+			else 
+			{
+				t.getTreeItem(i).setExpanded(true);
+			}
+			i++;			
+		}
+		}
+		catch (Exception e) {
+		}
+	}
 }

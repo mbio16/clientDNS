@@ -41,7 +41,7 @@
    <center>
       <AnchorPane prefHeight="766.0" prefWidth="1200.0" BorderPane.alignment="CENTER">
          <children>
-            <TitledPane fx:id="recordTypeTitledPane" animated="false" layoutX="25.0" layoutY="351.0" prefHeight="422.0" prefWidth="202.0" text="Záznam">
+            <TitledPane fx:id="recordTypeTitledPane" animated="false" collapsible="false" layoutX="25.0" layoutY="351.0" prefHeight="422.0" prefWidth="202.0" text="Záznam">
                <content>
                   <GridPane prefHeight="232.0" prefWidth="200.0">
                     <columnConstraints>
@@ -127,7 +127,7 @@
                   </GridPane>
                </content>
             </TitledPane>
-            <TitledPane fx:id="dnsServerTitledPane" animated="false" layoutX="245.0" layoutY="351.0" prefHeight="393.0" prefWidth="284.0" text="DNS server">
+            <TitledPane fx:id="dnsServerTitledPane" animated="false" collapsible="false" layoutX="245.0" layoutY="351.0" prefHeight="393.0" prefWidth="284.0" text="DNS server">
                <content>
                   <GridPane prefHeight="373.0" prefWidth="282.0">
                     <columnConstraints>
@@ -190,7 +190,7 @@
                   </GridPane>
                </content>
             </TitledPane>
-            <TitledPane fx:id="transportTitledPane" animated="false" layoutX="25.0" layoutY="240.0" prefHeight="103.0" prefWidth="202.0" text="Protokol transportní vrstvy">
+            <TitledPane fx:id="transportTitledPane" animated="false" collapsible="false" layoutX="25.0" layoutY="240.0" prefHeight="103.0" prefWidth="202.0" text="Protokol transportní vrstvy">
                <content>
                   <GridPane>
                      <columnConstraints>
@@ -215,7 +215,7 @@
                   </GridPane>
                </content>
             </TitledPane>
-            <TitledPane fx:id="dnssecTitledPane" animated="false" layoutX="26.0" layoutY="129.0" prefHeight="104.0" prefWidth="423.0" text="DNSSEC">
+            <TitledPane fx:id="dnssecTitledPane" animated="false" collapsible="false" layoutX="26.0" layoutY="129.0" prefHeight="104.0" prefWidth="423.0" text="DNSSEC">
                <content>
                   <GridPane prefHeight="67.0" prefWidth="200.0">
                      <columnConstraints>
@@ -246,7 +246,7 @@
                   </GridPane>
                </content>
             </TitledPane>
-            <TitledPane fx:id="iterativeTitledPane" animated="false" layoutX="246.0" layoutY="243.0" prefHeight="100.0" prefWidth="206.0" text="Druh dotazu">
+            <TitledPane fx:id="iterativeTitledPane" animated="false" collapsible="false" layoutX="246.0" layoutY="243.0" prefHeight="100.0" prefWidth="206.0" text="Druh dotazu">
                <content>
                   <GridPane prefHeight="67.0" prefWidth="200.0">
                      <columnConstraints>
@@ -277,12 +277,12 @@
                   <Font size="25.0" />
                </font>
             </Button>
-            <TitledPane fx:id="queryTitledPane" animated="false" layoutX="647.0" layoutY="27.0" prefHeight="673.0" prefWidth="400.0" text="Dotaz">
+            <TitledPane fx:id="queryTitledPane" animated="false" collapsible="false" layoutX="647.0" layoutY="27.0" onMouseClicked="#expandAllRequestOnClick" prefHeight="673.0" prefWidth="400.0" text="Dotaz">
                <content>
                   <TreeView fx:id="requestTreeView" prefHeight="734.0" prefWidth="328.0" />
                </content>
             </TitledPane>
-            <TitledPane fx:id="responseTitledPane" animated="false" layoutX="1071.0" layoutY="27.0" prefHeight="674.0" prefWidth="400.0" text="Odpověď">
+            <TitledPane fx:id="responseTitledPane" animated="false" collapsible="false" layoutX="1071.0" layoutY="27.0" onMouseClicked="#expandAllResponseOnClick" prefHeight="674.0" prefWidth="400.0" text="Odpověď">
                <content>
                   <TreeView fx:id="responseTreeView" prefHeight="697.0" prefWidth="328.0" />
                </content>
@@ -308,7 +308,7 @@
                   <Font size="15.0" />
                </font>
             </Label>
-            <TitledPane fx:id="domainNameTitledPane" animated="false" layoutX="25.0" layoutY="27.0" prefHeight="92.0" prefWidth="503.0" text="Doménové jméno">
+            <TitledPane fx:id="domainNameTitledPane" animated="false" collapsible="false" layoutX="25.0" layoutY="27.0" prefHeight="92.0" prefWidth="503.0" text="Doménové jméno">
                <content>
                   <GridPane>
                      <columnConstraints>
