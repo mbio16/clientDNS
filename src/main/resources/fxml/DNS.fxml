@@ -35,6 +35,12 @@
                   <RadioMenuItem fx:id="englishRadioButton" mnemonicParsing="false" onAction="#englishSelected" text="English" />
                </items>
             </Menu>
+            <Menu fx:id="historyMenu" mnemonicParsing="false" text="Historie">
+              <items>
+                <MenuItem fx:id="deleteDomainNameHistory" mnemonicParsing="false" text="Smazat historii doménových jmen" />
+                  <MenuItem fx:id="deleteDNSServersHistory" mnemonicParsing="false" text="Smazat historii DNS serverů" />
+              </items>
+            </Menu>
         </menus>
       </MenuBar>
    </top>

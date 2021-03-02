@@ -1,11 +1,8 @@
 package models;
 
-import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -13,8 +10,6 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import org.json.simple.JSONArray;
@@ -42,7 +37,8 @@ public class MessageSender {
 	private Socket socket;
 	private int messagesSent;
 	private byte  [] recieveReply;
-	private long timeElapsed;
+	private long startTime;
+	private long stopTime;
 	private boolean rrRecords;
 	private TreeItem<String> root;
 	private static final int MAX_MESSAGES_SENT=3;
@@ -148,17 +144,15 @@ public class MessageSender {
 			DatagramPacket responsePacket = new DatagramPacket(recieveReply, recieveReply.length);
 			DatagramPacket datagramPacket = new DatagramPacket(messageAsBytes, messageAsBytes.length,ip,DNS_PORT);
 			datagramSocket.setSoTimeout(TIME_OUT_MILLIS);
-			Instant start = Instant.now(); 
+			startTime = System.nanoTime(); 
 			datagramSocket.send(datagramPacket);
 			datagramSocket.receive(responsePacket);
-			Instant finish = Instant.now();
-			timeElapsed = Duration.between(start, finish).toMillis();
+			stopTime = System.nanoTime();
 			run = false;	
 			}
 			catch (SocketTimeoutException e) {
 	            LOGGER.warning("Time out for the: " + (messagesSent+1) + " message");
 	            if(messagesSent==MAX_MESSAGES_SENT) {
-	            	timeElapsed = 0;
 	            	socket.close();
 	            }
 	        }
@@ -173,22 +167,23 @@ public class MessageSender {
 	private void dnsOverTcp() throws IOException {
 		messageToBytes();
 		messagesSent = 1;
-		Instant start = Instant.now();
+		startTime = System.nanoTime();
 		try {
 		socket = new Socket(ip,DNS_PORT);
 		DataOutputStream output = new DataOutputStream(socket.getOutputStream());
 		output.write(messageAsBytes);
  
 		InputStream input = socket.getInputStream();
-		byte [] recieve = input.readNBytes(1232);
-		Instant finish = Instant.now();
+		byte [] sizeRicieve = input.readNBytes(2);
+
+		UInt16 messageSize = new UInt16().loadFromBytes(sizeRicieve[0],sizeRicieve[1]);
+		System.out.println(messageSize.getValue());
+		this.recieveReply = input.readNBytes(messageSize.getValue());
+
 		output.close();
 		input.close();
 		socket.close();
-		
-		timeElapsed = Duration.between(start,finish).toMillis();
-		
-		removeFirstTwoBytesFromReply(recieve);
+		stopTime = System.nanoTime();
 		}
 		catch (IOException e) {
 			throw new IOException();
@@ -200,14 +195,6 @@ public class MessageSender {
 			socket = null;	
 		}
 				
-	}
-	private void removeFirstTwoBytesFromReply(byte [] recieve) {
-		this.recieveReply = new byte [recieve.length-2];
-		int j=0;
-		for (int i = 2; i < recieve.length; i++) {
-			recieveReply[j] = recieve[i];
-			j++;
-		}
 	}
 	private void messageToBytes() {
 		int curentIndex = 0;
@@ -277,13 +264,14 @@ public class MessageSender {
 		return recieveReply;
 	}
 
-	public long getTimeElapsed() {
-		return timeElapsed;
+	public double getTimeElapsed() {
+		double h = (stopTime-startTime)/1000000.00;
+		return Math.round(h*100)/100.0;
 	}
 	
 	public void printStats() {
 		System.out.println("number of tries: " + this.messagesSent);
-		System.out.println("Time to send: " + this.timeElapsed);
+		System.out.println("Time to send: " + getTimeElapsed());
 	}
 	
 }

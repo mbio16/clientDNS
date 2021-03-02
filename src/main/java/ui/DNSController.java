@@ -23,13 +23,12 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 import models.DomainConvert;
@@ -71,6 +70,12 @@ public class DNSController extends MDNSController {
 	private RadioButton systemIpv4DNSRadioButton;
 	@FXML
 	private RadioButton systemIpv6DNSRadioButton;
+
+	// menu items
+	@FXML
+	private MenuItem deleteDomainNameHistory;
+	@FXML
+	private MenuItem deleteDNSServersHistory;
 
 	// checkboxes
 	@FXML
@@ -211,7 +216,8 @@ public class DNSController extends MDNSController {
 
 		copyRequestJsonButton.setText(language.getLanguageBundle().getString(copyRequestJsonButton.getId()));
 		copyResponseJsonButton.setText(language.getLanguageBundle().getString(copyResponseJsonButton.getId()));
-
+		deleteDomainNameHistory.setText(language.getLanguageBundle().getString(deleteDomainNameHistory.getId()));
+		deleteDNSServersHistory.setText(language.getLanguageBundle().getString(deleteDNSServersHistory.getId()));
 	}
 
 	private void setUserDataTransportProtocol() {
@@ -415,12 +421,12 @@ public class DNSController extends MDNSController {
 	@FXML
 	public void onDomainNameChoiseBoxAction(ActionEvent event) {
 		try {
-		if (!savedDomainNamesChoiseBox.getValue().equals(null) && !savedDomainNamesChoiseBox.getValue().equals("")) {
-			domainNameTextField.setText(savedDomainNamesChoiseBox.getValue());
-			sendButtonFired(event);
+			if (!savedDomainNamesChoiseBox.getValue().equals(null)
+					&& !savedDomainNamesChoiseBox.getValue().equals("")) {
+				domainNameTextField.setText(savedDomainNamesChoiseBox.getValue());
+				sendButtonFired(event);
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOGGER.warning(e.toString());
 		}
 	}
@@ -428,12 +434,11 @@ public class DNSController extends MDNSController {
 	@FXML
 	public void onDnsServerNameChoiseBoxAction(ActionEvent event) {
 		try {
-		if (!savedDNSChoiceBox.getValue().equals(null) && !savedDNSChoiceBox.getValue().equals("")) {
-			dnsServerTextField.setText(savedDNSChoiceBox.getValue());
-			copyDataToClipBoard(dnsServerTextField.getText());
-		}
-		}
-		catch (Exception e) {
+			if (!savedDNSChoiceBox.getValue().equals(null) && !savedDNSChoiceBox.getValue().equals("")) {
+				dnsServerTextField.setText(savedDNSChoiceBox.getValue());
+				copyDataToClipBoard(dnsServerTextField.getText());
+			}
+		} catch (Exception e) {
 			LOGGER.warning(e.toString());
 		}
 	}
@@ -451,5 +456,4 @@ public class DNSController extends MDNSController {
 		autobinging(dnsServerTextField.getText(), settings.getDnsServers(), savedDNSChoiceBox);
 	}
 
-	
 }
