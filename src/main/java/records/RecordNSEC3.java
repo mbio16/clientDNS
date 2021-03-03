@@ -20,7 +20,7 @@ public class RecordNSEC3 extends  Record {
 	private static final String KEY_SALT="SALT";
 	private static final String KEY_SALT_LENGHT = "SALT_LENGHT";
 	private static final String KEY_HASH_LENGHT="HASH_LENGHT";
-	private static final String KEY_NEXT_OWNER_HASH="NEXT_OWNER_HASH";
+	private static final String KEY_NEXT_OWNER_HASH="NEXT_DOMAIN_HASH";
 	 public RecordNSEC3(byte[] rawMessage, int lenght, int startIndex){
 		super(rawMessage, lenght, startIndex);
 		 salt = "";
@@ -85,7 +85,7 @@ public class RecordNSEC3 extends  Record {
 				 KEY_SALT + ": " + salt,
 				 KEY_SALT_LENGHT +": "+saltLenght,
 				 KEY_HASH_LENGHT + ": "+hashLenght,
-				KEY_NEXT_OWNER_HASH +": " + name
+				 KEY_NEXT_OWNER_HASH +": " + name
 		};
 		return pole;
 	}

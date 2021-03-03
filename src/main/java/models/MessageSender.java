@@ -21,7 +21,9 @@ import enums.TRANSPORT_PROTOCOL;
 import exceptions.MessageTooBigForUDPException;
 import exceptions.NotValidDomainNameException;
 import exceptions.NotValidIPException;
-import exceptions.TimeOutException;
+import exceptions.TimeoutException;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TreeItem;
 
 public class MessageSender {
@@ -37,10 +39,10 @@ public class MessageSender {
 	private Socket socket;
 	private int messagesSent;
 	private byte  [] recieveReply;
-	private long startTime;
-	private long stopTime;
 	private boolean rrRecords;
 	private TreeItem<String> root;
+	private long startTime;
+	private long stopTime;
 	private static final int MAX_MESSAGES_SENT=3;
 	private static final int TIME_OUT_MILLIS = 3000;
 	public static final int MAX_UDP_SIZE = 1232;
@@ -58,9 +60,9 @@ public class MessageSender {
 			this.transport_protocol = transport_protocol;
 			this.application_protocol = application_protocol;
 			this.ip =InetAddress.getByName(resolverIP);
-			this.messagesSent = 0;
 			this.recieveReply = new byte [512];
 			this.rrRecords = rrRecords;
+			messagesSent = 0;
 	}
 	
 	private String checkAndStripFullyQualifyName(String domain) {
@@ -102,7 +104,7 @@ public class MessageSender {
 			size += r.getSize();
 		}
 	}
-	public void send() throws TimeOutException, IOException, MessageTooBigForUDPException {
+	public void send() throws TimeoutException, IOException, MessageTooBigForUDPException {
 		switch (application_protocol) {
 		case DNS:
 			switch (transport_protocol) {
@@ -129,7 +131,7 @@ public class MessageSender {
 	}
 
 	@SuppressWarnings("resource")
-	private void dnsOverUDP() throws TimeOutException, IOException, MessageTooBigForUDPException {
+	private void dnsOverUDP() throws TimeoutException, IOException, MessageTooBigForUDPException {
 		if(size>MAX_UDP_SIZE) throw new MessageTooBigForUDPException();
 		messagesSent = 0;
 		messageToBytes();
@@ -139,18 +141,24 @@ public class MessageSender {
 		while (run) {
 			try {
 				if(messagesSent==MAX_MESSAGES_SENT) {
-					throw new TimeOutException();
+					throw new TimeoutException();
 				}
+				
 			DatagramPacket responsePacket = new DatagramPacket(recieveReply, recieveReply.length);
 			DatagramPacket datagramPacket = new DatagramPacket(messageAsBytes, messageAsBytes.length,ip,DNS_PORT);
 			datagramSocket.setSoTimeout(TIME_OUT_MILLIS);
-			startTime = System.nanoTime(); 
+			startTime = System.nanoTime();
+ 
 			datagramSocket.send(datagramPacket);
 			datagramSocket.receive(responsePacket);
 			stopTime = System.nanoTime();
+			datagramSocket.close();
+			
 			run = false;	
 			}
 			catch (SocketTimeoutException e) {
+				//Alert a = new Alert(AlertType.INFORMATION,"Timeout");
+				//a.show();
 	            LOGGER.warning("Time out for the: " + (messagesSent+1) + " message");
 	            if(messagesSent==MAX_MESSAGES_SENT) {
 	            	socket.close();
@@ -159,14 +167,13 @@ public class MessageSender {
 			messagesSent++;
 		}
 		if(exception) {
-			throw new TimeOutException();
+			throw new TimeoutException();
 		}
 		
 	}
 
 	private void dnsOverTcp() throws IOException {
 		messageToBytes();
-		messagesSent = 1;
 		startTime = System.nanoTime();
 		try {
 		socket = new Socket(ip,DNS_PORT);
@@ -256,7 +263,7 @@ public class MessageSender {
 		return header;
 	}
 
-	public int getMessagesSent() {
+	public int getMessageSent() {
 		return messagesSent;
 	}
 
@@ -270,7 +277,6 @@ public class MessageSender {
 	}
 	
 	public void printStats() {
-		System.out.println("number of tries: " + this.messagesSent);
 		System.out.println("Time to send: " + getTimeElapsed());
 	}
 	

@@ -1,8 +1,13 @@
 package ui;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
+
+import application.Main;
 import enums.APPLICATION_PROTOCOL;
 import enums.Q_COUNT;
 import enums.TRANSPORT_PROTOCOL;
@@ -13,7 +18,7 @@ import exceptions.NonRecordSelectedException;
 import exceptions.NotValidDomainNameException;
 import exceptions.NotValidIPException;
 import exceptions.QueryIdNotMatchException;
-import exceptions.TimeOutException;
+import exceptions.TimeoutException;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -31,6 +36,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import models.DomainConvert;
 import models.Ip;
@@ -91,6 +97,12 @@ public class DNSController extends MDNSController {
 	private CheckBox txtCheckBox;
 	@FXML
 	private CheckBox rrsigCheckBox;
+	
+	@FXML
+	private CheckBox nsecCheckBox;
+	
+	@FXML 
+	private CheckBox nsec3CheckBox;
 
 	// titledpane
 	@FXML
@@ -107,7 +119,6 @@ public class DNSController extends MDNSController {
 	// choice box
 	@FXML
 	private ChoiceBox<String> savedDNSChoiceBox;
-
 	public DNSController() {
 
 		super();
@@ -248,6 +259,8 @@ public class DNSController extends MDNSController {
 		soaCheckBox.setUserData(Q_COUNT.SOA);
 		dsCheckBox.setUserData(Q_COUNT.DS);
 		rrsigCheckBox.setUserData(Q_COUNT.RRSIG);
+		nsecCheckBox.setUserData(Q_COUNT.NSEC);
+		nsec3CheckBox.setUserData(Q_COUNT.NSEC3);
 
 	}
 
@@ -324,7 +337,7 @@ public class DNSController extends MDNSController {
 	private Q_COUNT[] getRecordTypes() throws MoreRecordsTypesWithPTRException, NonRecordSelectedException {
 		ArrayList<Q_COUNT> list = new ArrayList<Q_COUNT>();
 		CheckBox[] checkBoxArray = { aCheckBox, aaaaCheckBox, nsCheckBox, mxCheckBox, soaCheckBox, cnameCheckBox,
-				ptrCheckBox, dnskeyCheckBox, dsCheckBox, caaCheckBox, txtCheckBox, rrsigCheckBox };
+				ptrCheckBox, dnskeyCheckBox, dsCheckBox, caaCheckBox, txtCheckBox, rrsigCheckBox,nsecCheckBox,nsec3CheckBox };
 		for (int i = 0; i < checkBoxArray.length; i++) {
 			if (checkBoxArray[i].isSelected()) {
 				list.add((Q_COUNT) checkBoxArray[i].getUserData());
@@ -371,7 +384,7 @@ public class DNSController extends MDNSController {
 		responseTreeView.setRoot(parser.getAsTreeItem());
 		requestTreeView.setRoot(sender.getAsTreeItem());
 		responseTimeValueLabel.setText("" + sender.getTimeElapsed());
-		numberOfMessagesValueLabel.setText("" + sender.getMessagesSent());
+		numberOfMessagesValueLabel.setText("" + sender.getMessageSent());
 		setDisableJSonButtons(false);
 		responseTreeView.getTreeItem(0).setExpanded(true);
 		requestTreeView.getTreeItem(0).setExpanded(true);
@@ -402,15 +415,18 @@ public class DNSController extends MDNSController {
 			parser = new MessageParser(sender.getRecieveReply(), sender.getHeader());
 			parser.parse();
 			setControls();
-		} catch (NotValidDomainNameException | NotValidIPException | TimeOutException | DnsServerIpIsNotValidException
-				| MoreRecordsTypesWithPTRException | NonRecordSelectedException | IOException | QueryIdNotMatchException
+		}
+		catch (NotValidDomainNameException | NotValidIPException | DnsServerIpIsNotValidException
+				| MoreRecordsTypesWithPTRException | NonRecordSelectedException | TimeoutException | IOException | QueryIdNotMatchException
 				| MessageTooBigForUDPException e) {
 			String fullClassName = e.getClass().getSimpleName();
 			LOGGER.info(fullClassName);
+			numberOfMessagesValueLabel.setText("" + sender.getMessageSent());
 			showAller(fullClassName);
 		} catch (Exception e) {
 			showAller("Exception");
 		}
+
 
 	}
 

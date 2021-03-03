@@ -13,7 +13,7 @@ public class Ip {
 	public static final Logger LOGGER = Logger.getLogger(Ip.class.getName());	
 	private ArrayList<String> ipv4DnsServers;
 	private ArrayList<String> ipv6DnsServers;
-	private static final String  COMMAND = "powershell.exe $ip = Get-NetIPConfiguration; $ip.'DNSServer' | ForEach-Object -Process {$_.ServerAddresses}";
+	private static final String  COMMAND = "powershell.exe $ip=Get-NetIPConfiguration; $ip.'DNSServer' | ForEach-Object -Process {$_.ServerAddresses}";
 	public Ip(){
 		try {
 		setupArrays();

@@ -114,6 +114,10 @@ public class MainController extends GeneralController {
 		this.settings = settings;
 	}
 	
+	public void test() {
+		System.out.println("ahoj");
+	}
+	
 	public void setLabels() {
 		basicDNSLabel.setText(language.getLanguageBundle().getString(basicDNSLabel.getId()));
 		multicastDNSLabel.setText(language.getLanguageBundle().getString(multicastDNSLabel.getId()));

@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.biolek.martin</groupId>
   <artifactId>clientDNS</artifactId>
-  <version>0.0.1</version>
+  <version>0.1.1</version>
    <dependencies>
   		<!--javafx-->
 	    <dependency>
