@@ -1,13 +1,8 @@
 package ui;
 
 import java.io.IOException;
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
-
-import application.Main;
 import enums.APPLICATION_PROTOCOL;
 import enums.Q_COUNT;
 import enums.TRANSPORT_PROTOCOL;
@@ -36,7 +31,6 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import models.DomainConvert;
 import models.Ip;
@@ -152,8 +146,6 @@ public class DNSController extends MDNSController {
 	}
 
 	private void setSystemDNS() {
-		System.out.println(ipDns.getIpv4DnsServer().toString());
-		System.out.print(ipDns.getIpv6DnsServer().toString());
 		if (ipDns.getIpv4DnsServer().equals("")) {
 			systemIpv4DNSRadioButton.setSelected(false);
 			systemIpv4DNSRadioButton.setText(language.getLanguageBundle().getString("ipv4SystemDNSIsNotEnabled"));
@@ -283,6 +275,7 @@ public class DNSController extends MDNSController {
 			Stage mainStage = (Stage) sendButton.getScene().getWindow();
 			mainStage.close();
 			controller.setLabels();
+			controller.setIpDns(ipDns);
 		} catch (Exception e) {
 			e.printStackTrace();
 			Alert alert = new Alert(AlertType.ERROR, language.getLanguageBundle().getString("windowError"));
@@ -387,9 +380,8 @@ public class DNSController extends MDNSController {
 		numberOfMessagesValueLabel.setText("" + sender.getMessageSent());
 		setDisableJSonButtons(false);
 		responseTreeView.getTreeItem(0).setExpanded(true);
-		requestTreeView.getTreeItem(0).setExpanded(true);
-		requestTreeView.getTreeItem(1).setExpanded(true);
-		responseTreeView.getTreeItem(1).setExpanded(true);
+		expandAll(requestTreeView);
+		expandAll(responseTreeView);
 	}
 
 	private void showAller(String exceptionName) {

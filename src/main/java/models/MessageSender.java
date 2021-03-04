@@ -1,8 +1,11 @@
 package models;
 
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -22,8 +25,6 @@ import exceptions.MessageTooBigForUDPException;
 import exceptions.NotValidDomainNameException;
 import exceptions.NotValidIPException;
 import exceptions.TimeoutException;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TreeItem;
 
 public class MessageSender {
@@ -60,7 +61,7 @@ public class MessageSender {
 			this.transport_protocol = transport_protocol;
 			this.application_protocol = application_protocol;
 			this.ip =InetAddress.getByName(resolverIP);
-			this.recieveReply = new byte [512];
+			this.recieveReply = new byte [1232];
 			this.rrRecords = rrRecords;
 			messagesSent = 0;
 	}
@@ -130,7 +131,6 @@ public class MessageSender {
 		}
 	}
 
-	@SuppressWarnings("resource")
 	private void dnsOverUDP() throws TimeoutException, IOException, MessageTooBigForUDPException {
 		if(size>MAX_UDP_SIZE) throw new MessageTooBigForUDPException();
 		messagesSent = 0;
@@ -173,36 +173,32 @@ public class MessageSender {
 	}
 
 	private void dnsOverTcp() throws IOException {
-		messageToBytes();
 		startTime = System.nanoTime();
-		try {
+		messageToBytes();
+		messagesSent = 1;
+		
 		socket = new Socket(ip,DNS_PORT);
-		DataOutputStream output = new DataOutputStream(socket.getOutputStream());
-		output.write(messageAsBytes);
- 
+		OutputStream output = socket.getOutputStream();
 		InputStream input = socket.getInputStream();
+		output.write(messageAsBytes);
 		byte [] sizeRicieve = input.readNBytes(2);
-
 		UInt16 messageSize = new UInt16().loadFromBytes(sizeRicieve[0],sizeRicieve[1]);
-		System.out.println(messageSize.getValue());
+		//System.out.println(messageSize.getValue());
 		this.recieveReply = input.readNBytes(messageSize.getValue());
 
-		output.close();
-		input.close();
 		socket.close();
 		stopTime = System.nanoTime();
+	
+	
+}
+private void removeFirstTwoBytesFromReply(byte [] recieve) {
+	this.recieveReply = new byte [recieve.length-2];
+	int j=0;
+	for (int i = 2; i < recieve.length; i++) {
+		recieveReply[j] = recieve[i];
+		j++;
 		}
-		catch (IOException e) {
-			throw new IOException();
-		}
-		finally {
-
-			socket.close();
-			System.out.println(socket.isConnected());
-			socket = null;	
-		}
-				
-	}
+}
 	private void messageToBytes() {
 		int curentIndex = 0;
 		if (rrRecords) {
