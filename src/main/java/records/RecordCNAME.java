@@ -8,7 +8,7 @@ import models.DomainConvert;
 public class RecordCNAME extends Record{
 
 	protected String name;
-	private static String KEY_CNAME="Name";
+	protected static String KEY_CNAME="Name";
 	public RecordCNAME(byte[] rawMessage, int lenght, int startIndex) {
 		super(rawMessage, lenght, startIndex);
 		parseRecord();

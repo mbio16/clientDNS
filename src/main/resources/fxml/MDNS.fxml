@@ -188,10 +188,8 @@
                <content>
                   <GridPane>
                      <columnConstraints>
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="116.0" minWidth="7.0" prefWidth="32.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="234.0" minWidth="10.0" prefWidth="202.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="234.0" minWidth="0.0" prefWidth="23.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="131.0" minWidth="9.0" prefWidth="27.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="116.0" minWidth="7.0" prefWidth="15.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="234.0" minWidth="10.0" prefWidth="215.0" />
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="131.0" minWidth="10.0" prefWidth="20.0" />
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="252.0" minWidth="10.0" prefWidth="234.0" />
                      </columnConstraints>
@@ -199,18 +197,8 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                      </rowConstraints>
                      <children>
-                        <RadioButton fx:id="domainNameTextFieldRadioButton" mnemonicParsing="false" onAction="#domainNameRadioButtonChanged">
-                           <font>
-                              <Font size="15.0" />
-                           </font>
-                        </RadioButton>
-                        <RadioButton fx:id="domainNameChoiseBoxRadioButton" mnemonicParsing="false" onAction="#domainNameRadioButtonChanged" GridPane.columnIndex="3">
-                           <font>
-                              <Font size="15.0" />
-                           </font>
-                        </RadioButton>
-                        <TextField fx:id="domainNameTextField" GridPane.columnIndex="1" />
-                        <ChoiceBox fx:id="savedDomainNamesChoiseBox" prefHeight="25.0" prefWidth="212.0" GridPane.columnIndex="5" />
+                        <TextField fx:id="domainNameTextField" prefHeight="25.0" prefWidth="207.0" GridPane.columnIndex="1" />
+                        <ChoiceBox fx:id="savedDomainNamesChoiseBox" prefHeight="25.0" prefWidth="212.0" GridPane.columnIndex="3" />
                      </children>
                   </GridPane>
                </content>

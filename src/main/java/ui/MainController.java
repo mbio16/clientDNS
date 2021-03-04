@@ -83,7 +83,8 @@ public class MainController extends GeneralController {
 				newStage.getIcons().add(new Image(Main.ICON_URI));
 				Stage mainStage = (Stage) dnsButton.getScene().getWindow();
 				mainStage.close();
-				controller.setLabels();
+				controller.setIpDns(ipDns);
+				controller.setLabels();				
 				controller.loadDataFromSettings();
  		}		
 		catch (Exception e) {
@@ -111,6 +112,10 @@ public class MainController extends GeneralController {
 	}
 	public void setSettings(Settings settings) {
 		this.settings = settings;
+	}
+	
+	public void test() {
+		System.out.println("ahoj");
 	}
 	
 	public void setLabels() {

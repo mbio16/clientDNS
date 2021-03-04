@@ -1,12 +1,12 @@
 package exceptions;
 
-public class TimeOutException extends Exception {
+public class TimeoutException extends Exception {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public TimeOutException() {
-		super("TimeOut exception");
+	public TimeoutException() {
+		super("Socket timeout");
 	}
 }

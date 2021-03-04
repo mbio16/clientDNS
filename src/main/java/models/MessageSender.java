@@ -1,8 +1,8 @@
 package models;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -10,8 +10,6 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import org.json.simple.JSONArray;
@@ -23,7 +21,9 @@ import enums.TRANSPORT_PROTOCOL;
 import exceptions.MessageTooBigForUDPException;
 import exceptions.NotValidDomainNameException;
 import exceptions.NotValidIPException;
-import exceptions.TimeOutException;
+import exceptions.TimeoutException;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TreeItem;
 
 public class MessageSender {
@@ -39,10 +39,10 @@ public class MessageSender {
 	private Socket socket;
 	private int messagesSent;
 	private byte  [] recieveReply;
-	private long timeElapsed;
 	private boolean rrRecords;
 	private TreeItem<String> root;
-	
+	private long startTime;
+	private long stopTime;
 	private static final int MAX_MESSAGES_SENT=3;
 	private static final int TIME_OUT_MILLIS = 3000;
 	public static final int MAX_UDP_SIZE = 1232;
@@ -55,16 +55,25 @@ public class MessageSender {
 			requests = new ArrayList<Request>();
 			header = new Header(recursion, dnssec, types.length, rrRecords);
 			size = Header.getSize();
-			addRequests(types, domain);
+			addRequests(types, checkAndStripFullyQualifyName(domain));
 			//this.resolverIP = resolverIP;
 			this.transport_protocol = transport_protocol;
 			this.application_protocol = application_protocol;
 			this.ip =InetAddress.getByName(resolverIP);
-			this.messagesSent = 0;
 			this.recieveReply = new byte [512];
 			this.rrRecords = rrRecords;
+			messagesSent = 0;
 	}
 	
+	private String checkAndStripFullyQualifyName(String domain) {
+		if(domain.endsWith(".")) {
+			System.out.println("Striping .");
+			return domain.substring(0,domain.length()-1);
+		}
+		else {
+			return domain;
+		}
+	}
 	public TreeItem<String> getAsTreeItem() {
 		root = new TreeItem<String>(KEY_REQUEST);
 		root.getChildren().add(header.getAsTreeItem());
@@ -95,7 +104,7 @@ public class MessageSender {
 			size += r.getSize();
 		}
 	}
-	public void send() throws TimeOutException, IOException, MessageTooBigForUDPException {
+	public void send() throws TimeoutException, IOException, MessageTooBigForUDPException {
 		switch (application_protocol) {
 		case DNS:
 			switch (transport_protocol) {
@@ -122,7 +131,7 @@ public class MessageSender {
 	}
 
 	@SuppressWarnings("resource")
-	private void dnsOverUDP() throws TimeOutException, IOException, MessageTooBigForUDPException {
+	private void dnsOverUDP() throws TimeoutException, IOException, MessageTooBigForUDPException {
 		if(size>MAX_UDP_SIZE) throw new MessageTooBigForUDPException();
 		messagesSent = 0;
 		messageToBytes();
@@ -132,59 +141,67 @@ public class MessageSender {
 		while (run) {
 			try {
 				if(messagesSent==MAX_MESSAGES_SENT) {
-					throw new TimeOutException();
+					throw new TimeoutException();
 				}
+				
 			DatagramPacket responsePacket = new DatagramPacket(recieveReply, recieveReply.length);
 			DatagramPacket datagramPacket = new DatagramPacket(messageAsBytes, messageAsBytes.length,ip,DNS_PORT);
 			datagramSocket.setSoTimeout(TIME_OUT_MILLIS);
-			Instant start = Instant.now(); 
+			startTime = System.nanoTime();
+ 
 			datagramSocket.send(datagramPacket);
 			datagramSocket.receive(responsePacket);
-			Instant finish = Instant.now();
-			timeElapsed = Duration.between(start, finish).toMillis();
+			stopTime = System.nanoTime();
+			datagramSocket.close();
+			
 			run = false;	
 			}
 			catch (SocketTimeoutException e) {
+				//Alert a = new Alert(AlertType.INFORMATION,"Timeout");
+				//a.show();
 	            LOGGER.warning("Time out for the: " + (messagesSent+1) + " message");
 	            if(messagesSent==MAX_MESSAGES_SENT) {
-	            	timeElapsed = 0;
 	            	socket.close();
 	            }
 	        }
 			messagesSent++;
 		}
 		if(exception) {
-			throw new TimeOutException();
+			throw new TimeoutException();
 		}
 		
 	}
 
 	private void dnsOverTcp() throws IOException {
 		messageToBytes();
-		messagesSent = 1;
-		Instant start = Instant.now();
-		
+		startTime = System.nanoTime();
+		try {
 		socket = new Socket(ip,DNS_PORT);
-		OutputStream output = socket.getOutputStream();
+		DataOutputStream output = new DataOutputStream(socket.getOutputStream());
 		output.write(messageAsBytes);
  
 		InputStream input = socket.getInputStream();
-		byte [] recieve = input.readAllBytes();
+		byte [] sizeRicieve = input.readNBytes(2);
+
+		UInt16 messageSize = new UInt16().loadFromBytes(sizeRicieve[0],sizeRicieve[1]);
+		System.out.println(messageSize.getValue());
+		this.recieveReply = input.readNBytes(messageSize.getValue());
+
+		output.close();
+		input.close();
 		socket.close();
-		
-		Instant finish = Instant.now();
-		timeElapsed = Duration.between(start,finish).toMillis();
-		
-		removeFirstTwoBytesFromReply(recieve);
-				
-	}
-	private void removeFirstTwoBytesFromReply(byte [] recieve) {
-		this.recieveReply = new byte [recieve.length-2];
-		int j=0;
-		for (int i = 2; i < recieve.length; i++) {
-			recieveReply[j] = recieve[i];
-			j++;
+		stopTime = System.nanoTime();
 		}
+		catch (IOException e) {
+			throw new IOException();
+		}
+		finally {
+
+			socket.close();
+			System.out.println(socket.isConnected());
+			socket = null;	
+		}
+				
 	}
 	private void messageToBytes() {
 		int curentIndex = 0;
@@ -246,7 +263,7 @@ public class MessageSender {
 		return header;
 	}
 
-	public int getMessagesSent() {
+	public int getMessageSent() {
 		return messagesSent;
 	}
 
@@ -254,13 +271,13 @@ public class MessageSender {
 		return recieveReply;
 	}
 
-	public long getTimeElapsed() {
-		return timeElapsed;
+	public double getTimeElapsed() {
+		double h = (stopTime-startTime)/1000000.00;
+		return Math.round(h*100)/100.0;
 	}
 	
 	public void printStats() {
-		System.out.println("number of tries: " + this.messagesSent);
-		System.out.println("Time to send: " + this.timeElapsed);
+		System.out.println("Time to send: " + getTimeElapsed());
 	}
 	
 }
