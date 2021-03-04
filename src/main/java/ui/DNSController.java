@@ -424,6 +424,7 @@ public class DNSController extends MDNSController {
 			numberOfMessagesValueLabel.setText("" + sender.getMessageSent());
 			showAller(fullClassName);
 		} catch (Exception e) {
+			LOGGER.warning(e.toString());
 			showAller("Exception");
 		}
 
