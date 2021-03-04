@@ -216,6 +216,7 @@ public class MDNSController extends GeneralController {
 			Stage mainStage = (Stage) sendButton.getScene().getWindow();
 			mainStage.close();
 			controller.setLabels();
+			controller.setIpDns(ipDns);
 		} catch (Exception e) {
 			e.printStackTrace();
 			Alert alert = new Alert(AlertType.ERROR, language.getLanguageBundle().getString("windowError"));
@@ -279,7 +280,7 @@ public class MDNSController extends GeneralController {
 		expandAll(responseTreeView);
 	}
 
-	private void expandAll(TreeView<String> t) {
+	protected void expandAll(TreeView<String> t) {
 		try {
 			int i = 0;
 			while (true) {
