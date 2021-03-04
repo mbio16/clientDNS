@@ -19,7 +19,8 @@ public enum Q_COUNT {
 		OPT(41),
 		NS(2),
 		NSEC3(50),
-		NSEC(47);
+		NSEC(47),
+		NSEC3PARAM(51);
 		
 		public UInt16 code;
 	    private Q_COUNT(UInt16 code) {

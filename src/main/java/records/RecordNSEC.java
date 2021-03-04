@@ -10,15 +10,19 @@ import models.DomainConvert;
 import models.UInt16;
 
 public class RecordNSEC extends Record{
-	private String name;
-	private ArrayList<Q_COUNT> recordsTypes;
-	private static final String KEY_NAME="NEXT_DOMAIN_NAME";
-	private static final String KEY_TYPE_BIT="RECORD_IN_DOMAIN";
-	private static final String KEY_TYPE_BITS="RECORDS_IN_DOMAIN";
+	protected String name;
+	protected ArrayList<Q_COUNT> recordsTypes;
+	protected static final String KEY_NAME="NEXT_DOMAIN_NAME";
+	protected static final String KEY_TYPE_BIT="RECORD_IN_DOMAIN";
+	protected static final String KEY_TYPE_BITS="RECORDS_IN_DOMAIN";
 	public RecordNSEC(byte[] rawMessage, int lenght, int startIndex) {
 		super(rawMessage, lenght, startIndex);
 		recordsTypes = new ArrayList<Q_COUNT>();
 		parseRecord();
+	}
+	public RecordNSEC(byte[] rawMessage, int lenght, int startIndex,boolean nsec3) {
+		super(rawMessage, lenght, startIndex);
+		recordsTypes = new ArrayList<Q_COUNT>();
 	}
 	
 	private  void parseRecord() {

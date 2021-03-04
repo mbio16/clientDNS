@@ -1,10 +1,10 @@
 package records;
-
 import org.json.simple.JSONObject;
 import enums.DIGEST_TYPE;
+import enums.Q_COUNT;
 import models.UInt16;
 
-public class RecordNSEC3 extends  Record {
+public class RecordNSEC3 extends  RecordNSEC {
 
 	private DIGEST_TYPE hash;
 	private byte flags;
@@ -13,7 +13,6 @@ public class RecordNSEC3 extends  Record {
 	private String salt;
 	private int hashLenght;
 	private String name;
-	
 	private static final String KEY_HASH_TYPE="HASH_TYPE";
 	private static final String KEY_FLAGS="FLAGS";
 	private static final String KEY_ITERATION="ITERATIONS";
@@ -22,7 +21,7 @@ public class RecordNSEC3 extends  Record {
 	private static final String KEY_HASH_LENGHT="HASH_LENGHT";
 	private static final String KEY_NEXT_OWNER_HASH="NEXT_DOMAIN_HASH";
 	 public RecordNSEC3(byte[] rawMessage, int lenght, int startIndex){
-		super(rawMessage, lenght, startIndex);
+		 super(rawMessage, lenght, startIndex,true);
 		 salt = "";
 		 name = "";
 		parseRecord();
@@ -47,6 +46,11 @@ public class RecordNSEC3 extends  Record {
 		for (int i = currentIndex; i < currentIndex+hashLenght; i++) {
 			name += String.format("%02x", rawMessage[i]);
 		}
+		currentIndex = currentIndex+hashLenght;
+		System.out.println(String.format("%02x", rawMessage[currentIndex]));
+		System.out.print(String.format("%02x", rawMessage[currentIndex+1]));
+		parseTypeBits(currentIndex);
+		
 	}
 
 	@Override
@@ -70,24 +74,29 @@ public class RecordNSEC3 extends  Record {
 		 object.put(KEY_SALT,salt);
 		 object.put(KEY_SALT_LENGHT,saltLenght);
 		 object.put(KEY_HASH_LENGHT,hashLenght);
-		object.put(KEY_NEXT_OWNER_HASH,name);
+		 object.put(KEY_NEXT_OWNER_HASH,name);
+		 object.put(KEY_TYPE_BITS, recordsTypes);
 		return object;
 	}
 
 
 	@Override
 	public String [] getValesForTreeItem(){
-		String [] pole = {
-				
-				 KEY_HASH_TYPE +": " + hash,
-				 KEY_FLAGS +": "+ flags,
-				 KEY_ITERATION + ": " +iteration.getValue(),
-				 KEY_SALT + ": " + salt,
-				 KEY_SALT_LENGHT +": "+saltLenght,
-				 KEY_HASH_LENGHT + ": "+hashLenght,
-				 KEY_NEXT_OWNER_HASH +": " + name
-		};
-		return pole;
+		String [] response = new String [recordsTypes.size() + 7];
+						
+		response[0] = KEY_HASH_TYPE +": " + hash;
+		response[1] = KEY_FLAGS +": "+ flags;
+		response[2] = KEY_ITERATION + ": " +iteration.getValue();
+		response[3] = KEY_SALT + ": " + salt;
+		response[4] = KEY_SALT_LENGHT +": "+saltLenght;
+		response[5] = KEY_HASH_LENGHT + ": "+hashLenght;
+		response[6] = KEY_NEXT_OWNER_HASH +": " + name;
+		int i = 7;
+		for (Q_COUNT count: recordsTypes) {
+			response[i] = KEY_TYPE_BIT + ": " + count;
+			i++;
+		}
+		return response;
 	}
 	@Override
 	public String getDataForTreeViewName() {
