@@ -68,7 +68,6 @@ public class RecordRRSIG extends Record {
 		currentIndex = DomainConvert.getIndexOfLastByteOfName(rawMessage, currentIndex) +1;
 		
 		for (int i = currentIndex; i < startIndex+lenght; i++) {
-			System.out.println(signature);
 			signature += String.format("%02x", rawMessage[i]);
 		}
 	

@@ -47,8 +47,6 @@ public class RecordNSEC3 extends  RecordNSEC {
 			name += String.format("%02x", rawMessage[i]);
 		}
 		currentIndex = currentIndex+hashLenght;
-		System.out.println(String.format("%02x", rawMessage[currentIndex]));
-		System.out.print(String.format("%02x", rawMessage[currentIndex+1]));
 		parseTypeBits(currentIndex);
 		
 	}

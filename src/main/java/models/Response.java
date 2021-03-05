@@ -183,7 +183,7 @@ public class Response {
 		root.getChildren().add(new TreeItem<String>(TYPE_KEY + ": " + Q_COUNT.OPT));
 		root.getChildren().add(new TreeItem<String>(KEY_OPT_RCODE + ": "+ 0));
 		root.getChildren().add(new TreeItem<String>(KEY_OPT_VERSION + ": " + 0));
-		root.getChildren().add(new TreeItem<String>(KEY_OPT_UDP_SIZE + ": " + 512));
+		root.getChildren().add(new TreeItem<String>(KEY_OPT_UDP_SIZE + ": " + 1232));
 		root.getChildren().add(new TreeItem<String>(KEY_OPT_DO_BIT + ": " +  "true"));
 		return root;
 	}
