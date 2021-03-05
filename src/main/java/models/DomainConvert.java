@@ -164,6 +164,10 @@ public class DomainConvert {
 	}
 	
     public static boolean isValidDomainName(String domainName) {
+    	
+    	if(domainName.endsWith(".")) {
+    		domainName = domainName.substring(0,domainName.length()-1);
+    	}
     	if(domainName.split("\\.").length==1 && domainName.length()>=2) {
     		return true;
     	};

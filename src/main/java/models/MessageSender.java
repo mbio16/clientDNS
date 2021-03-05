@@ -1,10 +1,8 @@
 package models;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
@@ -173,32 +171,35 @@ public class MessageSender {
 	}
 
 	private void dnsOverTcp() throws IOException {
-		startTime = System.nanoTime();
+		
 		messageToBytes();
 		messagesSent = 1;
-		
+		startTime = System.nanoTime();
+		//connect and prepare input and output streams
 		socket = new Socket(ip,DNS_PORT);
 		OutputStream output = socket.getOutputStream();
 		InputStream input = socket.getInputStream();
+		
+		//send request
 		output.write(messageAsBytes);
+		
+		//dns message has first two bytes which is the lenght of the rest of the message
 		byte [] sizeRicieve = input.readNBytes(2);
+		
 		UInt16 messageSize = new UInt16().loadFromBytes(sizeRicieve[0],sizeRicieve[1]);
-		//System.out.println(messageSize.getValue());
+		
+		//based on size get the dns message it self
 		this.recieveReply = input.readNBytes(messageSize.getValue());
-
+		
+		//close connection
+		input.close();
+		output.close();
 		socket.close();
 		stopTime = System.nanoTime();
 	
 	
 }
-private void removeFirstTwoBytesFromReply(byte [] recieve) {
-	this.recieveReply = new byte [recieve.length-2];
-	int j=0;
-	for (int i = 2; i < recieve.length; i++) {
-		recieveReply[j] = recieve[i];
-		j++;
-		}
-}
+
 	private void messageToBytes() {
 		int curentIndex = 0;
 		if (rrRecords) {
