@@ -13,6 +13,8 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.control.TreeView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -52,12 +54,12 @@
          <center>
             <BorderPane minWidth="0.0" prefHeight="10.0">
                <BorderPane.margin>
-                  <Insets left="10.0" />
+                  <Insets left="5.0" />
                </BorderPane.margin>
                <right>
-                  <TitledPane fx:id="responseTitledPane" animated="false" collapsible="false" minWidth="340.0" onMouseClicked="#expandAllResponseOnClick" text="Odpověď" BorderPane.alignment="CENTER">
+                  <TitledPane fx:id="responseTitledPane" animated="false" collapsible="false" minWidth="310.0" onMouseClicked="#expandAllResponseOnClick" prefHeight="638.0" prefWidth="310.0" text="Odpověď" BorderPane.alignment="CENTER">
                      <content>
-                        <TreeView fx:id="responseTreeView" prefHeight="697.0" prefWidth="328.0" />
+                        <TreeView fx:id="responseTreeView" onMouseClicked="#clicked" prefHeight="500.0" prefWidth="338.0" />
                      </content>
                      <BorderPane.margin>
                         <Insets left="10.0" right="10.0" />
@@ -65,10 +67,13 @@
                   </TitledPane>
                </right>
                <left>
-                  <TitledPane fx:id="queryTitledPane" animated="false" collapsible="false" minWidth="340.0" onMouseClicked="#expandAllRequestOnClick" text="Dotaz" BorderPane.alignment="CENTER">
+                  <TitledPane fx:id="queryTitledPane" animated="false" collapsible="false" minWidth="310.0" onMouseClicked="#expandAllRequestOnClick" prefHeight="641.0" prefWidth="310.0" text="Dotaz" BorderPane.alignment="CENTER">
                      <content>
-                        <TreeView fx:id="requestTreeView" minWidth="250.0" prefHeight="778.0" prefWidth="338.0" />
+                        <TreeView fx:id="requestTreeView" minWidth="250.0" onMouseClicked="#clicked" prefHeight="599.0" prefWidth="310.0" />
                      </content>
+                     <BorderPane.margin>
+                        <Insets />
+                     </BorderPane.margin>
                   </TitledPane>
                </left>
             </BorderPane>
@@ -76,24 +81,24 @@
          <bottom>
             <AnchorPane prefHeight="0.0" prefWidth="315.0" BorderPane.alignment="CENTER">
                <children>
-                  <Button fx:id="copyResponseJsonButton" disable="true" layoutX="472.0" layoutY="25.0" minWidth="100.0" mnemonicParsing="false" onAction="#copyJsonResponseDataFired" prefHeight="40.0" text="Kopírovat odpověď jako JSON" />
-                  <Button fx:id="copyRequestJsonButton" disable="true" layoutX="271.0" layoutY="25.0" minWidth="100.0" mnemonicParsing="false" onAction="#copyJsonRequestDataFired" prefHeight="40.0" text="Kopírovat dotaz jako JSON" />
-                  <Label fx:id="responseTimeValueLabel" layoutX="194.0" layoutY="57.0" text="0">
+                  <Button fx:id="copyResponseJsonButton" disable="true" layoutX="460.0" layoutY="5.0" minWidth="100.0" mnemonicParsing="false" onAction="#copyJsonResponseDataFired" prefHeight="40.0" text="Kopírovat odpověď jako JSON" />
+                  <Button fx:id="copyRequestJsonButton" disable="true" layoutX="269.0" layoutY="5.0" minWidth="100.0" mnemonicParsing="false" onAction="#copyJsonRequestDataFired" prefHeight="40.0" text="Kopírovat dotaz jako JSON" />
+                  <Label fx:id="responseTimeValueLabel" layoutX="203.0" layoutY="29.0" text="0">
                      <font>
                         <Font size="15.0" />
                      </font>
                   </Label>
-                  <Label fx:id="numberOfMessagesLabel" alignment="BOTTOM_RIGHT" layoutX="29.0" layoutY="24.0" text="Počet opakování zpráv:">
+                  <Label fx:id="numberOfMessagesLabel" alignment="BOTTOM_RIGHT" layoutX="30.0" layoutY="4.0" text="Počet opakování zpráv:">
                      <font>
                         <Font size="15.0" />
                      </font>
                   </Label>
-                  <Label fx:id="responseTimeLabel" contentDisplay="CENTER" layoutX="30.0" layoutY="57.0" prefHeight="21.0" prefWidth="152.0" text="Čas odpovědi [ms]:">
+                  <Label fx:id="responseTimeLabel" contentDisplay="CENTER" layoutX="31.0" layoutY="29.0" prefHeight="21.0" prefWidth="152.0" text="Čas odpovědi [ms]:">
                      <font>
                         <Font size="15.0" />
                      </font>
                   </Label>
-                  <Label fx:id="numberOfMessagesValueLabel" layoutX="194.0" layoutY="24.0" text="0">
+                  <Label fx:id="numberOfMessagesValueLabel" layoutX="203.0" layoutY="4.0" text="0">
                      <font>
                         <Font size="15.0" />
                      </font>
@@ -109,11 +114,12 @@
    <left>
       <AnchorPane BorderPane.alignment="CENTER">
          <children>
-            <TitledPane fx:id="dnsServerTitledPane" animated="false" collapsible="false" layoutX="151.0" layoutY="346.0" prefHeight="399.0" prefWidth="276.0" text="DNS server">
+            <TitledPane fx:id="dnsServerTitledPane" animated="false" collapsible="false" layoutX="194.0" layoutY="330.0" prefHeight="315.0" prefWidth="240.0" text="DNS server">
                <content>
-                  <GridPane prefHeight="373.0" prefWidth="282.0">
+                  <GridPane prefHeight="320.0" prefWidth="211.0">
                     <columnConstraints>
-                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="205.0" minWidth="10.0" prefWidth="187.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="104.0" minWidth="10.0" prefWidth="41.0" />
                     </columnConstraints>
                     <rowConstraints>
                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -140,15 +146,15 @@
                            <font>
                               <Font size="15.0" />
                            </font></RadioButton>
-                        <RadioButton fx:id="cloudflareIpv6RadioButton" mnemonicParsing="false" onAction="#onRadioButtonChange" text="2606:4700:4700::1111 (Cloudflare)" GridPane.rowIndex="3">
+                        <RadioButton fx:id="cloudflareIpv6RadioButton" mnemonicParsing="false" onAction="#onRadioButtonChange" text="2606:4700:4700::1111" GridPane.rowIndex="3">
                            <font>
                               <Font size="15.0" />
                            </font></RadioButton>
-                        <RadioButton fx:id="googleIpv6RadioButton" mnemonicParsing="false" onAction="#onRadioButtonChange" text="2001:4860:4860::8888 (Google)" GridPane.rowIndex="4">
+                        <RadioButton fx:id="googleIpv6RadioButton" mnemonicParsing="false" onAction="#onRadioButtonChange" text="2001:4860:4860::8888" GridPane.rowIndex="4">
                            <font>
                               <Font size="15.0" />
                            </font></RadioButton>
-                        <RadioButton fx:id="cznicIpv6RadioButton" mnemonicParsing="false" onAction="#onRadioButtonChange" text="2001:148f:ffff::1 (CZ.NIC)" GridPane.rowIndex="5">
+                        <RadioButton fx:id="cznicIpv6RadioButton" mnemonicParsing="false" onAction="#onRadioButtonChange" text="2001:148f:ffff::1" GridPane.rowIndex="5">
                            <font>
                               <Font size="15.0" />
                            </font></RadioButton>
@@ -162,17 +168,95 @@
                               <Font size="15.0" />
                            </font>
                         </RadioButton>
-                        <TextField fx:id="dnsServerTextField" onKeyPressed="#dnsServerKeyPressed" prefHeight="29.0" prefWidth="243.0" GridPane.rowIndex="8">
+                        <TextField fx:id="dnsServerTextField" onAction="#onDomainNameAction" onKeyPressed="#dnsServerKeyPressed" prefHeight="29.0" prefWidth="193.0" GridPane.rowIndex="8">
                            <font>
                               <Font size="13.0" />
                            </font>
+                           <GridPane.margin>
+                              <Insets />
+                           </GridPane.margin>
                         </TextField>
                         <ChoiceBox fx:id="savedDNSChoiceBox" onAction="#onDnsServerNameChoiseBoxAction" prefHeight="25.0" prefWidth="263.0" GridPane.rowIndex="9" />
+                        <ImageView fx:id="cloudflareIpv4ImageView" fitHeight="28.0" fitWidth="42.0" onMouseClicked="#copyImageViewFired" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1">
+                           <image>
+                              <Image url="@../images/copy-clipboard.png" />
+                           </image>
+                           <GridPane.margin>
+                              <Insets bottom="2.0" left="5.0" right="5.0" top="2.0" />
+                           </GridPane.margin>
+                        </ImageView>
+                        <ImageView fx:id="googleIpv4IamgeView" fitHeight="28.0" fitWidth="42.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                           <image>
+                              <Image url="@../images/copy-clipboard.png" />
+                           </image>
+                           <GridPane.margin>
+                              <Insets bottom="2.0" left="5.0" right="5.0" top="2.0" />
+                           </GridPane.margin>
+                        </ImageView>
+                        <ImageView fx:id="cznicIpv4RadioIamgeView" fitHeight="28.0" fitWidth="42.0" onMouseClicked="#copyImageViewFired" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                           <image>
+                              <Image url="@../images/copy-clipboard.png" />
+                           </image>
+                           <GridPane.margin>
+                              <Insets bottom="2.0" left="5.0" right="5.0" top="2.0" />
+                           </GridPane.margin>
+                        </ImageView>
+                        <ImageView fx:id="cloudflareIpv6ImageView" fitHeight="28.0" fitWidth="42.0" onMouseClicked="#copyImageViewFired" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                           <image>
+                              <Image url="@../images/copy-clipboard.png" />
+                           </image>
+                           <GridPane.margin>
+                              <Insets bottom="2.0" left="5.0" right="5.0" top="2.0" />
+                           </GridPane.margin>
+                        </ImageView>
+                        <ImageView fx:id="googleIpv6ImagaView" fitHeight="28.0" fitWidth="42.0" onMouseClicked="#copyImageViewFired" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                           <image>
+                              <Image url="@../images/copy-clipboard.png" />
+                           </image>
+                           <GridPane.margin>
+                              <Insets bottom="2.0" left="5.0" right="5.0" top="2.0" />
+                           </GridPane.margin>
+                        </ImageView>
+                        <ImageView fx:id="cznicIpv6ImageView" fitHeight="28.0" fitWidth="42.0" onMouseClicked="#copyImageViewFired" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                           <image>
+                              <Image url="@../images/copy-clipboard.png" />
+                           </image>
+                           <GridPane.margin>
+                              <Insets left="3.0" right="3.0" />
+                           </GridPane.margin>
+                        </ImageView>
+                        <ImageView fx:id="systemIpv4DNSImageView" fitHeight="28.0" fitWidth="42.0" onMouseClicked="#copyImageViewFired" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="6">
+                           <image>
+                              <Image url="@../images/copy-clipboard.png" />
+                           </image>
+                           <GridPane.margin>
+                              <Insets bottom="2.0" left="5.0" right="5.0" top="2.0" />
+                           </GridPane.margin>
+                        </ImageView>
+                        <ImageView fx:id="systemIpv6DNSIamgeView" fitHeight="28.0" fitWidth="42.0" onMouseClicked="#copyImageViewFired" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="7">
+                           <image>
+                              <Image url="@../images/copy-clipboard.png" />
+                           </image>
+                           <GridPane.margin>
+                              <Insets bottom="2.0" left="5.0" right="5.0" top="2.0" />
+                           </GridPane.margin>
+                        </ImageView>
+                        <ImageView fx:id="custumImageView" fitHeight="28.0" fitWidth="42.0" onMouseClicked="#copyImageViewFired" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="8">
+                           <image>
+                              <Image url="@../images/copy-clipboard.png" />
+                           </image>
+                           <GridPane.margin>
+                              <Insets bottom="2.0" left="5.0" right="5.0" top="2.0" />
+                           </GridPane.margin>
+                        </ImageView>
                      </children>
+                     <padding>
+                        <Insets bottom="5.0" left="10.0" top="5.0" />
+                     </padding>
                   </GridPane>
                </content>
             </TitledPane>
-            <TitledPane fx:id="dnssecTitledPane" animated="false" collapsible="false" layoutX="8.0" layoutY="124.0" prefHeight="104.0" prefWidth="421.0" text="DNSSEC">
+            <TitledPane fx:id="dnssecTitledPane" animated="false" collapsible="false" layoutX="11.0" layoutY="121.0" prefHeight="94.0" prefWidth="422.0" text="DNSSEC">
                <content>
                   <GridPane prefHeight="67.0" prefWidth="200.0">
                      <columnConstraints>
@@ -203,7 +287,7 @@
                   </GridPane>
                </content>
             </TitledPane>
-            <TitledPane fx:id="iterativeTitledPane" animated="false" collapsible="false" layoutX="9.0" layoutY="238.0" prefHeight="101.0" prefWidth="243.0" text="Druh dotazu">
+            <TitledPane fx:id="iterativeTitledPane" animated="false" collapsible="false" layoutX="11.0" layoutY="225.0" prefHeight="95.0" prefWidth="175.0" text="Druh dotazu">
                <content>
                   <GridPane prefHeight="67.0" prefWidth="200.0">
                      <columnConstraints>
@@ -229,12 +313,12 @@
                   </GridPane>
                </content>
             </TitledPane>
-            <Button fx:id="sendButton" layoutX="152.0" layoutY="752.0" mnemonicParsing="false" onAction="#sendButtonFired" prefHeight="47.0" prefWidth="274.0" text="Odeslat">
+            <Button fx:id="sendButton" layoutX="9.0" layoutY="653.0" mnemonicParsing="false" onAction="#sendButtonFired" prefHeight="44.0" prefWidth="427.0" text="Odeslat">
                <font>
-                  <Font size="25.0" />
+                  <Font size="20.0" />
                </font>
             </Button>
-            <TitledPane fx:id="domainNameTitledPane" animated="false" collapsible="false" layoutX="7.0" layoutY="2.0" prefHeight="112.0" prefWidth="423.0" text="Doménové jméno">
+            <TitledPane fx:id="domainNameTitledPane" animated="false" collapsible="false" layoutX="11.0" prefHeight="112.0" prefWidth="422.0" text="Doménové jméno">
                <content>
                   <GridPane prefHeight="71.0" prefWidth="391.0">
                      <columnConstraints>
@@ -255,12 +339,12 @@
                   <Insets top="5.0" />
                </padding>
             </TitledPane>
-            <TitledPane fx:id="recordTypeTitledPane" animated="false" collapsible="false" layoutX="7.0" layoutY="346.0" prefHeight="455.0" prefWidth="131.0" text="Záznam">
+            <TitledPane fx:id="recordTypeTitledPane" animated="false" collapsible="false" layoutX="9.0" layoutY="330.0" prefHeight="315.0" prefWidth="175.0" text="Záznam">
                <content>
-                  <GridPane prefHeight="410.0" prefWidth="201.0">
+                  <GridPane prefHeight="315.0" prefWidth="210.0">
                     <columnConstraints>
-                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="180.0" minWidth="10.0" prefWidth="180.0" />
-                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="127.0" minWidth="0.0" prefWidth="0.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="127.0" minWidth="0.0" prefWidth="90.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="180.0" minWidth="10.0" prefWidth="102.0" />
                     </columnConstraints>
                     <rowConstraints>
                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -270,81 +354,74 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
-                        <CheckBox fx:id="aaaaCheckBox" mnemonicParsing="false" text="AAAA" GridPane.rowIndex="1">
+                        <CheckBox fx:id="aaaaCheckBox" mnemonicParsing="false" text="AAAA" GridPane.columnIndex="1">
                            <font>
                               <Font size="15.0" />
                            </font>
                         </CheckBox>
-                        <CheckBox fx:id="aCheckBox" mnemonicParsing="false" selected="true" text="A">
+                        <CheckBox fx:id="aCheckBox" mnemonicParsing="false" prefHeight="21.0" prefWidth="46.0" selected="true" text="A">
                            <font>
                               <Font size="15.0" />
                            </font>
                         </CheckBox>
-                        <CheckBox fx:id="nsCheckBox" mnemonicParsing="false" text="NS" GridPane.rowIndex="2">
+                        <CheckBox fx:id="nsCheckBox" mnemonicParsing="false" text="NS" GridPane.rowIndex="1">
                            <font>
                               <Font size="15.0" />
                            </font>
                         </CheckBox>
-                        <CheckBox fx:id="mxCheckBox" mnemonicParsing="false" text="MX" GridPane.rowIndex="3">
+                        <CheckBox fx:id="mxCheckBox" mnemonicParsing="false" text="MX" GridPane.columnIndex="1" GridPane.rowIndex="1">
                            <font>
                               <Font size="15.0" />
                            </font>
                         </CheckBox>
-                        <CheckBox fx:id="soaCheckBox" mnemonicParsing="false" text="SOA" GridPane.rowIndex="4">
+                        <CheckBox fx:id="soaCheckBox" mnemonicParsing="false" text="SOA" GridPane.rowIndex="2">
                            <font>
                               <Font size="15.0" />
                            </font>
                         </CheckBox>
-                        <CheckBox fx:id="cnameCheckBox" mnemonicParsing="false" text="CNAME" GridPane.rowIndex="5">
+                        <CheckBox fx:id="cnameCheckBox" mnemonicParsing="false" text="CNAME" GridPane.columnIndex="1" GridPane.rowIndex="2">
                            <font>
                               <Font size="15.0" />
                            </font>
                         </CheckBox>
-                        <CheckBox fx:id="ptrCheckBox" mnemonicParsing="false" text="PTR" GridPane.rowIndex="6">
+                        <CheckBox fx:id="ptrCheckBox" mnemonicParsing="false" text="PTR" GridPane.rowIndex="3">
                            <font>
                               <Font size="15.0" />
                            </font>
                         </CheckBox>
-                        <CheckBox fx:id="dnskeyCheckBox" mnemonicParsing="false" text="DNSKEY" GridPane.rowIndex="7">
+                        <CheckBox fx:id="dnskeyCheckBox" mnemonicParsing="false" text="DNSKEY" GridPane.columnIndex="1" GridPane.rowIndex="3">
                            <font>
                               <Font size="15.0" />
                            </font>
                         </CheckBox>
-                        <CheckBox fx:id="dsCheckBox" mnemonicParsing="false" text="DS" GridPane.rowIndex="8">
+                        <CheckBox fx:id="dsCheckBox" mnemonicParsing="false" text="DS" GridPane.rowIndex="4">
                            <font>
                               <Font size="15.0" />
                            </font>
                         </CheckBox>
-                        <CheckBox fx:id="caaCheckBox" mnemonicParsing="false" text="CAA" GridPane.rowIndex="9">
+                        <CheckBox fx:id="caaCheckBox" mnemonicParsing="false" text="CAA" GridPane.rowIndex="5">
                            <font>
                               <Font size="15.0" />
                            </font>
                         </CheckBox>
-                        <CheckBox fx:id="txtCheckBox" mnemonicParsing="false" text="TXT" GridPane.rowIndex="10">
+                        <CheckBox fx:id="txtCheckBox" mnemonicParsing="false" text="TXT" GridPane.rowIndex="6">
                            <font>
                               <Font size="15.0" />
                            </font>
                         </CheckBox>
-                        <CheckBox fx:id="rrsigCheckBox" mnemonicParsing="false" text="RRSIG" GridPane.rowIndex="11">
+                        <CheckBox fx:id="rrsigCheckBox" mnemonicParsing="false" text="RRSIG" GridPane.columnIndex="1" GridPane.rowIndex="4">
                            <font>
                               <Font size="15.0" />
                            </font>
                         </CheckBox>
-                        <CheckBox fx:id="nsecCheckBox" mnemonicParsing="false" text="NSEC" GridPane.rowIndex="12">
+                        <CheckBox fx:id="nsecCheckBox" mnemonicParsing="false" text="NSEC" GridPane.columnIndex="1" GridPane.rowIndex="5">
                            <font>
                               <Font size="15.0" />
                            </font>
                         </CheckBox>
-                        <CheckBox fx:id="nsec3CheckBox" mnemonicParsing="false" text="NSEC3" GridPane.rowIndex="13">
+                        <CheckBox fx:id="nsec3CheckBox" mnemonicParsing="false" text="NSEC3" GridPane.columnIndex="1" GridPane.rowIndex="6">
                            <font>
                               <Font size="15.0" />
                            </font>
@@ -353,9 +430,9 @@
                   </GridPane>
                </content>
             </TitledPane>
-            <TitledPane fx:id="transportTitledPane" animated="false" collapsible="false" layoutX="261.0" layoutY="237.0" prefHeight="103.0" prefWidth="167.0" text="Protokol transportní vrstvy">
+            <TitledPane fx:id="transportTitledPane" animated="false" collapsible="false" layoutX="194.0" layoutY="225.0" prefHeight="95.0" prefWidth="239.0" text="Protokol transportní vrstvy">
                <content>
-                  <GridPane>
+                  <GridPane prefHeight="65.0" prefWidth="153.0">
                      <columnConstraints>
                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                      </columnConstraints>

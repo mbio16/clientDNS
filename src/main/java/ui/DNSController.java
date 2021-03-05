@@ -2,6 +2,7 @@ package ui;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.logging.Logger;
 import enums.APPLICATION_PROTOCOL;
 import enums.Q_COUNT;
@@ -29,7 +30,11 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 import models.DomainConvert;
@@ -113,6 +118,16 @@ public class DNSController extends MDNSController {
 	// choice box
 	@FXML
 	private ChoiceBox<String> savedDNSChoiceBox;
+	@FXML private ImageView cloudflareIpv4ImageView;
+	@FXML private ImageView googleIpv4IamgeView;
+	@FXML private ImageView cznicIpv4RadioIamgeView;
+	@FXML private ImageView cloudflareIpv6ImageView;
+	@FXML private ImageView googleIpv6ImagaView;
+	@FXML private ImageView cznicIpv6ImageView;
+	@FXML private ImageView systemIpv4DNSImageView;
+	@FXML private ImageView systemIpv6DNSIamgeView;
+	@FXML private ImageView custumImageView;
+	
 	public DNSController() {
 
 		super();
@@ -145,22 +160,40 @@ public class DNSController extends MDNSController {
 		systemIpv6DNSRadioButton.setToggleGroup(dnsserverToggleGroup);
 	}
 
+	public void copyImageViewFired(MouseEvent event) {
+		if(event.getSource()==custumImageView) {
+			copyDataToClipBoard(dnsServerTextField.getText());
+		}else {
+			System.out.println("ano");
+			ImageView v = (ImageView) event.getSource();
+			System.out.println(v.getUserData());
+			copyDataToClipBoard(v.getUserData().toString());
+		}
+	}
 	private void setSystemDNS() {
 		if (ipDns.getIpv4DnsServer().equals("")) {
 			systemIpv4DNSRadioButton.setSelected(false);
 			systemIpv4DNSRadioButton.setText(language.getLanguageBundle().getString("ipv4SystemDNSIsNotEnabled"));
 			systemIpv4DNSRadioButton.setDisable(true);
+			systemIpv4DNSImageView.setDisable(true);;
+			
+			
 		} else {
 			systemIpv4DNSRadioButton.setText(ipDns.getIpv4DnsServer());
 			systemIpv4DNSRadioButton.setUserData(ipDns.getIpv4DnsServer());
+			systemIpv4DNSImageView.setDisable(false);
+			systemIpv4DNSImageView.setUserData(ipDns.getIpv4DnsServer());
 		}
 		if (ipDns.getIpv6DnsServer().equals("")) {
 			systemIpv6DNSRadioButton.setSelected(false);
 			systemIpv6DNSRadioButton.setText(language.getLanguageBundle().getString("ipv6SystemDNSIsNotEnabled"));
 			systemIpv6DNSRadioButton.setDisable(true);
+			systemIpv6DNSIamgeView.setDisable(true);
+			systemIpv6DNSIamgeView.setUserData(ipDns.getIpv6DnsServer());
 		} else {
 			systemIpv6DNSRadioButton.setText(ipDns.getIpv6DnsServer());
 			systemIpv6DNSRadioButton.setUserData(ipDns.getIpv6DnsServer());
+			systemIpv6DNSIamgeView.setDisable(false);
 		}
 	}
 
@@ -215,8 +248,8 @@ public class DNSController extends MDNSController {
 		// permform radio buttons actions
 		onRadioButtonChange(null);
 
-		responseTreeView.setStyle("-fx-font-size: 14");
-		requestTreeView.setStyle("-fx-font-size: 14");
+		responseTreeView.setStyle("-fx-font-size: 12");
+		requestTreeView.setStyle("-fx-font-size: 12");
 
 		copyRequestJsonButton.setText(language.getLanguageBundle().getString(copyRequestJsonButton.getId()));
 		copyResponseJsonButton.setText(language.getLanguageBundle().getString(copyResponseJsonButton.getId()));
@@ -236,6 +269,13 @@ public class DNSController extends MDNSController {
 		cloudflareIpv6RadioButton.setUserData("2606:4700:4700::1111");
 		googleIpv6RadioButton.setUserData("2001:4860:4860::8888");
 		cznicIpv6RadioButton.setUserData("2001:148f:ffff::1");
+		cloudflareIpv4ImageView.setUserData("1.1.1.1");
+		googleIpv4IamgeView.setUserData("8.8.8.8");;
+		cznicIpv4RadioIamgeView.setUserData("193.17.47.1");;
+		cloudflareIpv6ImageView.setUserData("2606:4700:4700::1111");
+		googleIpv6ImagaView.setUserData("2001:4860:4860::8888");
+		cznicIpv6ImageView.setUserData("2001:148f:ffff::1");
+
 	}
 
 	private void setUserDataRecords() {
@@ -428,6 +468,20 @@ public class DNSController extends MDNSController {
 		sendButtonFired(e);
 	}
 
+	@FXML 
+	public void clicked(MouseEvent event) {
+		
+		 if(event.getClickCount() == 2)
+	        {
+			 TreeView<String> v = (TreeView<String>) event.getSource();
+	         String value = v.getSelectionModel().getSelectedItem().getValue();
+	         String [] array = value.toString().split(": ");
+	         if (array.length!=1) {
+				copyDataToClipBoard(array[1]);
+	         }
+	        }
+	}
+	
 	@FXML
 	public void onDomainNameChoiseBoxAction(ActionEvent event) {
 		try {
