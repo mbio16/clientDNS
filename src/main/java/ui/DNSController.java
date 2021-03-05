@@ -1,8 +1,9 @@
 package ui;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.logging.Logger;
 import enums.APPLICATION_PROTOCOL;
 import enums.Q_COUNT;
@@ -30,7 +31,6 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
@@ -332,7 +332,15 @@ public class DNSController extends MDNSController {
 
 	}
 
-	private String getDnsServerIp() throws DnsServerIpIsNotValidException {
+	private String getDnsServerIp() throws DnsServerIpIsNotValidException, UnknownHostException {
+		if(DomainConvert.isValidDomainName(dnsServerTextField.getText())) {
+		      InetAddress ipaddress = InetAddress.getByName(dnsServerTextField.getText());
+		      System.out.println("IP address: " + ipaddress.getHostAddress());
+		      String ipAddr = ipaddress.getHostAddress().toString();
+		      dnsServerTextField.setText(ipAddr);
+		      settings.addDNSServer(ipAddr);
+		      return ipAddr;
+		}
 		if (!dnsServerTextField.getText().equals("")) {
 			if (Ip.isIpValid(dnsServerTextField.getText())) {
 				System.out.println(dnsServerTextField);
