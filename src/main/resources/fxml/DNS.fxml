@@ -57,7 +57,7 @@
                   <Insets left="5.0" />
                </BorderPane.margin>
                <right>
-                  <TitledPane fx:id="responseTitledPane" animated="false" collapsible="false" minWidth="310.0" onMouseClicked="#expandAllResponseOnClick" prefHeight="638.0" prefWidth="310.0" text="Odpověď" BorderPane.alignment="CENTER">
+                  <TitledPane fx:id="responseTitledPane" animated="false" collapsible="false" onMouseClicked="#expandAllResponseOnClick" prefHeight="641.0" prefWidth="310.0" text="Odpověď" BorderPane.alignment="CENTER">
                      <content>
                         <TreeView fx:id="responseTreeView" onMouseClicked="#clicked" prefHeight="500.0" prefWidth="338.0" />
                      </content>
@@ -67,7 +67,7 @@
                   </TitledPane>
                </right>
                <left>
-                  <TitledPane fx:id="queryTitledPane" animated="false" collapsible="false" minWidth="310.0" onMouseClicked="#expandAllRequestOnClick" prefHeight="641.0" prefWidth="310.0" text="Dotaz" BorderPane.alignment="CENTER">
+                  <TitledPane fx:id="queryTitledPane" animated="false" collapsible="false" maxHeight="641.0" maxWidth="310.0" onMouseClicked="#expandAllRequestOnClick" prefHeight="641.0" prefWidth="310.0" text="Dotaz" BorderPane.alignment="CENTER">
                      <content>
                         <TreeView fx:id="requestTreeView" minWidth="250.0" onMouseClicked="#clicked" prefHeight="599.0" prefWidth="310.0" />
                      </content>
@@ -118,8 +118,8 @@
                <content>
                   <GridPane prefHeight="320.0" prefWidth="211.0">
                     <columnConstraints>
-                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="205.0" minWidth="10.0" prefWidth="187.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="104.0" minWidth="10.0" prefWidth="41.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="207.0" minWidth="10.0" prefWidth="200.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="104.0" minWidth="10.0" prefWidth="28.0" />
                     </columnConstraints>
                     <rowConstraints>
                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -168,16 +168,8 @@
                               <Font size="15.0" />
                            </font>
                         </RadioButton>
-                        <TextField fx:id="dnsServerTextField" onAction="#onDomainNameAction" onKeyPressed="#dnsServerKeyPressed" prefHeight="29.0" prefWidth="193.0" GridPane.rowIndex="8">
-                           <font>
-                              <Font size="13.0" />
-                           </font>
-                           <GridPane.margin>
-                              <Insets />
-                           </GridPane.margin>
-                        </TextField>
                         <ChoiceBox fx:id="savedDNSChoiceBox" onAction="#onDnsServerNameChoiseBoxAction" prefHeight="25.0" prefWidth="263.0" GridPane.rowIndex="9" />
-                        <ImageView fx:id="cloudflareIpv4ImageView" fitHeight="28.0" fitWidth="42.0" onMouseClicked="#copyImageViewFired" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1">
+                        <ImageView fx:id="cloudflareIpv4ImageView" fitHeight="20.0" fitWidth="20.0" onMouseClicked="#copyImageViewFired" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1">
                            <image>
                               <Image url="@../images/copy-clipboard.png" />
                            </image>
@@ -185,7 +177,7 @@
                               <Insets bottom="2.0" left="5.0" right="5.0" top="2.0" />
                            </GridPane.margin>
                         </ImageView>
-                        <ImageView fx:id="googleIpv4IamgeView" fitHeight="28.0" fitWidth="42.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                        <ImageView fx:id="googleIpv4IamgeView" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="1">
                            <image>
                               <Image url="@../images/copy-clipboard.png" />
                            </image>
@@ -193,7 +185,7 @@
                               <Insets bottom="2.0" left="5.0" right="5.0" top="2.0" />
                            </GridPane.margin>
                         </ImageView>
-                        <ImageView fx:id="cznicIpv4RadioIamgeView" fitHeight="28.0" fitWidth="42.0" onMouseClicked="#copyImageViewFired" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                        <ImageView fx:id="cznicIpv4RadioIamgeView" fitHeight="20.0" fitWidth="20.0" onMouseClicked="#copyImageViewFired" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="2">
                            <image>
                               <Image url="@../images/copy-clipboard.png" />
                            </image>
@@ -201,7 +193,7 @@
                               <Insets bottom="2.0" left="5.0" right="5.0" top="2.0" />
                            </GridPane.margin>
                         </ImageView>
-                        <ImageView fx:id="cloudflareIpv6ImageView" fitHeight="28.0" fitWidth="42.0" onMouseClicked="#copyImageViewFired" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                        <ImageView fx:id="cloudflareIpv6ImageView" fitHeight="20.0" fitWidth="20.0" onMouseClicked="#copyImageViewFired" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="3">
                            <image>
                               <Image url="@../images/copy-clipboard.png" />
                            </image>
@@ -209,7 +201,7 @@
                               <Insets bottom="2.0" left="5.0" right="5.0" top="2.0" />
                            </GridPane.margin>
                         </ImageView>
-                        <ImageView fx:id="googleIpv6ImagaView" fitHeight="28.0" fitWidth="42.0" onMouseClicked="#copyImageViewFired" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                        <ImageView fx:id="googleIpv6ImagaView" fitHeight="20.0" fitWidth="20.0" onMouseClicked="#copyImageViewFired" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="4">
                            <image>
                               <Image url="@../images/copy-clipboard.png" />
                            </image>
@@ -217,7 +209,7 @@
                               <Insets bottom="2.0" left="5.0" right="5.0" top="2.0" />
                            </GridPane.margin>
                         </ImageView>
-                        <ImageView fx:id="cznicIpv6ImageView" fitHeight="28.0" fitWidth="42.0" onMouseClicked="#copyImageViewFired" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                        <ImageView fx:id="cznicIpv6ImageView" fitHeight="20.0" fitWidth="20.0" onMouseClicked="#copyImageViewFired" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="5">
                            <image>
                               <Image url="@../images/copy-clipboard.png" />
                            </image>
@@ -225,7 +217,7 @@
                               <Insets left="3.0" right="3.0" />
                            </GridPane.margin>
                         </ImageView>
-                        <ImageView fx:id="systemIpv4DNSImageView" fitHeight="28.0" fitWidth="42.0" onMouseClicked="#copyImageViewFired" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="6">
+                        <ImageView fx:id="systemIpv4DNSImageView" fitHeight="20.0" fitWidth="20.0" onMouseClicked="#copyImageViewFired" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="6">
                            <image>
                               <Image url="@../images/copy-clipboard.png" />
                            </image>
@@ -233,7 +225,7 @@
                               <Insets bottom="2.0" left="5.0" right="5.0" top="2.0" />
                            </GridPane.margin>
                         </ImageView>
-                        <ImageView fx:id="systemIpv6DNSIamgeView" fitHeight="28.0" fitWidth="42.0" onMouseClicked="#copyImageViewFired" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="7">
+                        <ImageView fx:id="systemIpv6DNSIamgeView" fitHeight="20.0" fitWidth="20.0" onMouseClicked="#copyImageViewFired" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="7">
                            <image>
                               <Image url="@../images/copy-clipboard.png" />
                            </image>
@@ -241,7 +233,7 @@
                               <Insets bottom="2.0" left="5.0" right="5.0" top="2.0" />
                            </GridPane.margin>
                         </ImageView>
-                        <ImageView fx:id="custumImageView" fitHeight="28.0" fitWidth="42.0" onMouseClicked="#copyImageViewFired" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="8">
+                        <ImageView fx:id="custumImageView" fitHeight="20.0" fitWidth="20.0" onMouseClicked="#copyImageViewFired" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="8">
                            <image>
                               <Image url="@../images/copy-clipboard.png" />
                            </image>
@@ -249,6 +241,30 @@
                               <Insets bottom="2.0" left="5.0" right="5.0" top="2.0" />
                            </GridPane.margin>
                         </ImageView>
+                        <GridPane prefHeight="30.0" prefWidth="122.0" GridPane.rowIndex="8">
+                          <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="95.0" minWidth="10.0" prefWidth="22.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="183.0" minWidth="10.0" prefWidth="178.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                              <RowConstraints />
+                          </rowConstraints>
+                           <children>
+                              <TextField fx:id="dnsServerTextField" onAction="#onDomainNameAction" onKeyPressed="#dnsServerKeyPressed" prefHeight="29.0" prefWidth="162.0" GridPane.columnIndex="1">
+                                 <font>
+                                    <Font size="13.0" />
+                                 </font>
+                                 <GridPane.margin>
+                                    <Insets />
+                                 </GridPane.margin>
+                              </TextField>
+                              <RadioButton fx:id="systemIpv6DNSRadioButton1" mnemonicParsing="false" onAction="#onRadioButtonChange">
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                              </RadioButton>
+                           </children>
+                        </GridPane>
                      </children>
                      <padding>
                         <Insets bottom="5.0" left="10.0" top="5.0" />

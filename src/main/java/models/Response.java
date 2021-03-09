@@ -97,6 +97,7 @@ public class Response {
 		currentIndex += 2;
 		this.rdata = parseRecord(currentIndex);
 		nameAsString = ". (ROOT)";
+		this.endIndex = currentIndex;
 	}
 	private int parseName(int startIndex) {		
 		//Has to be done seperately (not in DomainConvert), because of end index

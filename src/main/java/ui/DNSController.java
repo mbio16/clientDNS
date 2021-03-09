@@ -341,6 +341,7 @@ public class DNSController extends MDNSController {
 		      settings.addDNSServer(ipAddr);
 		      return ipAddr;
 		}
+		
 		if (!dnsServerTextField.getText().equals("")) {
 			if (Ip.isIpValid(dnsServerTextField.getText())) {
 				System.out.println(dnsServerTextField);
@@ -430,6 +431,8 @@ public class DNSController extends MDNSController {
 		responseTreeView.getTreeItem(0).setExpanded(true);
 		expandAll(requestTreeView);
 		expandAll(responseTreeView);
+		queryTitledPane.setText(language.getLanguageBundle().getString(queryTitledPane.getId().toString()) + " (" + sender.getByteSizeQuery()+" B)");
+		responseTitledPane.setText(language.getLanguageBundle().getString(responseTitledPane.getId().toString()) + " (" + parser.getByteSizeResponse() + " B)");
 	}
 
 	private void showAller(String exceptionName) {
@@ -452,7 +455,7 @@ public class DNSController extends MDNSController {
 			sender = new MessageSender(recursive, dnssec, dnssecRRSig, domain, records, transport,
 					APPLICATION_PROTOCOL.DNS, dnsServer);
 			sender.send();
-			parser = new MessageParser(sender.getRecieveReply(), sender.getHeader());
+			parser = new MessageParser(sender.getRecieveReply(), sender.getHeader(),transport);
 			parser.parse();
 			setControls();
 		}
@@ -481,7 +484,8 @@ public class DNSController extends MDNSController {
 		
 		 if(event.getClickCount() == 2)
 	        {
-			 TreeView<String> v = (TreeView<String>) event.getSource();
+			 @SuppressWarnings("unchecked")
+			TreeView<String> v = (TreeView<String>) event.getSource();
 	         String value = v.getSelectionModel().getSelectedItem().getValue();
 	         String [] array = value.toString().split(": ");
 	         if (array.length!=1) {

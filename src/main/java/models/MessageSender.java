@@ -9,6 +9,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.Socket;
+
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ public class MessageSender {
 	private APPLICATION_PROTOCOL application_protocol;
 	private static final int DNS_PORT = 53;
 	private byte[] messageAsBytes;
+	private int byteSizeQuery;
 	//private String resolverIP;
 	private InetAddress ip;
 	private int size;
@@ -43,7 +45,7 @@ public class MessageSender {
 	private long startTime;
 	private long stopTime;
 	private static final int MAX_MESSAGES_SENT=3;
-	private static final int TIME_OUT_MILLIS = 3000;
+	private static final int TIME_OUT_MILLIS = 2000;
 	public static final int MAX_UDP_SIZE = 1232;
 	private static final String KEY_HEAD="Head";
 	private static final String KEY_QUERY="Questions";
@@ -149,10 +151,10 @@ public class MessageSender {
  
 			datagramSocket.send(datagramPacket);
 			datagramSocket.receive(responsePacket);
+		
 			stopTime = System.nanoTime();
 			datagramSocket.close();
-			
-			run = false;	
+			run = false;
 			}
 			catch (SocketTimeoutException e) {
 				//Alert a = new Alert(AlertType.INFORMATION,"Timeout");
@@ -169,14 +171,15 @@ public class MessageSender {
 		}
 		
 	}
-
-	private void dnsOverTcp() throws IOException {
+	private void dnsOverTcp() throws  TimeoutException{
 		
 		messageToBytes();
+		try {
 		messagesSent = 1;
 		startTime = System.nanoTime();
 		//connect and prepare input and output streams
 		socket = new Socket(ip,DNS_PORT);
+		socket.setSoTimeout(TIME_OUT_MILLIS);
 		OutputStream output = socket.getOutputStream();
 		InputStream input = socket.getInputStream();
 		
@@ -190,12 +193,15 @@ public class MessageSender {
 		
 		//based on size get the dns message it self
 		this.recieveReply = input.readNBytes(messageSize.getValue());
-		
 		//close connection
 		input.close();
 		output.close();
 		socket.close();
 		stopTime = System.nanoTime();
+		}
+		catch (Exception e) {
+			throw new TimeoutException();
+		}
 	
 	
 }
@@ -236,7 +242,7 @@ public class MessageSender {
 			this.messageAsBytes[i] = opt[j];
 			j++;
 		}
-		
+		byteSizeQuery = messageAsBytes.length;
 		
 	}
 
@@ -273,6 +279,12 @@ public class MessageSender {
 		return Math.round(h*100)/100.0;
 	}
 	
+	
+	public int getByteSizeQuery() {
+		return byteSizeQuery;
+	}
+
+
 	public void printStats() {
 		System.out.println("Time to send: " + getTimeElapsed());
 	}

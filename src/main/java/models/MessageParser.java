@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import com.google.gson.GsonBuilder;
+
+import enums.TRANSPORT_PROTOCOL;
 import exceptions.QueryIdNotMatchException;
 import javafx.scene.control.TreeItem;
 
@@ -23,9 +25,11 @@ public class MessageParser {
 	private static final String KEY_ANSWERS="Answer";
 	private static final String KEY_AUTHORITY="Authority";
 	public static final String KEY_ADDITIONAL_RECORDS = "Aditional records";
+	private TRANSPORT_PROTOCOL protocol;
 	private TreeItem<String> main;
+	private int byteSizeResponse;
 	
-	public MessageParser(byte [] rawMessage, Header queryHeader) {
+	public MessageParser(byte [] rawMessage, Header queryHeader,TRANSPORT_PROTOCOL protocol) {
 	this.rawMessage = rawMessage;
 	this.queryHeader = queryHeader;
 	this.currentIndex = 0;
@@ -33,7 +37,9 @@ public class MessageParser {
 	this.ancountResponses = new ArrayList<Response>();
 	this.nscountResponses = new ArrayList<Response>();
 	this.arcountResponses = new ArrayList<Response>();
+	this.protocol = protocol;
 	this.main = new TreeItem<String>(KEY_ANSWERS);
+	byteSizeResponse = 0;
 	}
 	
 	public void parse() throws QueryIdNotMatchException, UnknownHostException, UnsupportedEncodingException {
@@ -60,6 +66,13 @@ public class MessageParser {
 			Response r = new Response().parseResponse(rawMessage, currentIndex);
 			arcountResponses.add(r);
 			currentIndex = r.getEndIndex() + 1;
+		}
+		
+		if (protocol == TRANSPORT_PROTOCOL.TCP) {
+			byteSizeResponse = currentIndex +1;
+		}
+		else {
+			byteSizeResponse = currentIndex;
 		}
 		
 	}
@@ -138,7 +151,10 @@ public class MessageParser {
 	
 	public String  getAsJsonString() {
 		return new GsonBuilder().setPrettyPrinting().create().toJson(getAsJson());
-		
-		
 	}
+
+	public int getByteSizeResponse() {
+		return byteSizeResponse;
+	}
+	
 }
