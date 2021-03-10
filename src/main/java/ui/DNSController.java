@@ -342,6 +342,7 @@ public class DNSController extends MDNSController {
 		      System.out.println("IP address: " + ipaddress.getHostAddress());
 		      String ipAddr = ipaddress.getHostAddress().toString();
 		      Alert info = new Alert(Alert.AlertType.INFORMATION);
+		      info.setTitle(language.getLanguageBundle().getString("translated"));
 		      info.setContentText( dnsServerTextField.getText() +" "+  language.getLanguageBundle().getString("rootServerWasTranslated")+  ipAddr);
 		      info.show();
 		      dnsServerTextField.setText(ipAddr);
@@ -373,7 +374,8 @@ public class DNSController extends MDNSController {
 			}
 			if (DomainConvert.isValidDomainName(domain)) {
 				settings.addDNSDomain(domain);
-				return domainNameTextField.getText();
+				
+				return DomainConvert.encodeIDN(domain);
 			} else {
 				throw new NotValidDomainNameException();
 			}

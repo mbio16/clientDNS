@@ -23,9 +23,7 @@ public class DomainConvert {
 		if (domain.equals(null) || domain.equals("")) {
 			 return ROOT;
 		}
-		if (!Charset.forName("US-ASCII").newEncoder().canEncode(domain)) {
-			domain = Punycode.toPunycode(domain);
-		}
+		domain = encodeIDN(domain);
 		if(!isValidDomainName(domain)) {
 			throw new NotValidDomainNameException();
 		}
@@ -47,6 +45,15 @@ public class DomainConvert {
 		return arrayToReturn;
 	}
 	
+	
+	public static String encodeIDN(String domain) {
+		if (!Charset.forName("US-ASCII").newEncoder().canEncode(domain)) {
+			return Punycode.toPunycode(domain);
+		}
+		else {
+			return domain;
+		}
+	}
 	public static String decodeDNS(byte [] encodedDomain) {
 		int passed = 0;
 		String result = "";
