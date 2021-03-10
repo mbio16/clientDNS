@@ -168,7 +168,7 @@
                               <Font size="15.0" />
                            </font>
                         </RadioButton>
-                        <ChoiceBox fx:id="savedDNSChoiceBox" onAction="#onDnsServerNameChoiseBoxAction" prefHeight="25.0" prefWidth="263.0" GridPane.rowIndex="9" />
+                        <ChoiceBox fx:id="savedDNSChoiceBox" onAction="#onDnsServerNameChoiseBoxAction" onMouseClicked="#onSavedDNSChoiseBoxFired" prefHeight="25.0" prefWidth="263.0" GridPane.rowIndex="9" />
                         <ImageView fx:id="cloudflareIpv4ImageView" fitHeight="20.0" fitWidth="20.0" onMouseClicked="#copyImageViewFired" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1">
                            <image>
                               <Image url="@../images/copy-clipboard.png" />
@@ -214,7 +214,7 @@
                               <Image url="@../images/copy-clipboard.png" />
                            </image>
                            <GridPane.margin>
-                              <Insets left="3.0" right="3.0" />
+                              <Insets bottom="2.0" left="5.0" right="5.0" top="2.0" />
                            </GridPane.margin>
                         </ImageView>
                         <ImageView fx:id="systemIpv4DNSImageView" fitHeight="20.0" fitWidth="20.0" onMouseClicked="#copyImageViewFired" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="6">
@@ -258,7 +258,7 @@
                                     <Insets />
                                  </GridPane.margin>
                               </TextField>
-                              <RadioButton fx:id="systemIpv6DNSRadioButton1" mnemonicParsing="false" onAction="#onRadioButtonChange">
+                              <RadioButton fx:id="customDNSRadioButton" mnemonicParsing="false" onAction="#onRadioButtonChange">
                                  <font>
                                     <Font size="15.0" />
                                  </font>
@@ -347,7 +347,7 @@
                      </rowConstraints>
                      <children>
                         <TextField fx:id="domainNameTextField" onAction="#onDomainNameAction" onKeyTyped="#domainNameKeyPressed" prefHeight="25.0" prefWidth="301.0" />
-                        <ChoiceBox fx:id="savedDomainNamesChoiseBox" onAction="#onDomainNameChoiseBoxAction" prefHeight="25.0" prefWidth="420.0" GridPane.rowIndex="1" />
+                        <ChoiceBox fx:id="savedDomainNamesChoiseBox" onAction="#onDomainNameChoiseBoxAction" onMouseClicked="#onDomainNameChoiseBoxFired" prefHeight="25.0" prefWidth="420.0" GridPane.rowIndex="1" />
                      </children>
                   </GridPane>
                </content>

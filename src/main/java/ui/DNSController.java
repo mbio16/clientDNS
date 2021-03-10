@@ -36,6 +36,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 import models.DomainConvert;
 import models.Ip;
@@ -52,6 +53,7 @@ public class DNSController extends MDNSController {
 	private TextField dnsServerTextField;
 
 	// radio buttons
+	
 	@FXML
 	private RadioButton tcpRadioButton;
 	@FXML
@@ -76,6 +78,7 @@ public class DNSController extends MDNSController {
 	private RadioButton systemIpv4DNSRadioButton;
 	@FXML
 	private RadioButton systemIpv6DNSRadioButton;
+	@FXML private RadioButton customDNSRadioButton;
 
 	// menu items
 	@FXML
@@ -158,6 +161,7 @@ public class DNSController extends MDNSController {
 		cznicIpv6RadioButton.setToggleGroup(dnsserverToggleGroup);
 		systemIpv4DNSRadioButton.setToggleGroup(dnsserverToggleGroup);
 		systemIpv6DNSRadioButton.setToggleGroup(dnsserverToggleGroup);
+		customDNSRadioButton.setToggleGroup(dnsserverToggleGroup);
 	}
 
 	public void copyImageViewFired(MouseEvent event) {
@@ -333,16 +337,19 @@ public class DNSController extends MDNSController {
 	}
 
 	private String getDnsServerIp() throws DnsServerIpIsNotValidException, UnknownHostException {
-		if(DomainConvert.isValidDomainName(dnsServerTextField.getText())) {
+		if(DomainConvert.isValidDomainName(dnsServerTextField.getText()) && customDNSRadioButton.isSelected()) {
 		      InetAddress ipaddress = InetAddress.getByName(dnsServerTextField.getText());
 		      System.out.println("IP address: " + ipaddress.getHostAddress());
 		      String ipAddr = ipaddress.getHostAddress().toString();
+		      Alert info = new Alert(Alert.AlertType.INFORMATION);
+		      info.setContentText( dnsServerTextField.getText() +" "+  language.getLanguageBundle().getString("rootServerWasTranslated")+  ipAddr);
+		      info.show();
 		      dnsServerTextField.setText(ipAddr);
 		      settings.addDNSServer(ipAddr);
 		      return ipAddr;
 		}
 		
-		if (!dnsServerTextField.getText().equals("")) {
+		if ((!dnsServerTextField.getText().equals("")) && customDNSRadioButton.isSelected()) {
 			if (Ip.isIpValid(dnsServerTextField.getText())) {
 				System.out.println(dnsServerTextField);
 				settings.addDNSServer(dnsServerTextField.getText());
@@ -474,6 +481,11 @@ public class DNSController extends MDNSController {
 
 	}
 
+	@FXML void onSavedDNSChoiseBoxFired(MouseEvent e) {
+		customDNSRadioButton.setSelected(true);
+		savedDNSChoiceBox.getItems().removeAll(savedDNSChoiceBox.getItems());
+		savedDNSChoiceBox.getItems().addAll(settings.getDnsServers());
+	}
 	@FXML
 	public void onDomainNameAction(ActionEvent e) {
 		sendButtonFired(e);
@@ -500,13 +512,16 @@ public class DNSController extends MDNSController {
 			if (!savedDomainNamesChoiseBox.getValue().equals(null)
 					&& !savedDomainNamesChoiseBox.getValue().equals("")) {
 				domainNameTextField.setText(savedDomainNamesChoiseBox.getValue());
-				sendButtonFired(event);
 			}
 		} catch (Exception e) {
 			LOGGER.warning(e.toString());
 		}
 	}
 
+	@FXML public void onDomainNameChoiseBoxFired() {
+		savedDomainNamesChoiseBox.getItems().removeAll(savedDomainNamesChoiseBox.getItems());
+		savedDomainNamesChoiseBox.getItems().addAll(settings.getDomainNamesDNS());
+	}
 	@FXML
 	public void onDnsServerNameChoiseBoxAction(ActionEvent event) {
 		try {
@@ -526,6 +541,7 @@ public class DNSController extends MDNSController {
 
 	@FXML
 	public void dnsServerKeyPressed(KeyEvent event) {
+		customDNSRadioButton.setSelected(true);
 		if (Ip.isIpValid(dnsServerTextField.getText())) {
 			copyDataToClipBoard(dnsServerTextField.getText());
 		}
@@ -535,13 +551,13 @@ public class DNSController extends MDNSController {
 	@FXML public void deleteDomainNameHistoryFired(Event event) {
 		settings.eraseDomainNames();
 		savedDomainNamesChoiseBox.getItems().removeAll(savedDomainNamesChoiseBox.getItems());
-		loadDataFromSettings();
+		//loadDataFromSettings();
 	}
 	
 	@FXML public void deleteDNSServerHistoryFired(Event event) {
 		settings.eraseDNSServers();
 		savedDNSChoiceBox.getItems().removeAll(savedDNSChoiceBox.getItems());
-		loadDataFromSettings();
+		//loadDataFromSettings();
 		
 	}
 	
