@@ -53,7 +53,7 @@ public class DNSController extends MDNSController {
 	private TextField dnsServerTextField;
 
 	// radio buttons
-	
+
 	@FXML
 	private RadioButton tcpRadioButton;
 	@FXML
@@ -78,7 +78,8 @@ public class DNSController extends MDNSController {
 	private RadioButton systemIpv4DNSRadioButton;
 	@FXML
 	private RadioButton systemIpv6DNSRadioButton;
-	@FXML private RadioButton customDNSRadioButton;
+	@FXML
+	private RadioButton customDNSRadioButton;
 
 	// menu items
 	@FXML
@@ -99,11 +100,12 @@ public class DNSController extends MDNSController {
 	private CheckBox txtCheckBox;
 	@FXML
 	private CheckBox rrsigCheckBox;
-	
+	@FXML
+	private CheckBox holdConectionCheckbox;
 	@FXML
 	private CheckBox nsecCheckBox;
-	
-	@FXML 
+
+	@FXML
 	private CheckBox nsec3CheckBox;
 
 	// titledpane
@@ -121,16 +123,25 @@ public class DNSController extends MDNSController {
 	// choice box
 	@FXML
 	private ChoiceBox<String> savedDNSChoiceBox;
-	@FXML private ImageView cloudflareIpv4ImageView;
-	@FXML private ImageView googleIpv4IamgeView;
-	@FXML private ImageView cznicIpv4RadioIamgeView;
-	@FXML private ImageView cloudflareIpv6ImageView;
-	@FXML private ImageView googleIpv6ImagaView;
-	@FXML private ImageView cznicIpv6ImageView;
-	@FXML private ImageView systemIpv4DNSImageView;
-	@FXML private ImageView systemIpv6DNSIamgeView;
-	@FXML private ImageView custumImageView;
-	
+	@FXML
+	private ImageView cloudflareIpv4ImageView;
+	@FXML
+	private ImageView googleIpv4IamgeView;
+	@FXML
+	private ImageView cznicIpv4RadioIamgeView;
+	@FXML
+	private ImageView cloudflareIpv6ImageView;
+	@FXML
+	private ImageView googleIpv6ImagaView;
+	@FXML
+	private ImageView cznicIpv6ImageView;
+	@FXML
+	private ImageView systemIpv4DNSImageView;
+	@FXML
+	private ImageView systemIpv6DNSIamgeView;
+	@FXML
+	private ImageView custumImageView;
+
 	public DNSController() {
 
 		super();
@@ -165,23 +176,24 @@ public class DNSController extends MDNSController {
 	}
 
 	public void copyImageViewFired(MouseEvent event) {
-		if(event.getSource()==custumImageView) {
+		if (event.getSource() == custumImageView) {
 			copyDataToClipBoard(dnsServerTextField.getText());
-		}else {
+		} else {
 			System.out.println("ano");
 			ImageView v = (ImageView) event.getSource();
 			System.out.println(v.getUserData());
 			copyDataToClipBoard(v.getUserData().toString());
 		}
 	}
+
 	private void setSystemDNS() {
 		if (ipDns.getIpv4DnsServer().equals("")) {
 			systemIpv4DNSRadioButton.setSelected(false);
 			systemIpv4DNSRadioButton.setText(language.getLanguageBundle().getString("ipv4SystemDNSIsNotEnabled"));
 			systemIpv4DNSRadioButton.setDisable(true);
-			systemIpv4DNSImageView.setDisable(true);;
-			
-			
+			systemIpv4DNSImageView.setDisable(true);
+			;
+
 		} else {
 			systemIpv4DNSRadioButton.setText(ipDns.getIpv4DnsServer());
 			systemIpv4DNSRadioButton.setUserData(ipDns.getIpv4DnsServer());
@@ -274,8 +286,10 @@ public class DNSController extends MDNSController {
 		googleIpv6RadioButton.setUserData("2001:4860:4860::8888");
 		cznicIpv6RadioButton.setUserData("2001:148f:ffff::1");
 		cloudflareIpv4ImageView.setUserData("1.1.1.1");
-		googleIpv4IamgeView.setUserData("8.8.8.8");;
-		cznicIpv4RadioIamgeView.setUserData("193.17.47.1");;
+		googleIpv4IamgeView.setUserData("8.8.8.8");
+		;
+		cznicIpv4RadioIamgeView.setUserData("193.17.47.1");
+		;
 		cloudflareIpv6ImageView.setUserData("2606:4700:4700::1111");
 		googleIpv6ImagaView.setUserData("2001:4860:4860::8888");
 		cznicIpv6ImageView.setUserData("2001:148f:ffff::1");
@@ -337,19 +351,20 @@ public class DNSController extends MDNSController {
 	}
 
 	private String getDnsServerIp() throws DnsServerIpIsNotValidException, UnknownHostException {
-		if(DomainConvert.isValidDomainName(dnsServerTextField.getText()) && customDNSRadioButton.isSelected()) {
-		      InetAddress ipaddress = InetAddress.getByName(dnsServerTextField.getText());
-		      System.out.println("IP address: " + ipaddress.getHostAddress());
-		      String ipAddr = ipaddress.getHostAddress().toString();
-		      Alert info = new Alert(Alert.AlertType.INFORMATION);
-		      info.setTitle(language.getLanguageBundle().getString("translated"));
-		      info.setContentText( dnsServerTextField.getText() +" "+  language.getLanguageBundle().getString("rootServerWasTranslated")+  ipAddr);
-		      info.show();
-		      dnsServerTextField.setText(ipAddr);
-		      settings.addDNSServer(ipAddr);
-		      return ipAddr;
+		if (DomainConvert.isValidDomainName(dnsServerTextField.getText()) && customDNSRadioButton.isSelected()) {
+			InetAddress ipaddress = InetAddress.getByName(dnsServerTextField.getText());
+			System.out.println("IP address: " + ipaddress.getHostAddress());
+			String ipAddr = ipaddress.getHostAddress().toString();
+			Alert info = new Alert(Alert.AlertType.INFORMATION);
+			info.setTitle(language.getLanguageBundle().getString("translated"));
+			info.setContentText(dnsServerTextField.getText() + " "
+					+ language.getLanguageBundle().getString("rootServerWasTranslated") + ipAddr);
+			info.show();
+			dnsServerTextField.setText(ipAddr);
+			settings.addDNSServer(ipAddr);
+			return ipAddr;
 		}
-		
+
 		if ((!dnsServerTextField.getText().equals("")) && customDNSRadioButton.isSelected()) {
 			if (Ip.isIpValid(dnsServerTextField.getText())) {
 				System.out.println(dnsServerTextField);
@@ -374,7 +389,7 @@ public class DNSController extends MDNSController {
 			}
 			if (DomainConvert.isValidDomainName(domain)) {
 				settings.addDNSDomain(domain);
-				
+
 				return DomainConvert.encodeIDN(domain);
 			} else {
 				throw new NotValidDomainNameException();
@@ -388,7 +403,8 @@ public class DNSController extends MDNSController {
 	private Q_COUNT[] getRecordTypes() throws MoreRecordsTypesWithPTRException, NonRecordSelectedException {
 		ArrayList<Q_COUNT> list = new ArrayList<Q_COUNT>();
 		CheckBox[] checkBoxArray = { aCheckBox, aaaaCheckBox, nsCheckBox, mxCheckBox, soaCheckBox, cnameCheckBox,
-				ptrCheckBox, dnskeyCheckBox, dsCheckBox, caaCheckBox, txtCheckBox, rrsigCheckBox,nsecCheckBox,nsec3CheckBox };
+				ptrCheckBox, dnskeyCheckBox, dsCheckBox, caaCheckBox, txtCheckBox, rrsigCheckBox, nsecCheckBox,
+				nsec3CheckBox };
 		for (int i = 0; i < checkBoxArray.length; i++) {
 			if (checkBoxArray[i].isSelected()) {
 				list.add((Q_COUNT) checkBoxArray[i].getUserData());
@@ -440,8 +456,10 @@ public class DNSController extends MDNSController {
 		responseTreeView.getTreeItem(0).setExpanded(true);
 		expandAll(requestTreeView);
 		expandAll(responseTreeView);
-		queryTitledPane.setText(language.getLanguageBundle().getString(queryTitledPane.getId().toString()) + " (" + sender.getByteSizeQuery()+" B)");
-		responseTitledPane.setText(language.getLanguageBundle().getString(responseTitledPane.getId().toString()) + " (" + parser.getByteSizeResponse() + " B)");
+		queryTitledPane.setText(language.getLanguageBundle().getString(queryTitledPane.getId().toString()) + " ("
+				+ sender.getByteSizeQuery() + " B)");
+		responseTitledPane.setText(language.getLanguageBundle().getString(responseTitledPane.getId().toString()) + " ("
+				+ parser.getByteSizeResponse() + " B)");
 	}
 
 	private void showAller(String exceptionName) {
@@ -464,13 +482,12 @@ public class DNSController extends MDNSController {
 			sender = new MessageSender(recursive, dnssec, dnssecRRSig, domain, records, transport,
 					APPLICATION_PROTOCOL.DNS, dnsServer);
 			sender.send();
-			parser = new MessageParser(sender.getRecieveReply(), sender.getHeader(),transport);
+			parser = new MessageParser(sender.getRecieveReply(), sender.getHeader(), transport);
 			parser.parse();
 			setControls();
-		}
-		catch (NotValidDomainNameException | NotValidIPException | DnsServerIpIsNotValidException
-				| MoreRecordsTypesWithPTRException | NonRecordSelectedException | TimeoutException | IOException | QueryIdNotMatchException
-				| MessageTooBigForUDPException e) {
+		} catch (NotValidDomainNameException | NotValidIPException | DnsServerIpIsNotValidException
+				| MoreRecordsTypesWithPTRException | NonRecordSelectedException | TimeoutException | IOException
+				| QueryIdNotMatchException | MessageTooBigForUDPException e) {
 			String fullClassName = e.getClass().getSimpleName();
 			LOGGER.info(fullClassName);
 			numberOfMessagesValueLabel.setText("" + sender.getMessageSent());
@@ -480,34 +497,34 @@ public class DNSController extends MDNSController {
 			showAller("Exception");
 		}
 
-
 	}
 
-	@FXML void onSavedDNSChoiseBoxFired(MouseEvent e) {
+	@FXML
+	void onSavedDNSChoiseBoxFired(MouseEvent e) {
 		customDNSRadioButton.setSelected(true);
 		savedDNSChoiceBox.getItems().removeAll(savedDNSChoiceBox.getItems());
 		savedDNSChoiceBox.getItems().addAll(settings.getDnsServers());
 	}
+
 	@FXML
 	public void onDomainNameAction(ActionEvent e) {
 		sendButtonFired(e);
 	}
 
-	@FXML 
+	@FXML
 	public void clicked(MouseEvent event) {
-		
-		 if(event.getClickCount() == 2)
-	        {
-			 @SuppressWarnings("unchecked")
+
+		if (event.getClickCount() == 2) {
+			@SuppressWarnings("unchecked")
 			TreeView<String> v = (TreeView<String>) event.getSource();
-	         String value = v.getSelectionModel().getSelectedItem().getValue();
-	         String [] array = value.toString().split(": ");
-	         if (array.length!=1) {
+			String value = v.getSelectionModel().getSelectedItem().getValue();
+			String[] array = value.toString().split(": ");
+			if (array.length != 1) {
 				copyDataToClipBoard(array[1]);
-	         }
-	        }
+			}
+		}
 	}
-	
+
 	@FXML
 	public void onDomainNameChoiseBoxAction(ActionEvent event) {
 		try {
@@ -520,10 +537,12 @@ public class DNSController extends MDNSController {
 		}
 	}
 
-	@FXML public void onDomainNameChoiseBoxFired() {
+	@FXML
+	public void onDomainNameChoiseBoxFired() {
 		savedDomainNamesChoiseBox.getItems().removeAll(savedDomainNamesChoiseBox.getItems());
 		savedDomainNamesChoiseBox.getItems().addAll(settings.getDomainNamesDNS());
 	}
+
 	@FXML
 	public void onDnsServerNameChoiseBoxAction(ActionEvent event) {
 		try {
@@ -549,19 +568,20 @@ public class DNSController extends MDNSController {
 		}
 		autobinging(dnsServerTextField.getText(), settings.getDnsServers(), savedDNSChoiceBox);
 	}
-	
-	@FXML public void deleteDomainNameHistoryFired(Event event) {
+
+	@FXML
+	public void deleteDomainNameHistoryFired(Event event) {
 		settings.eraseDomainNames();
 		savedDomainNamesChoiseBox.getItems().removeAll(savedDomainNamesChoiseBox.getItems());
-		//loadDataFromSettings();
+		// loadDataFromSettings();
 	}
-	
-	@FXML public void deleteDNSServerHistoryFired(Event event) {
+
+	@FXML
+	public void deleteDNSServerHistoryFired(Event event) {
 		settings.eraseDNSServers();
 		savedDNSChoiceBox.getItems().removeAll(savedDNSChoiceBox.getItems());
-		//loadDataFromSettings();
-		
+		// loadDataFromSettings();
+
 	}
-	
 
 }
