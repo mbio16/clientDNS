@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import enums.APPLICATION_PROTOCOL;
 import enums.Q_COUNT;
 import enums.TRANSPORT_PROTOCOL;
+import exceptions.CouldNotUseHoldConnectionException;
 import exceptions.DnsServerIpIsNotValidException;
 import exceptions.MessageTooBigForUDPException;
 import exceptions.MoreRecordsTypesWithPTRException;
@@ -36,13 +37,13 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 import models.DomainConvert;
 import models.Ip;
 import models.Language;
 import models.MessageParser;
 import models.MessageSender;
+import models.TCPConnection;
 
 public class DNSController extends MDNSController {
 
@@ -142,6 +143,7 @@ public class DNSController extends MDNSController {
 	@FXML
 	private ImageView custumImageView;
 
+	private TCPConnection tcpConnection;
 	public DNSController() {
 
 		super();
@@ -440,10 +442,10 @@ public class DNSController extends MDNSController {
 	}
 
 	private void logMessage(String dnsServer, String domain, Q_COUNT[] records, boolean recursive, boolean dnssec,
-			TRANSPORT_PROTOCOL transport, boolean dnssecRRsig) {
+			TRANSPORT_PROTOCOL transport, boolean dnssecRRsig, boolean holdConnection) {
 		LOGGER.info("DNS server: " + dnsServer + "\n" + "Domain: " + domain + "\n" + "Records: " + records.toString()
 				+ "\n" + "Recursive:" + recursive + "\n" + "DNSSEC: " + dnssec + "\n" + "DNSSEC sig records"
-				+ dnssecRRsig + "\n" + "Transport protocol: " + transport + "\n" + "Application protocol: "
+				+ dnssecRRsig + "\n" + "Transport protocol: " + transport + "\n"+ "Hold connection: "+ holdConnection + "\n" + "Application protocol: "
 				+ APPLICATION_PROTOCOL.DNS);
 	}
 
@@ -478,16 +480,25 @@ public class DNSController extends MDNSController {
 			boolean recursive = isRecursiveSet();
 			boolean dnssec = isDNSSECSet();
 			boolean dnssecRRSig = dnssecRecordsRequestCheckBox.isSelected();
-			logMessage(dnsServer, domain, records, recursive, dnssec, transport, dnssecRRSig);
+			boolean holdConnection = holdConectionCheckbox.isSelected();
+			logMessage(dnsServer, domain, records, recursive, dnssec, transport, dnssecRRSig, holdConnection);
 			sender = new MessageSender(recursive, dnssec, dnssecRRSig, domain, records, transport,
 					APPLICATION_PROTOCOL.DNS, dnsServer);
+			if(transport == TRANSPORT_PROTOCOL.TCP) {
+				sender.setTcp(tcpConnection);
+				sender.setCloseConnection(!holdConnection);
+			}
+			else {
+				if (tcpConnection !=null) tcpConnection.closeAll();
+				}
 			sender.send();
 			parser = new MessageParser(sender.getRecieveReply(), sender.getHeader(), transport);
 			parser.parse();
+			tcpConnection = sender.getTcp();
 			setControls();
 		} catch (NotValidDomainNameException | NotValidIPException | DnsServerIpIsNotValidException
 				| MoreRecordsTypesWithPTRException | NonRecordSelectedException | TimeoutException | IOException
-				| QueryIdNotMatchException | MessageTooBigForUDPException e) {
+				| QueryIdNotMatchException | MessageTooBigForUDPException | CouldNotUseHoldConnectionException e) {
 			String fullClassName = e.getClass().getSimpleName();
 			LOGGER.info(fullClassName);
 			numberOfMessagesValueLabel.setText("" + sender.getMessageSent());
@@ -573,15 +584,12 @@ public class DNSController extends MDNSController {
 	public void deleteDomainNameHistoryFired(Event event) {
 		settings.eraseDomainNames();
 		savedDomainNamesChoiseBox.getItems().removeAll(savedDomainNamesChoiseBox.getItems());
-		// loadDataFromSettings();
-	}
+}
 
 	@FXML
 	public void deleteDNSServerHistoryFired(Event event) {
 		settings.eraseDNSServers();
 		savedDNSChoiceBox.getItems().removeAll(savedDNSChoiceBox.getItems());
-		// loadDataFromSettings();
-
 	}
 
 }

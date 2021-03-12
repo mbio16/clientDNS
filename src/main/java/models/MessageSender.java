@@ -2,8 +2,6 @@ package models;
 
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -20,6 +18,7 @@ import com.google.gson.GsonBuilder;
 import enums.APPLICATION_PROTOCOL;
 import enums.Q_COUNT;
 import enums.TRANSPORT_PROTOCOL;
+import exceptions.CouldNotUseHoldConnectionException;
 import exceptions.MessageTooBigForUDPException;
 import exceptions.NotValidDomainNameException;
 import exceptions.NotValidIPException;
@@ -44,6 +43,8 @@ public class MessageSender {
 	private TreeItem<String> root;
 	private long startTime;
 	private long stopTime;
+	private TCPConnection tcp;
+	private boolean closeConnection;
 	private static final int MAX_MESSAGES_SENT=3;
 	private static final int TIME_OUT_MILLIS = 2000;
 	public static final int MAX_UDP_SIZE = 1232;
@@ -64,6 +65,8 @@ public class MessageSender {
 			this.recieveReply = new byte [1232];
 			this.rrRecords = rrRecords;
 			messagesSent = 0;
+			tcp = null;
+			closeConnection = true;
 	}
 	
 	private String checkAndStripFullyQualifyName(String domain) {
@@ -105,7 +108,7 @@ public class MessageSender {
 			size += r.getSize();
 		}
 	}
-	public void send() throws TimeoutException, IOException, MessageTooBigForUDPException {
+	public void send() throws TimeoutException, IOException, MessageTooBigForUDPException,CouldNotUseHoldConnectionException {
 		switch (application_protocol) {
 		case DNS:
 			switch (transport_protocol) {
@@ -124,13 +127,10 @@ public class MessageSender {
 			break;
 		case DOH:
 			break;
-		
-
 		default:
 			break;
 		}
 	}
-
 	private void dnsOverUDP() throws TimeoutException, IOException, MessageTooBigForUDPException {
 		if(size>MAX_UDP_SIZE) throw new MessageTooBigForUDPException();
 		messagesSent = 0;
@@ -171,40 +171,51 @@ public class MessageSender {
 		}
 		
 	}
-	private void dnsOverTcp() throws  TimeoutException{
-		
+	private void dnsOverTcp() throws  TimeoutException,CouldNotUseHoldConnectionException {
 		messageToBytes();
 		try {
-		messagesSent = 1;
-		startTime = System.nanoTime();
-		//connect and prepare input and output streams
-		socket = new Socket(ip,DNS_PORT);
-		socket.setSoTimeout(TIME_OUT_MILLIS);
-		OutputStream output = socket.getOutputStream();
-		InputStream input = socket.getInputStream();
-		
-		//send request
-		output.write(messageAsBytes);
-		
-		//dns message has first two bytes which is the lenght of the rest of the message
-		byte [] sizeRicieve = input.readNBytes(2);
-		
-		UInt16 messageSize = new UInt16().loadFromBytes(sizeRicieve[0],sizeRicieve[1]);
-		
-		//based on size get the dns message it self
-		this.recieveReply = input.readNBytes(messageSize.getValue());
-		//close connection
-		input.close();
-		output.close();
-		socket.close();
-		stopTime = System.nanoTime();
-		}
-		catch (Exception e) {
+			startTime = System.nanoTime();
+			if (tcp == null) {
+				tcp = new TCPConnection(ip);
+			}
+			this.recieveReply = tcp.send(this.messageAsBytes,ip,this.closeConnection);
+			stopTime = System.nanoTime();
+			}
+		catch (IOException e) {
 			throw new TimeoutException();
 		}
-	
-	
+//		messagesSent = 1;
+//		startTime = System.nanoTime();
+//		//connect and prepare input and output streams
+//		socket = new Socket(ip,DNS_PORT);
+//		socket.setSoTimeout(TIME_OUT_MILLIS);
+//		OutputStream output = socket.getOutputStream();
+//		InputStream input = socket.getInputStream();
+//		
+//		//send request
+//		output.write(messageAsBytes);
+//		
+//		//dns message has first two bytes which is the lenght of the rest of the message
+//		byte [] sizeRicieve = input.readNBytes(2);
+//		
+//		UInt16 messageSize = new UInt16().loadFromBytes(sizeRicieve[0],sizeRicieve[1]);
+//		
+//		//based on size get the dns message it self
+//		this.recieveReply = input.readNBytes(messageSize.getValue());
+//		//close connection
+//		input.close();
+//		output.close();
+//		socket.close();
+//		stopTime = System.nanoTime();
+//		}
+//		catch (Exception e) {
+//			throw new TimeoutException();
+//		}
 }
+	
+	public void closeTCPConnection() throws IOException {
+		tcp.closeAll();
+	}
 
 	private void messageToBytes() {
 		int curentIndex = 0;
@@ -284,9 +295,21 @@ public class MessageSender {
 		return byteSizeQuery;
 	}
 
-
 	public void printStats() {
 		System.out.println("Time to send: " + getTimeElapsed());
 	}
+
+	public TCPConnection getTcp() {
+		return tcp;
+	}
+
+	public void setTcp(TCPConnection tcp) {
+		this.tcp = tcp;
+	}
+	
+	public void setCloseConnection(boolean closeConnection) {
+		this.closeConnection = closeConnection;
+	}
+	
 	
 }
