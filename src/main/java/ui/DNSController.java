@@ -177,14 +177,15 @@ public class DNSController extends MDNSController {
 		customDNSRadioButton.setToggleGroup(dnsserverToggleGroup);
 	}
 
-	public void copyImageViewFired(MouseEvent event) {
+	@FXML
+	private void copyImageViewFired(MouseEvent event) {
 		if (event.getSource() == custumImageView) {
 			copyDataToClipBoard(dnsServerTextField.getText());
 		} else {
-			System.out.println("ano");
+
 			ImageView v = (ImageView) event.getSource();
-			System.out.println(v.getUserData());
 			copyDataToClipBoard(v.getUserData().toString());
+			LOGGER.info("Copy to clipboard: " + v.getUserData().toString());
 		}
 	}
 
@@ -245,6 +246,7 @@ public class DNSController extends MDNSController {
 		// set sendButton
 		sendButton.setText(language.getLanguageBundle().getString(sendButton.getId()));
 
+		holdConectionCheckbox.setText(language.getLanguageBundle().getString(holdConectionCheckbox.getId()));
 		if (language.getCurrentLanguage().equals(Language.CZECH)) {
 			czechRadioButton.setSelected(true);
 			englishRadioButton.setSelected(false);
@@ -322,7 +324,7 @@ public class DNSController extends MDNSController {
 	}
 
 	@FXML
-	public void backButtonFirred(ActionEvent event) {
+	private void backButtonFirred(ActionEvent event) {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(MainController.FXML_FILE_NAME));
 			Stage newStage = new Stage();
@@ -344,7 +346,7 @@ public class DNSController extends MDNSController {
 	}
 
 	@FXML
-	public void onRadioButtonChange(ActionEvent event) {
+	private void onRadioButtonChange(ActionEvent event) {
 		if (dnsserverToggleGroup.getSelectedToggle().getUserData() != null) {
 			dnsServerTextField.setText("");
 			copyDataToClipBoard(dnsserverToggleGroup.getSelectedToggle().getUserData().toString());
@@ -473,13 +475,13 @@ public class DNSController extends MDNSController {
 				+ parser.getByteSizeResponse() + " B)");
 	}
 
-	private void showAller(String exceptionName) {
+	public void showAller(String exceptionName) {
 		Alert alert = new Alert(AlertType.ERROR, language.getLanguageBundle().getString(exceptionName));
 		alert.show();
 	}
 
 	@FXML
-	public void sendButtonFired(ActionEvent event) {
+	protected void sendButtonFired(ActionEvent event) {
 		try {
 			String dnsServer = getDnsServerIp();
 			LOGGER.info(dnsServer);
@@ -510,7 +512,7 @@ public class DNSController extends MDNSController {
 				| QueryIdNotMatchException | MessageTooBigForUDPException | CouldNotUseHoldConnectionException e) {
 			String fullClassName = e.getClass().getSimpleName();
 			LOGGER.info(fullClassName);
-			numberOfMessagesValueLabel.setText("" + sender.getMessageSent());
+			if(sender !=null) numberOfMessagesValueLabel.setText("" + sender.getMessageSent());
 			showAller(fullClassName);
 		} catch (Exception e) {
 			LOGGER.warning(e.toString());
@@ -520,19 +522,19 @@ public class DNSController extends MDNSController {
 	}
 
 	@FXML
-	void onSavedDNSChoiseBoxFired(MouseEvent e) {
+	private void onSavedDNSChoiseBoxFired(MouseEvent e) {
 		customDNSRadioButton.setSelected(true);
 		savedDNSChoiceBox.getItems().removeAll(savedDNSChoiceBox.getItems());
 		savedDNSChoiceBox.getItems().addAll(settings.getDnsServers());
 	}
 
 	@FXML
-	public void onDomainNameAction(ActionEvent e) {
+	private void onDomainNameAction(ActionEvent e) {
 		sendButtonFired(e);
 	}
 
 	@FXML
-	public void clicked(MouseEvent event) {
+	private void clicked(MouseEvent event) {
 
 		if (event.getClickCount() == 2) {
 			@SuppressWarnings("unchecked")
@@ -546,7 +548,7 @@ public class DNSController extends MDNSController {
 	}
 
 	@FXML
-	public void onDomainNameChoiseBoxAction(ActionEvent event) {
+	private void onDomainNameChoiseBoxAction(ActionEvent event) {
 		try {
 			if (!savedDomainNamesChoiseBox.getValue().equals(null)
 					&& !savedDomainNamesChoiseBox.getValue().equals("")) {
@@ -558,13 +560,13 @@ public class DNSController extends MDNSController {
 	}
 
 	@FXML
-	public void onDomainNameChoiseBoxFired() {
+	private void onDomainNameChoiseBoxFired() {
 		savedDomainNamesChoiseBox.getItems().removeAll(savedDomainNamesChoiseBox.getItems());
 		savedDomainNamesChoiseBox.getItems().addAll(settings.getDomainNamesDNS());
 	}
 
 	@FXML
-	public void onDnsServerNameChoiseBoxAction(ActionEvent event) {
+	private void onDnsServerNameChoiseBoxAction(ActionEvent event) {
 		try {
 			if (!savedDNSChoiceBox.getValue().equals(null) && !savedDNSChoiceBox.getValue().equals("")) {
 				dnsServerTextField.setText(savedDNSChoiceBox.getValue());
@@ -576,12 +578,12 @@ public class DNSController extends MDNSController {
 	}
 
 	@FXML
-	public void domainNameKeyPressed(KeyEvent event) {
+	private void domainNameKeyPressed(KeyEvent event) {
 		autobinging(domainNameTextField.getText(), settings.getDomainNamesDNS(), savedDomainNamesChoiseBox);
 	}
 
 	@FXML
-	public void dnsServerKeyPressed(KeyEvent event) {
+	private void dnsServerKeyPressed(KeyEvent event) {
 		customDNSRadioButton.setSelected(true);
 		if (Ip.isIpValid(dnsServerTextField.getText())) {
 			copyDataToClipBoard(dnsServerTextField.getText());
@@ -590,19 +592,19 @@ public class DNSController extends MDNSController {
 	}
 
 	@FXML
-	public void deleteDomainNameHistoryFired(Event event) {
+	private void deleteDomainNameHistoryFired(Event event) {
 		settings.eraseDomainNames();
 		savedDomainNamesChoiseBox.getItems().removeAll(savedDomainNamesChoiseBox.getItems());
 }
 
 	@FXML
-	public void deleteDNSServerHistoryFired(Event event) {
+	private void deleteDNSServerHistoryFired(Event event) {
 		settings.eraseDNSServers();
 		savedDNSChoiceBox.getItems().removeAll(savedDNSChoiceBox.getItems());
 	}
 
 	@FXML 
-	public void transportProtocolAction(ActionEvent event) {
+	private void transportProtocolAction(ActionEvent event) {
 		if (tcpRadioButton.isSelected()) {
 			holdConectionCheckbox.setDisable(false);
 		}
@@ -613,7 +615,7 @@ public class DNSController extends MDNSController {
 		}
 	}
 	@FXML
-	public void holdConnectionAction(ActionEvent event) {
+	private void holdConnectionAction(ActionEvent event) {
 		if(!holdConectionCheckbox.isSelected()) {
 			closeHoldedConnection();
 		}

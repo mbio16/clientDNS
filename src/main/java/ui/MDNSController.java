@@ -185,25 +185,25 @@ public class MDNSController extends GeneralController {
 		savedDomainNamesChoiseBox.getItems().addAll(settings.getDomainNamesMDNS());
 	}
 
-	public void setDisableJSonButtons(boolean disable) {
+	protected void setDisableJSonButtons(boolean disable) {
 		copyRequestJsonButton.setDisable(disable);
 		copyResponseJsonButton.setDisable(disable);
 	}
 
 	@FXML
-	public void czechSelected(ActionEvent event) {
+	protected void czechSelected(ActionEvent event) {
 		language.changeLanguageBundle(true);
 		setLabels();
 	}
 
 	@FXML
-	public void englishSelected(ActionEvent event) {
+	protected void englishSelected(ActionEvent event) {
 		language.changeLanguageBundle(false);
 		setLabels();
 	}
 
 	@FXML
-	public void backButtonFirred(ActionEvent event) {
+	private void backButtonFirred(ActionEvent event) {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(MainController.FXML_FILE_NAME));
 			Stage newStage = new Stage();
@@ -225,7 +225,7 @@ public class MDNSController extends GeneralController {
 	}
 
 	@FXML
-	public void sendButtonFired(ActionEvent event) {
+	protected void sendButtonFired(ActionEvent event) {
 
 	}
 
@@ -237,13 +237,13 @@ public class MDNSController extends GeneralController {
 	}
 
 	@FXML
-	public void copyJsonRequestDataFired(ActionEvent event) {
+	protected void copyJsonRequestDataFired(ActionEvent event) {
 		copyDataToClipBoard(sender.getAsJsonString());
 
 	}
 
 	@FXML
-	public void copyJsonResponseDataFired(ActionEvent event) {
+	protected void copyJsonResponseDataFired(ActionEvent event) {
 		copyDataToClipBoard(parser.getAsJsonString());
 	}
 

@@ -177,7 +177,7 @@
                               <Insets bottom="2.0" left="5.0" right="5.0" top="2.0" />
                            </GridPane.margin>
                         </ImageView>
-                        <ImageView fx:id="googleIpv4IamgeView" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                        <ImageView fx:id="googleIpv4IamgeView" fitHeight="20.0" fitWidth="20.0"  onMouseClicked="#copyImageViewFired"  pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="1">
                            <image>
                               <Image url="@../images/copy-clipboard.png" />
                            </image>
