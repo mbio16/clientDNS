@@ -457,7 +457,7 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                      </rowConstraints>
                      <children>
-                        <RadioButton fx:id="udpRadioButton" mnemonicParsing="false" selected="true" text="UDP">
+                        <RadioButton fx:id="udpRadioButton" mnemonicParsing="false" onAction="#transportProtocolAction" selected="true" text="UDP">
                            <font>
                               <Font size="15.0" />
                            </font>
@@ -471,12 +471,12 @@
                             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                              <RadioButton fx:id="tcpRadioButton" mnemonicParsing="false" text="TCP">
+                              <RadioButton fx:id="tcpRadioButton" mnemonicParsing="false" onAction="#transportProtocolAction" text="TCP">
                                  <font>
                                     <Font size="15.0" />
                                  </font>
                               </RadioButton>
-                              <CheckBox fx:id="holdConectionCheckbox" mnemonicParsing="false" prefHeight="21.0" prefWidth="143.0" text="Podržet spojení" GridPane.columnIndex="1">
+                              <CheckBox fx:id="holdConectionCheckbox" disable="true" mnemonicParsing="false" onAction="#holdConnectionAction" prefHeight="21.0" prefWidth="143.0" text="Podržet spojení" GridPane.columnIndex="1">
                                  <font>
                                     <Font size="15.0" />
                                  </font>

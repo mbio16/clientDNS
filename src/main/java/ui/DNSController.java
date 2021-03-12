@@ -432,7 +432,16 @@ public class DNSController extends MDNSController {
 			return TRANSPORT_PROTOCOL.TCP;
 		}
 	}
-
+	
+	private void closeHoldedConnection(){
+		try {
+		if (tcpConnection != null) tcpConnection.closeAll();
+		}
+		catch (Exception e) {
+			LOGGER.warning("Can not close connection to object null");
+		}
+	}
+	
 	private boolean isRecursiveSet() {
 		return recursiveQueryRadioButton.isSelected();
 	}
@@ -489,7 +498,7 @@ public class DNSController extends MDNSController {
 				sender.setCloseConnection(!holdConnection);
 			}
 			else {
-				if (tcpConnection !=null) tcpConnection.closeAll();
+				closeHoldedConnection();
 				}
 			sender.send();
 			parser = new MessageParser(sender.getRecieveReply(), sender.getHeader(), transport);
@@ -592,4 +601,21 @@ public class DNSController extends MDNSController {
 		savedDNSChoiceBox.getItems().removeAll(savedDNSChoiceBox.getItems());
 	}
 
+	@FXML 
+	public void transportProtocolAction(ActionEvent event) {
+		if (tcpRadioButton.isSelected()) {
+			holdConectionCheckbox.setDisable(false);
+		}
+		else {
+			holdConectionCheckbox.setDisable(true);
+			holdConectionCheckbox.setSelected(false);
+			closeHoldedConnection();
+		}
+	}
+	@FXML
+	public void holdConnectionAction(ActionEvent event) {
+		if(!holdConectionCheckbox.isSelected()) {
+			closeHoldedConnection();
+		}
+	}
 }
