@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import enums.APPLICATION_PROTOCOL;
 import enums.Q_COUNT;
 import enums.TRANSPORT_PROTOCOL;
+import enums.WIRESHARK_FILTER;
 import exceptions.CouldNotUseHoldConnectionException;
 import exceptions.DnsServerIpIsNotValidException;
 import exceptions.MessageTooBigForUDPException;
@@ -29,6 +30,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleGroup;
@@ -107,6 +109,16 @@ public class DNSController extends MDNSController {
 	private CheckBox nsecCheckBox;
 
 	@FXML
+	private RadioMenuItem justIp;
+	@FXML
+	private RadioMenuItem IpAsFilter;
+	@FXML
+	private RadioMenuItem IpWithUDPAsFilter;
+	@FXML
+	private RadioMenuItem IpwithTCPAsFilter;
+	@FXML
+	private RadioMenuItem IpWithUDPandTcpAsFilter;
+	@FXML
 	private CheckBox nsec3CheckBox;
 
 	// titledpane
@@ -121,6 +133,7 @@ public class DNSController extends MDNSController {
 	private ToggleGroup transportToggleGroup;
 	private ToggleGroup iterativeToggleGroup;
 	private ToggleGroup dnsserverToggleGroup;
+	private ToggleGroup wiresharkFilterToogleGroup;
 	// choice box
 	@FXML
 	private ChoiceBox<String> savedDNSChoiceBox;
@@ -144,6 +157,7 @@ public class DNSController extends MDNSController {
 	private ImageView custumImageView;
 
 	private TCPConnection tcpConnection;
+
 	public DNSController() {
 
 		super();
@@ -175,18 +189,49 @@ public class DNSController extends MDNSController {
 		systemIpv4DNSRadioButton.setToggleGroup(dnsserverToggleGroup);
 		systemIpv6DNSRadioButton.setToggleGroup(dnsserverToggleGroup);
 		customDNSRadioButton.setToggleGroup(dnsserverToggleGroup);
+		
+		wiresharkFilterToogleGroup = new ToggleGroup();
+		justIp.setToggleGroup(wiresharkFilterToogleGroup);
+		IpAsFilter.setToggleGroup(wiresharkFilterToogleGroup);
+		IpWithUDPAsFilter.setToggleGroup(wiresharkFilterToogleGroup);
+		IpwithTCPAsFilter.setToggleGroup(wiresharkFilterToogleGroup);
+		IpWithUDPandTcpAsFilter.setToggleGroup(wiresharkFilterToogleGroup);
 	}
 
 	@FXML
 	private void copyImageViewFired(MouseEvent event) {
+		String ip = "";
+		String response = "";
+		String prefix = "ip";
 		if (event.getSource() == custumImageView) {
-			copyDataToClipBoard(dnsServerTextField.getText());
+			ip = dnsServerTextField.getText();
 		} else {
 
 			ImageView v = (ImageView) event.getSource();
-			copyDataToClipBoard(v.getUserData().toString());
-			LOGGER.info("Copy to clipboard: " + v.getUserData().toString());
+			ip = v.getUserData().toString();
+
 		}
+		if(Ip.isIpv6Address(ip)) prefix="ipv6";
+		switch ((WIRESHARK_FILTER)wiresharkFilterToogleGroup.getSelectedToggle().getUserData()) {
+		case JUST_IP:
+			response = ip;
+			break;
+		case IP_FILTER:
+			response = prefix + ".addr == " + ip;
+			break;
+		case IP_WITH_UDP:
+			response = prefix + ".addr == " + ip +" && udp.port == 53";
+			break;
+		case IP_WITH_TCP:
+			response = prefix + ".addr == " + ip + " && tcp.port == 53";
+			break;
+		case IP_WITH_UDP_AND_TCP:
+			response =  prefix + ".addr == " + ip +  " && (udp.port == 53 || tcp.port == 53)";
+		default:
+			break;
+		}
+	LOGGER.info("Copy to clipboard: " + response);
+	copyDataToClipBoard(response);
 	}
 
 	private void setSystemDNS() {
@@ -227,6 +272,8 @@ public class DNSController extends MDNSController {
 
 		Label[] labelsArray = new Label[] { responseTimeLabel, numberOfMessagesLabel };
 
+		RadioMenuItem[] radioMenuItemsArray = new RadioMenuItem[] { justIp, IpAsFilter, IpWithUDPAsFilter,
+				IpwithTCPAsFilter, IpWithUDPandTcpAsFilter };
 		// set labels to current language in menu
 		backMenuItem.setText(language.getLanguageBundle().getString(backMenuItem.getId()));
 		actionMenu.setText(language.getLanguageBundle().getString(actionMenu.getId()));
@@ -243,6 +290,9 @@ public class DNSController extends MDNSController {
 			label.setText(language.getLanguageBundle().getString(label.getId()));
 		}
 
+		for (RadioMenuItem item: radioMenuItemsArray) {
+			item.setText(language.getLanguageBundle().getString(item.getId()));
+		}
 		// set sendButton
 		sendButton.setText(language.getLanguageBundle().getString(sendButton.getId()));
 
@@ -265,6 +315,7 @@ public class DNSController extends MDNSController {
 		setUserDataDnsServers();
 		setUserDataRecords();
 		setUserDataTransportProtocol();
+		setUserDataWiresharkRadioMenuItem();
 		// permform radio buttons actions
 		onRadioButtonChange(null);
 
@@ -277,6 +328,13 @@ public class DNSController extends MDNSController {
 		deleteDNSServersHistory.setText(language.getLanguageBundle().getString(deleteDNSServersHistory.getId()));
 	}
 
+	private void setUserDataWiresharkRadioMenuItem() {
+		justIp.setUserData(WIRESHARK_FILTER.JUST_IP);
+		IpAsFilter.setUserData(WIRESHARK_FILTER.IP_FILTER);
+		IpWithUDPAsFilter.setUserData(WIRESHARK_FILTER.IP_WITH_UDP);
+		IpwithTCPAsFilter.setUserData(WIRESHARK_FILTER.IP_WITH_TCP);
+		IpWithUDPandTcpAsFilter.setUserData(WIRESHARK_FILTER.IP_WITH_UDP_AND_TCP);
+	}
 	private void setUserDataTransportProtocol() {
 		tcpRadioButton.setUserData(TRANSPORT_PROTOCOL.TCP);
 		udpRadioButton.setUserData(TRANSPORT_PROTOCOL.UDP);
@@ -434,16 +492,16 @@ public class DNSController extends MDNSController {
 			return TRANSPORT_PROTOCOL.TCP;
 		}
 	}
-	
-	private void closeHoldedConnection(){
+
+	private void closeHoldedConnection() {
 		try {
-		if (tcpConnection != null) tcpConnection.closeAll();
-		}
-		catch (Exception e) {
+			if (tcpConnection != null)
+				tcpConnection.closeAll();
+		} catch (Exception e) {
 			LOGGER.warning("Can not close connection to object null");
 		}
 	}
-	
+
 	private boolean isRecursiveSet() {
 		return recursiveQueryRadioButton.isSelected();
 	}
@@ -456,8 +514,8 @@ public class DNSController extends MDNSController {
 			TRANSPORT_PROTOCOL transport, boolean dnssecRRsig, boolean holdConnection) {
 		LOGGER.info("DNS server: " + dnsServer + "\n" + "Domain: " + domain + "\n" + "Records: " + records.toString()
 				+ "\n" + "Recursive:" + recursive + "\n" + "DNSSEC: " + dnssec + "\n" + "DNSSEC sig records"
-				+ dnssecRRsig + "\n" + "Transport protocol: " + transport + "\n"+ "Hold connection: "+ holdConnection + "\n" + "Application protocol: "
-				+ APPLICATION_PROTOCOL.DNS);
+				+ dnssecRRsig + "\n" + "Transport protocol: " + transport + "\n" + "Hold connection: " + holdConnection
+				+ "\n" + "Application protocol: " + APPLICATION_PROTOCOL.DNS);
 	}
 
 	private void setControls() {
@@ -495,13 +553,12 @@ public class DNSController extends MDNSController {
 			logMessage(dnsServer, domain, records, recursive, dnssec, transport, dnssecRRSig, holdConnection);
 			sender = new MessageSender(recursive, dnssec, dnssecRRSig, domain, records, transport,
 					APPLICATION_PROTOCOL.DNS, dnsServer);
-			if(transport == TRANSPORT_PROTOCOL.TCP) {
+			if (transport == TRANSPORT_PROTOCOL.TCP) {
 				sender.setTcp(tcpConnection);
 				sender.setCloseConnection(!holdConnection);
-			}
-			else {
+			} else {
 				closeHoldedConnection();
-				}
+			}
 			sender.send();
 			parser = new MessageParser(sender.getRecieveReply(), sender.getHeader(), transport);
 			parser.parse();
@@ -512,7 +569,8 @@ public class DNSController extends MDNSController {
 				| QueryIdNotMatchException | MessageTooBigForUDPException | CouldNotUseHoldConnectionException e) {
 			String fullClassName = e.getClass().getSimpleName();
 			LOGGER.info(fullClassName);
-			if(sender !=null) numberOfMessagesValueLabel.setText("" + sender.getMessageSent());
+			if (sender != null)
+				numberOfMessagesValueLabel.setText("" + sender.getMessageSent());
 			showAller(fullClassName);
 		} catch (Exception e) {
 			LOGGER.warning(e.toString());
@@ -595,7 +653,7 @@ public class DNSController extends MDNSController {
 	private void deleteDomainNameHistoryFired(Event event) {
 		settings.eraseDomainNames();
 		savedDomainNamesChoiseBox.getItems().removeAll(savedDomainNamesChoiseBox.getItems());
-}
+	}
 
 	@FXML
 	private void deleteDNSServerHistoryFired(Event event) {
@@ -603,20 +661,20 @@ public class DNSController extends MDNSController {
 		savedDNSChoiceBox.getItems().removeAll(savedDNSChoiceBox.getItems());
 	}
 
-	@FXML 
+	@FXML
 	private void transportProtocolAction(ActionEvent event) {
 		if (tcpRadioButton.isSelected()) {
 			holdConectionCheckbox.setDisable(false);
-		}
-		else {
+		} else {
 			holdConectionCheckbox.setDisable(true);
 			holdConectionCheckbox.setSelected(false);
 			closeHoldedConnection();
 		}
 	}
+
 	@FXML
 	private void holdConnectionAction(ActionEvent event) {
-		if(!holdConectionCheckbox.isSelected()) {
+		if (!holdConectionCheckbox.isSelected()) {
 			closeHoldedConnection();
 		}
 	}

@@ -43,6 +43,15 @@
                   <MenuItem fx:id="deleteDNSServersHistory" mnemonicParsing="false" onAction="#deleteDNSServerHistoryFired" text="Smazat historii DNS serverů" />
               </items>
             </Menu>
+            <Menu mnemonicParsing="false" text="Wireshark">
+               <items>
+                  <RadioMenuItem fx:id="justIp" mnemonicParsing="false" selected="true" text="Pouze IP adresa" />
+                  <RadioMenuItem fx:id="IpAsFilter" mnemonicParsing="false" text="IP adresa jako filtr" />
+                  <RadioMenuItem fx:id="IpWithUDPAsFilter" mnemonicParsing="false" text="IP adresa s UDP jako filtr" />
+                  <RadioMenuItem fx:id="IpwithTCPAsFilter" mnemonicParsing="false" text="IP adresa s TCP jako filtr" />
+                  <RadioMenuItem fx:id="IpWithUDPandTcpAsFilter" mnemonicParsing="false" text="IP adresa s UDP a TCP jako filtr" />
+               </items>
+            </Menu>
         </menus>
       </MenuBar>
    </top>
@@ -177,7 +186,7 @@
                               <Insets bottom="2.0" left="5.0" right="5.0" top="2.0" />
                            </GridPane.margin>
                         </ImageView>
-                        <ImageView fx:id="googleIpv4IamgeView" fitHeight="20.0" fitWidth="20.0"  onMouseClicked="#copyImageViewFired"  pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                        <ImageView fx:id="googleIpv4IamgeView" fitHeight="20.0" fitWidth="20.0" onMouseClicked="#copyImageViewFired" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="1">
                            <image>
                               <Image url="@../images/copy-clipboard.png" />
                            </image>
