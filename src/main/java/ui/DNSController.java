@@ -107,7 +107,8 @@ public class DNSController extends MDNSController {
 	private CheckBox holdConectionCheckbox;
 	@FXML
 	private CheckBox nsecCheckBox;
-
+	@FXML
+	private CheckBox nsec3paramCheckBox;
 	@FXML
 	private RadioMenuItem justIp;
 	@FXML
@@ -204,7 +205,8 @@ public class DNSController extends MDNSController {
 		String response = "";
 		String prefix = "ip";
 		if (event.getSource() == custumImageView) {
-			ip = dnsServerTextField.getText();
+			if (Ip.isIpValid(dnsServerTextField.getText())) 
+				ip = dnsServerTextField.getText();
 		} else {
 
 			ImageView v = (ImageView) event.getSource();
@@ -373,7 +375,7 @@ public class DNSController extends MDNSController {
 		rrsigCheckBox.setUserData(Q_COUNT.RRSIG);
 		nsecCheckBox.setUserData(Q_COUNT.NSEC);
 		nsec3CheckBox.setUserData(Q_COUNT.NSEC3);
-
+		nsec3paramCheckBox.setUserData(Q_COUNT.NSEC3PARAM);
 	}
 
 	public void loadDataFromSettings() {
@@ -466,7 +468,7 @@ public class DNSController extends MDNSController {
 		ArrayList<Q_COUNT> list = new ArrayList<Q_COUNT>();
 		CheckBox[] checkBoxArray = { aCheckBox, aaaaCheckBox, nsCheckBox, mxCheckBox, soaCheckBox, cnameCheckBox,
 				ptrCheckBox, dnskeyCheckBox, dsCheckBox, caaCheckBox, txtCheckBox, rrsigCheckBox, nsecCheckBox,
-				nsec3CheckBox };
+				nsec3CheckBox, nsec3paramCheckBox };
 		for (int i = 0; i < checkBoxArray.length; i++) {
 			if (checkBoxArray[i].isSelected()) {
 				list.add((Q_COUNT) checkBoxArray[i].getUserData());

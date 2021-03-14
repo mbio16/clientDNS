@@ -10,12 +10,12 @@ import models.TCPConnection;
 public class TestMain {
 
 	public static void main(String[] args) {
-		Q_COUNT[] a = {Q_COUNT.A};
+		Q_COUNT[] a = {Q_COUNT.NSEC3PARAM};
 		MessageSender sender;
 		MessageParser parser;
-		TRANSPORT_PROTOCOL protocol = TRANSPORT_PROTOCOL.TCP;
+		TRANSPORT_PROTOCOL protocol = TRANSPORT_PROTOCOL.UDP;
 		try {
-			sender = new MessageSender(true, true,true,"biolek.net.",a ,protocol,APPLICATION_PROTOCOL.DNS,"8.8.8.8");
+		/*	sender = new MessageSender(true, true,true,"biolek.net.",a ,protocol,APPLICATION_PROTOCOL.DNS,"8.8.8.8");
 			sender.setCloseConnection(false);
 			sender.send();
 			TCPConnection t = sender.getTcp();
@@ -40,7 +40,14 @@ public class TestMain {
 			System.out.println(sender.getAsJsonString());
 			System.out.println(parser.getAsJsonString());
 			System.out.println("Message size query: " + sender.getByteSizeQuery());
-			System.out.println("Messge size response: " + parser.getByteSizeResponse());
+			System.out.println("Messge size response: " + parser.getByteSizeResponse());*/
+			
+			sender = new MessageSender(true, true,true,"biolek.net.",a ,protocol,APPLICATION_PROTOCOL.DNS,"8.8.8.8");
+			sender.send();
+			parser = new MessageParser(sender.getRecieveReply(),sender.getHeader(),protocol);
+			parser.parse();
+			System.out.println(sender.getAsJsonString());
+			System.out.println(parser.getAsJsonString());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

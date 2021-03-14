@@ -20,6 +20,7 @@ import records.RecordMX;
 import records.RecordNS;
 import records.RecordNSEC;
 import records.RecordNSEC3;
+import records.RecordNSEC3PARAM;
 import records.RecordOPT;
 import records.RecordPTR;
 import records.RecordRRSIG;
@@ -148,6 +149,8 @@ public class Response {
 			return new RecordNSEC(rawMessage,rdLenght.getValue(),currentIndex);
 		case NSEC3:
 			return new RecordNSEC3(rawMessage, rdLenght.getValue(),currentIndex);
+		case NSEC3PARAM:
+			return new RecordNSEC3PARAM(rawMessage, rdLenght.getValue(), currentIndex);
 		default:
 			return null;
 		}
