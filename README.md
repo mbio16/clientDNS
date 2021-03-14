@@ -8,6 +8,10 @@ GUI for DNS Client
 - GLUON Scene Builder
 - Eclipse 2020.09
 
+## Deploy
+- import project into Elipse IDE
+- ...
+
 ## Convetion
 
 Classes - Starts With Cap. Letter, no spaces **MainClass**
