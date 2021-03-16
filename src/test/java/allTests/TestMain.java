@@ -42,7 +42,7 @@ public class TestMain {
 			System.out.println("Message size query: " + sender.getByteSizeQuery());
 			System.out.println("Messge size response: " + parser.getByteSizeResponse());*/
 			
-			sender = new MessageSender(true, true,true,"biolek.net.",a ,protocol,APPLICATION_PROTOCOL.DNS,"8.8.8.8");
+			sender = new MessageSender(true, true,true,"кц.рФ",a ,protocol,APPLICATION_PROTOCOL.DNS,"8.8.8.8");
 			sender.send();
 			parser = new MessageParser(sender.getRecieveReply(),sender.getHeader(),protocol);
 			parser.parse();

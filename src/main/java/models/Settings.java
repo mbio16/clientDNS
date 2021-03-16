@@ -1,9 +1,13 @@
 package models;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -76,9 +80,13 @@ public class Settings {
 		jsonMap.put(DOMAIN_NAMES_DNS, domainNamesDNS);
 		jsonMap.put(DOMAIN_NAMES_mDNS, domainNamesMDNS);
 		JSONObject json = new JSONObject(jsonMap);
-		FileWriter fileWriter = new FileWriter(file);
-		fileWriter.write(json.toString());
-		fileWriter.close();
+		//FileWriter fileWriter = new FileWriter(file);
+		//fileWriter.write(json.toString());
+		//fileWriter.close();
+		 try (FileWriter fw = new FileWriter(file, StandardCharsets.UTF_8);
+	             BufferedWriter writer = new BufferedWriter(fw)) {
+	                writer.append(json.toString());
+	            }
 		jsonMap.clear();
 	}
 	
@@ -87,7 +95,7 @@ public class Settings {
 	private void readValues() {
 		JSONParser jsonParser = new JSONParser();
 		try {
-			FileReader reader = new FileReader(filePath);
+			FileReader reader = new FileReader(filePath,StandardCharsets.UTF_8);
 			JSONObject jsonObject = (JSONObject) jsonParser.parse(reader);
 			dnsServers = readJsonArraylist(DNS_SERVERS, jsonObject);
 			domainNamesMDNS = readJsonArraylist(DOMAIN_NAMES_mDNS, jsonObject);

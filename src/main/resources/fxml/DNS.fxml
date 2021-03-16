@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.CustomMenuItem?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
@@ -45,6 +46,11 @@
             </Menu>
             <Menu mnemonicParsing="false" text="Wireshark">
                <items>
+                  <CustomMenuItem mnemonicParsing="false" style="-fx-background-color: #D3D3D3;" text="Unspecified Action">
+                     <content>
+                        <Label fx:id="wiresharkLabel" style="-fx-background-color: #D3D3D3;" text="Filtr nastavuje parametry pro kopírování DNS serveru. Filtr lze získat pro daný server kliknutím na ikonu &quot;kopie&quot;." />
+                     </content>
+                  </CustomMenuItem>
                   <RadioMenuItem fx:id="justIp" mnemonicParsing="false" selected="true" text="Pouze IP adresa" />
                   <RadioMenuItem fx:id="IpAsFilter" mnemonicParsing="false" text="IP adresa jako filtr" />
                   <RadioMenuItem fx:id="IpWithUDPAsFilter" mnemonicParsing="false" text="IP adresa s UDP jako filtr" />

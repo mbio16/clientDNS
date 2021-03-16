@@ -23,8 +23,9 @@ public class DomainConvert {
 		if (domain.equals(null) || domain.equals("")) {
 			 return ROOT;
 		}
+		String original = domain;
 		domain = encodeIDN(domain);
-		if(!isValidDomainName(domain)) {
+		if(!isValidDomainName(original)) {
 			throw new NotValidDomainNameException();
 		}
 		ArrayList<Byte> resultByte = new ArrayList<Byte>();
@@ -163,8 +164,8 @@ public class DomainConvert {
 	private static boolean isUTF8Domain(String domain) {
 		try {
 			domain.getBytes("UTF-8");
-			String domainEncoded = Punycode.toPunycode(domain);
-			return pDomainNameOnly.matcher(domainEncoded).find();
+			Punycode.toPunycode(domain);
+			return true;
 		} catch (Exception e) {
 			return false;
 		}

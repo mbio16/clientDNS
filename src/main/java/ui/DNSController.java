@@ -1,5 +1,6 @@
 package ui;
-
+import java.awt.Toolkit;
+import java.awt.datatransfer.DataFlavor;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -36,6 +37,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.control.Alert.AlertType;
@@ -55,8 +57,10 @@ public class DNSController extends MDNSController {
 	@FXML
 	private TextField dnsServerTextField;
 
+	@FXML
+	private Label wiresharkLabel;
+	
 	// radio buttons
-
 	@FXML
 	private RadioButton tcpRadioButton;
 	@FXML
@@ -328,6 +332,8 @@ public class DNSController extends MDNSController {
 		copyResponseJsonButton.setText(language.getLanguageBundle().getString(copyResponseJsonButton.getId()));
 		deleteDomainNameHistory.setText(language.getLanguageBundle().getString(deleteDomainNameHistory.getId()));
 		deleteDNSServersHistory.setText(language.getLanguageBundle().getString(deleteDNSServersHistory.getId()));
+		
+		wiresharkLabel.setText(language.getLanguageBundle().getString(wiresharkLabel.getId()));
 	}
 
 	private void setUserDataWiresharkRadioMenuItem() {
@@ -645,12 +651,18 @@ public class DNSController extends MDNSController {
 	@FXML
 	private void dnsServerKeyPressed(KeyEvent event) {
 		customDNSRadioButton.setSelected(true);
-		if (Ip.isIpValid(dnsServerTextField.getText())) {
-			copyDataToClipBoard(dnsServerTextField.getText());
-		}
+		controlKeys(event,dnsServerTextField);
 		autobinging(dnsServerTextField.getText(), settings.getDnsServers(), savedDNSChoiceBox);
 	}
 
+	private void controlKeys(KeyEvent e,TextField text) {
+		if (e.getSource() == KeyCode.BACK_SPACE && text.getText().length()>=1) {
+			text.setText(text.getText().substring(0, text.getText().length()-1));
+		}
+		if (e.getSource() == KeyCode.DELETE && text.getText().length()>=1) {
+			text.setText(text.getText().substring(1, text.getText().length()));
+		}
+	}
 	@FXML
 	private void deleteDomainNameHistoryFired(Event event) {
 		settings.eraseDomainNames();
