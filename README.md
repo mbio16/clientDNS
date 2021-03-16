@@ -3,10 +3,14 @@ GUI for DNS Client
 
 
 ## Setup
-- JAVA version 1.8 
+- JAVA version 11
 - JAVAFX SDK version 15.0.1
 - GLUON Scene Builder
 - Eclipse 2020.09
+
+## Deploy
+- import project into Elipse IDE
+- ...
 
 ## Convetion
 
