@@ -1,8 +1,8 @@
 package enums;
 
 public enum TC {
-	FRANGMENTED((boolean) true),
-	NON_FRAGMENTED((boolean) false);
+	TRANCATED((boolean) true),
+	NON_TRANCATED((boolean) false);
 	
 	public boolean code;
 	

@@ -1,6 +1,4 @@
 package ui;
-import java.awt.Toolkit;
-import java.awt.datatransfer.DataFlavor;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
