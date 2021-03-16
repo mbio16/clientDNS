@@ -7,12 +7,13 @@ import models.Language;
 import models.Settings;
 
 public class GeneralController {
-	
+
 	protected Language language;
-	public static final String APP_TITTLE="DNS klient";
+	public static final String APP_TITTLE = "DNS klient";
 	protected Settings settings;
 	protected Logger LOGGER;
 	protected Ip ipDns;
+
 	public Settings getSettings() {
 		return settings;
 	}
@@ -21,29 +22,24 @@ public class GeneralController {
 		this.ipDns = ip;
 	}
 
-
 	public void setSettings(Settings settings) {
 		this.settings = settings;
 	}
-
-
 
 	public Language getLanguage() {
 		return language;
 	}
 
-
-
 	public void setLanguage(Language language) {
 		this.language = language;
-		//System.out.println("Language load to another window");
+		// System.out.println("Language load to another window");
 	}
 
 	public void setLabels() {
-		//To be overrited
+		// To be overrited
 	}
-	
+
 	public void loadDataFromSettings() {
-		//to be overrited
+		// to be overrited
 	}
 }

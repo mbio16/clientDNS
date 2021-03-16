@@ -5,10 +5,10 @@ import java.net.UnknownHostException;
 import org.json.simple.JSONObject;
 
 public class RecordAAAA extends RecordA {
-	private static final String KEY_ADDRESS="Ipv6";
+	private static final String KEY_ADDRESS = "Ipv6";
+
 	public RecordAAAA(byte[] rawMessage, int lenght, int startIndex) throws UnknownHostException {
 		super(rawMessage, lenght, startIndex);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override

@@ -1,4 +1,5 @@
 package ui;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -57,7 +58,7 @@ public class DNSController extends MDNSController {
 
 	@FXML
 	private Label wiresharkLabel;
-	
+
 	// radio buttons
 	@FXML
 	private RadioButton tcpRadioButton;
@@ -192,7 +193,7 @@ public class DNSController extends MDNSController {
 		systemIpv4DNSRadioButton.setToggleGroup(dnsserverToggleGroup);
 		systemIpv6DNSRadioButton.setToggleGroup(dnsserverToggleGroup);
 		customDNSRadioButton.setToggleGroup(dnsserverToggleGroup);
-		
+
 		wiresharkFilterToogleGroup = new ToggleGroup();
 		justIp.setToggleGroup(wiresharkFilterToogleGroup);
 		IpAsFilter.setToggleGroup(wiresharkFilterToogleGroup);
@@ -207,7 +208,7 @@ public class DNSController extends MDNSController {
 		String response = "";
 		String prefix = "ip";
 		if (event.getSource() == custumImageView) {
-			if (Ip.isIpValid(dnsServerTextField.getText())) 
+			if (Ip.isIpValid(dnsServerTextField.getText()))
 				ip = dnsServerTextField.getText();
 		} else {
 
@@ -215,8 +216,9 @@ public class DNSController extends MDNSController {
 			ip = v.getUserData().toString();
 
 		}
-		if(Ip.isIpv6Address(ip)) prefix="ipv6";
-		switch ((WIRESHARK_FILTER)wiresharkFilterToogleGroup.getSelectedToggle().getUserData()) {
+		if (Ip.isIpv6Address(ip))
+			prefix = "ipv6";
+		switch ((WIRESHARK_FILTER) wiresharkFilterToogleGroup.getSelectedToggle().getUserData()) {
 		case JUST_IP:
 			response = ip;
 			break;
@@ -224,18 +226,18 @@ public class DNSController extends MDNSController {
 			response = prefix + ".addr == " + ip;
 			break;
 		case IP_WITH_UDP:
-			response = prefix + ".addr == " + ip +" && udp.port == 53";
+			response = prefix + ".addr == " + ip + " && udp.port == 53";
 			break;
 		case IP_WITH_TCP:
 			response = prefix + ".addr == " + ip + " && tcp.port == 53";
 			break;
 		case IP_WITH_UDP_AND_TCP:
-			response =  prefix + ".addr == " + ip +  " && (udp.port == 53 || tcp.port == 53)";
+			response = prefix + ".addr == " + ip + " && (udp.port == 53 || tcp.port == 53)";
 		default:
 			break;
 		}
-	LOGGER.info("Copy to clipboard: " + response);
-	copyDataToClipBoard(response);
+		LOGGER.info("Copy to clipboard: " + response);
+		copyDataToClipBoard(response);
 	}
 
 	private void setSystemDNS() {
@@ -294,7 +296,7 @@ public class DNSController extends MDNSController {
 			label.setText(language.getLanguageBundle().getString(label.getId()));
 		}
 
-		for (RadioMenuItem item: radioMenuItemsArray) {
+		for (RadioMenuItem item : radioMenuItemsArray) {
 			item.setText(language.getLanguageBundle().getString(item.getId()));
 		}
 		// set sendButton
@@ -330,7 +332,7 @@ public class DNSController extends MDNSController {
 		copyResponseJsonButton.setText(language.getLanguageBundle().getString(copyResponseJsonButton.getId()));
 		deleteDomainNameHistory.setText(language.getLanguageBundle().getString(deleteDomainNameHistory.getId()));
 		deleteDNSServersHistory.setText(language.getLanguageBundle().getString(deleteDNSServersHistory.getId()));
-		
+
 		wiresharkLabel.setText(language.getLanguageBundle().getString(wiresharkLabel.getId()));
 	}
 
@@ -341,6 +343,7 @@ public class DNSController extends MDNSController {
 		IpwithTCPAsFilter.setUserData(WIRESHARK_FILTER.IP_WITH_TCP);
 		IpWithUDPandTcpAsFilter.setUserData(WIRESHARK_FILTER.IP_WITH_UDP_AND_TCP);
 	}
+
 	private void setUserDataTransportProtocol() {
 		tcpRadioButton.setUserData(TRANSPORT_PROTOCOL.TCP);
 		udpRadioButton.setUserData(TRANSPORT_PROTOCOL.UDP);
@@ -649,18 +652,19 @@ public class DNSController extends MDNSController {
 	@FXML
 	private void dnsServerKeyPressed(KeyEvent event) {
 		customDNSRadioButton.setSelected(true);
-		controlKeys(event,dnsServerTextField);
+		controlKeys(event, dnsServerTextField);
 		autobinging(dnsServerTextField.getText(), settings.getDnsServers(), savedDNSChoiceBox);
 	}
 
-	private void controlKeys(KeyEvent e,TextField text) {
-		if (e.getSource() == KeyCode.BACK_SPACE && text.getText().length()>=1) {
-			text.setText(text.getText().substring(0, text.getText().length()-1));
+	private void controlKeys(KeyEvent e, TextField text) {
+		if (e.getSource() == KeyCode.BACK_SPACE && text.getText().length() >= 1) {
+			text.setText(text.getText().substring(0, text.getText().length() - 1));
 		}
-		if (e.getSource() == KeyCode.DELETE && text.getText().length()>=1) {
+		if (e.getSource() == KeyCode.DELETE && text.getText().length() >= 1) {
 			text.setText(text.getText().substring(1, text.getText().length()));
 		}
 	}
+
 	@FXML
 	private void deleteDomainNameHistoryFired(Event event) {
 		settings.eraseDomainNames();

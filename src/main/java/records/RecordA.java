@@ -8,16 +8,17 @@ public class RecordA extends Record {
 
 	protected InetAddress ipAddress;
 	protected String ipAddressAsString;
-	private static final String KEY_ADDRESS="Ipv4";
+	private static final String KEY_ADDRESS = "Ipv4";
+
 	public RecordA(byte[] rawMessage, int lenght, int startIndex) throws UnknownHostException {
 		super(rawMessage, lenght, startIndex);
 		parseRecord();
 	}
-	
-	private  void parseRecord() throws UnknownHostException {
-		byte data [] = new byte [lenght];
+
+	private void parseRecord() throws UnknownHostException {
+		byte data[] = new byte[lenght];
 		int j = 0;
-		for (int i = startIndex; i < startIndex+lenght; i++) {
+		for (int i = startIndex; i < startIndex + lenght; i++) {
 			data[j] = rawMessage[i];
 			j++;
 		}
@@ -27,15 +28,15 @@ public class RecordA extends Record {
 
 	@Override
 	public String toString() {
-		return KEY_ADDRESS +": " + ipAddressAsString;
+		return KEY_ADDRESS + ": " + ipAddressAsString;
 	}
-	
+
 	@Override
 	public String getDataAsString() {
-		
+
 		return ipAddressAsString;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public JSONObject getAsJson() {
@@ -44,12 +45,12 @@ public class RecordA extends Record {
 		return object;
 	}
 
-
 	@Override
-	public String [] getValesForTreeItem(){
-		String [] pole = {toString()};
+	public String[] getValesForTreeItem() {
+		String[] pole = { toString() };
 		return pole;
 	}
+
 	@Override
 	public String getDataForTreeViewName() {
 		return ipAddressAsString;

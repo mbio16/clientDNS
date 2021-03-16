@@ -17,24 +17,23 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-
-
 public class Settings {
 
 	public static final String SETTINGS_FILE_NAME = "settings.json";
-	public static final String SETTINGS_FOLDER_NAME="DNSClient";
-	public static final String DNS_SERVERS="DNS_SERVERS";
+	public static final String SETTINGS_FOLDER_NAME = "DNSClient";
+	public static final String DNS_SERVERS = "DNS_SERVERS";
 	public static final String DOMAIN_NAMES_mDNS = "DOMAIN_NAMES_mDNS";
-	public static final String DOMAIN_NAMES_DNS="DOMAIN_NAMES_DNS";
+	public static final String DOMAIN_NAMES_DNS = "DOMAIN_NAMES_DNS";
 	private String filePath;
 	private File file;
 	private ArrayList<String> dnsServers;
 	private ArrayList<String> domainNamesDNS;
 	private ArrayList<String> domainNamesMDNS;
-	private static final int MAX_DOMAIN_NAME_RECORDS=15;
-	private static final int MAX_DNS_SERVER_RECORDS=2;
-	private static final int MAX_MDNS_NAME_RECORDS=15;
- 	private static final Logger LOGGER = Logger.getLogger(Settings.class.getName());
+	private static final int MAX_DOMAIN_NAME_RECORDS = 15;
+	private static final int MAX_DNS_SERVER_RECORDS = 2;
+	private static final int MAX_MDNS_NAME_RECORDS = 15;
+	private static final Logger LOGGER = Logger.getLogger(Settings.class.getName());
+
 	public Settings() {
 		dnsServers = new ArrayList<String>();
 		domainNamesDNS = new ArrayList<String>();
@@ -42,54 +41,50 @@ public class Settings {
 		checkIfFileExistsOrCreate();
 		readValues();
 	}
-	
-	private void checkIfFileExistsOrCreate()  {
+
+	private void checkIfFileExistsOrCreate() {
 		String userDocumentsFolder = FileSystemView.getFileSystemView().getDefaultDirectory().getPath().toString();
-		
-		
-		Path folderPath = Paths.get(userDocumentsFolder,SETTINGS_FOLDER_NAME);
-		Path filePath = Paths.get(folderPath.toString(),SETTINGS_FILE_NAME);
-		
+
+		Path folderPath = Paths.get(userDocumentsFolder, SETTINGS_FOLDER_NAME);
+		Path filePath = Paths.get(folderPath.toString(), SETTINGS_FILE_NAME);
+
 		File folder = new File(folderPath.toString());
 		file = new File(filePath.toString());
-		
-		if(!folder.exists()) {
+
+		if (!folder.exists()) {
 			folder.mkdirs();
 		}
-		if(!file.exists()) {
+		if (!file.exists()) {
 			try {
-			file.createNewFile();
-			setupJsonFile();
-			}
-			catch (Exception e) {
+				file.createNewFile();
+				setupJsonFile();
+			} catch (Exception e) {
 				LOGGER.severe("Could not write to file: \n" + e.toString());
 			}
 		}
 		this.filePath = file.getPath().toString();
 	}
-	
+
 	private void setupJsonFile() throws IOException {
-		Map<String,ArrayList<String>> jsonMap = new HashMap<String, ArrayList<String>>();
-		jsonMap.put(DNS_SERVERS,dnsServers);
+		Map<String, ArrayList<String>> jsonMap = new HashMap<String, ArrayList<String>>();
+		jsonMap.put(DNS_SERVERS, dnsServers);
 		jsonMap.put(DOMAIN_NAMES_DNS, domainNamesDNS);
 		jsonMap.put(DOMAIN_NAMES_mDNS, domainNamesMDNS);
 		JSONObject json = new JSONObject(jsonMap);
-		//FileWriter fileWriter = new FileWriter(file);
-		//fileWriter.write(json.toString());
-		//fileWriter.close();
-		 try (FileWriter fw = new FileWriter(file, StandardCharsets.UTF_8);
-	             BufferedWriter writer = new BufferedWriter(fw)) {
-	                writer.append(json.toString());
-	            }
+		// FileWriter fileWriter = new FileWriter(file);
+		// fileWriter.write(json.toString());
+		// fileWriter.close();
+		try (FileWriter fw = new FileWriter(file, StandardCharsets.UTF_8);
+				BufferedWriter writer = new BufferedWriter(fw)) {
+			writer.append(json.toString());
+		}
 		jsonMap.clear();
 	}
-	
 
-	
 	private void readValues() {
 		JSONParser jsonParser = new JSONParser();
 		try {
-			FileReader reader = new FileReader(filePath,StandardCharsets.UTF_8);
+			FileReader reader = new FileReader(filePath, StandardCharsets.UTF_8);
 			JSONObject jsonObject = (JSONObject) jsonParser.parse(reader);
 			dnsServers = readJsonArraylist(DNS_SERVERS, jsonObject);
 			domainNamesMDNS = readJsonArraylist(DOMAIN_NAMES_mDNS, jsonObject);
@@ -97,88 +92,84 @@ public class Settings {
 			reader.close();
 			jsonObject = null;
 			jsonParser = null;
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOGGER.severe("Could not parse settings from file: \n" + e.toString());
-			}
+		}
 	}
-	
-	private ArrayList<String> readJsonArraylist(String key, JSONObject jsonObject){
-		JSONArray jsonArray =  (JSONArray) jsonObject.get(key);
-		ArrayList<String> list= new ArrayList<String>();
-		for(int i=0;i<jsonArray.size();i++) {
+
+	private ArrayList<String> readJsonArraylist(String key, JSONObject jsonObject) {
+		JSONArray jsonArray = (JSONArray) jsonObject.get(key);
+		ArrayList<String> list = new ArrayList<String>();
+		for (int i = 0; i < jsonArray.size(); i++) {
 			list.add((String) jsonArray.get(i));
 		}
 		return list;
 	}
+
 	public void addDNSServer(String ip) {
-		if(dnsServers.size() == MAX_DNS_SERVER_RECORDS) {
+		if (dnsServers.size() == MAX_DNS_SERVER_RECORDS) {
 			LOGGER.info("Max size, not adding to array");
 			return;
 		}
-		if(Ip.isIpValid(ip)) {
+		if (Ip.isIpValid(ip)) {
 			if (!dnsServers.contains(ip)) {
 				dnsServers.add(ip);
-			}
-			else {
+			} else {
 				LOGGER.info("IP address of DNS server already in list");
 			}
-		}
-		else {
+		} else {
 			LOGGER.info("IP address of DNS server is not valid");
 		}
 	}
-	
+
 	public void addMDNSDomain(String domain) {
-		if(domainNamesMDNS.size() == MAX_MDNS_NAME_RECORDS) {
+		if (domainNamesMDNS.size() == MAX_MDNS_NAME_RECORDS) {
 			LOGGER.info("Max size, not adding to array");
 			return;
 		}
-		if(DomainConvert.isValidDomainName(domain)) {
+		if (DomainConvert.isValidDomainName(domain)) {
 			if (!domainNamesMDNS.contains(domain)) {
 				domainNamesMDNS.add(domain);
 				LOGGER.info("mDNS domain name added");
-			}else {
+			} else {
 				LOGGER.info("mDNS domain already in list");
-			}			
-		}
-		else {
+			}
+		} else {
 			LOGGER.warning("mDNs domain name is not valid");
 		}
 	}
-	
+
 	public void addDNSDomain(String domain) {
-		if(domainNamesDNS.size() ==MAX_DOMAIN_NAME_RECORDS) {
+		if (domainNamesDNS.size() == MAX_DOMAIN_NAME_RECORDS) {
 			LOGGER.info("Max size, not adding to array");
 			return;
 		}
-		if(DomainConvert.isValidDomainName(domain)) {
-			if(!domainNamesDNS.contains(domain)) {
+		if (DomainConvert.isValidDomainName(domain)) {
+			if (!domainNamesDNS.contains(domain)) {
 				domainNamesDNS.add(domain);
 				LOGGER.info("DNS domain name added");
-			}
-			else {
+			} else {
 				LOGGER.info("DNS domain already in list");
 			}
-		}
-		else {
+		} else {
 			LOGGER.warning("DNS domain name is not valid");
 		}
 	}
-	
+
 	public void appIsClossing() {
 		file.delete();
 		checkIfFileExistsOrCreate();
 		LOGGER.info("Setting written in file");
 	}
-	
+
 	public void eraseDomainNames() {
 		this.domainNamesDNS = new ArrayList<String>();
 	}
-	
+
 	public void eraseDNSServers() {
 		this.dnsServers = new ArrayList<String>();
 	}
+
 	public ArrayList<String> getDnsServers() {
 		return dnsServers;
 	}
@@ -186,8 +177,7 @@ public class Settings {
 	public ArrayList<String> getDomainNamesDNS() {
 		return domainNamesDNS;
 	}
-	
-	
+
 	public ArrayList<String> getDomainNamesMDNS() {
 		return domainNamesMDNS;
 	}
