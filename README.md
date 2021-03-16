@@ -10,8 +10,9 @@ GUI for DNS Client
 
 ## Deploy
 - import project into Elipse IDE
-- ...
-
+- Run configuration  
+- Main: application.Main
+- Set Goals -> Goals: **javafx:run**
 ## Convetion
 
 Classes - Starts With Cap. Letter, no spaces **MainClass**
