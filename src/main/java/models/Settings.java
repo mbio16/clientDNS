@@ -71,9 +71,6 @@ public class Settings {
 		jsonMap.put(DOMAIN_NAMES_DNS, domainNamesDNS);
 		jsonMap.put(DOMAIN_NAMES_mDNS, domainNamesMDNS);
 		JSONObject json = new JSONObject(jsonMap);
-		// FileWriter fileWriter = new FileWriter(file);
-		// fileWriter.write(json.toString());
-		// fileWriter.close();
 		try (FileWriter fw = new FileWriter(file, StandardCharsets.UTF_8);
 				BufferedWriter writer = new BufferedWriter(fw)) {
 			writer.append(json.toString());
