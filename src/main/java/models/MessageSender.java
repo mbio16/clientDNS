@@ -90,6 +90,14 @@ public class MessageSender {
 			optRecord.getChildren().add(Response.getOptAsTreeItem());
 			root.getChildren().add(optRecord);
 		}
+		
+		if(transport_protocol == TRANSPORT_PROTOCOL.TCP) {
+			TreeItem<String> tcpTreeItem = new TreeItem<String>("");
+			tcpTreeItem.getChildren().add(new TreeItem<String>(KEY_LENGHT + ": " + byteSizeQuery ));
+			tcpTreeItem.getChildren().add(root);
+			return tcpTreeItem;
+			
+		}
 		return root;
 	}
 

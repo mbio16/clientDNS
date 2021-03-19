@@ -78,11 +78,19 @@ public class MessageParser {
 	}
 
 	public TreeItem<String> getAsTreeItem() {
+
 		main.getChildren().add(header.getAsTreeItem());
 		addRequestToTreeItem();
 		addResponsToTreeItem(ancountResponses, KEY_ANSWERS);
 		addResponsToTreeItem(nscountResponses, KEY_AUTHORITY);
 		addResponsToTreeItem(arcountResponses, KEY_ADDITIONAL_RECORDS);
+		if(protocol == TRANSPORT_PROTOCOL.TCP) {
+			TreeItem<String> tcpTreeItem = new TreeItem<String>("");
+			tcpTreeItem.getChildren().add(new TreeItem<String>(KEY_LENGHT + ": " + byteSizeResponse ));
+			tcpTreeItem.getChildren().add(main);
+			return tcpTreeItem;
+			
+		}
 		return main;
 	}
 

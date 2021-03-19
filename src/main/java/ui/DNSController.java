@@ -36,7 +36,6 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.control.Alert.AlertType;
@@ -612,7 +611,6 @@ public class DNSController extends MDNSController {
 
 	@FXML
 	private void clicked(MouseEvent event) {
-
 		if (event.getClickCount() == 2) {
 			@SuppressWarnings("unchecked")
 			TreeView<String> v = (TreeView<String>) event.getSource();
@@ -656,6 +654,7 @@ public class DNSController extends MDNSController {
 
 	@FXML
 	private void domainNameKeyPressed(KeyEvent event) {
+		controlKeys(event, domainNameTextField);
 		autobinging(domainNameTextField.getText(), settings.getDomainNamesDNS(), savedDomainNamesChoiseBox);
 	}
 
@@ -667,14 +666,22 @@ public class DNSController extends MDNSController {
 	}
 
 	private void controlKeys(KeyEvent e, TextField text) {
-		if (e.getSource() == KeyCode.BACK_SPACE && text.getText().length() >= 1) {
-			text.setText(text.getText().substring(0, text.getText().length() - 1));
-		}
-		if (e.getSource() == KeyCode.DELETE && text.getText().length() >= 1) {
+		byte b = e.getCharacter().getBytes()[0];
+		if (b == (byte) 0x08 && text.getText().length() >= 1 && isRightToLeft(text.getText())) {
+			System.out.println(text.getText());
 			text.setText(text.getText().substring(1, text.getText().length()));
 		}
 	}
 
+	private boolean isRightToLeft(String text) {
+		char[] chars = text.toCharArray();
+		for(char c: chars){
+		    if(c >= 0x500 && c <= 0x6ff){
+		        return true;
+		        		     }
+		}
+		return false;
+	}
 	@FXML
 	private void deleteDomainNameHistoryFired(Event event) {
 		settings.eraseDomainNames();
