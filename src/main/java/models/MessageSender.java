@@ -93,7 +93,7 @@ public class MessageSender {
 		
 		if(transport_protocol == TRANSPORT_PROTOCOL.TCP) {
 			TreeItem<String> tcpTreeItem = new TreeItem<String>("");
-			tcpTreeItem.getChildren().add(new TreeItem<String>(KEY_LENGHT + ": " + byteSizeQuery ));
+			tcpTreeItem.getChildren().add(new TreeItem<String>(KEY_LENGHT + ": " + (byteSizeQuery - 2)));
 			tcpTreeItem.getChildren().add(root);
 			return tcpTreeItem;
 			
@@ -171,8 +171,6 @@ public class MessageSender {
 				datagramSocket.close();
 				run = false;
 			} catch (SocketTimeoutException e) {
-				// Alert a = new Alert(AlertType.INFORMATION,"Timeout");
-				// a.show();
 				LOGGER.warning("Time out for the: " + (messagesSent + 1) + " message");
 				if (messagesSent == MAX_MESSAGES_SENT) {
 					socket.close();
@@ -252,6 +250,7 @@ public class MessageSender {
 			jsonArray.add(request.getAsJson());
 		}
 		jsonObject.put(KEY_QUERY, jsonArray);
+		if (transport_protocol == TRANSPORT_PROTOCOL.TCP) jsonObject.put(KEY_LENGHT, (byteSizeQuery -2));
 		return jsonObject;
 	}
 

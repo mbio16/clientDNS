@@ -86,7 +86,7 @@ public class MessageParser {
 		addResponsToTreeItem(arcountResponses, KEY_ADDITIONAL_RECORDS);
 		if(protocol == TRANSPORT_PROTOCOL.TCP) {
 			TreeItem<String> tcpTreeItem = new TreeItem<String>("");
-			tcpTreeItem.getChildren().add(new TreeItem<String>(KEY_LENGHT + ": " + byteSizeResponse ));
+			tcpTreeItem.getChildren().add(new TreeItem<String>(KEY_LENGHT + ": " + (byteSizeResponse -2 )));
 			tcpTreeItem.getChildren().add(main);
 			return tcpTreeItem;
 			
@@ -154,6 +154,7 @@ public class MessageParser {
 		main.put(KEY_ANSWERS, an);
 		main.put(KEY_AUTHORITY, ns);
 		main.put(KEY_ADDITIONAL_RECORDS, ar);
+		if (protocol == TRANSPORT_PROTOCOL.TCP) main.put(KEY_LENGHT, (byteSizeResponse -2));
 
 		return main;
 	}
