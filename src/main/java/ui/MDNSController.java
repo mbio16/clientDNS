@@ -12,7 +12,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -115,7 +115,7 @@ public class MDNSController extends GeneralController {
 	protected ToggleGroup domainNameToggleGroup;
 
 	@FXML
-	protected ChoiceBox<String> savedDomainNamesChoiseBox;
+	protected ComboBox<String> savedDomainNamesChoiseBox;
 
 	@FXML
 	protected TreeView<String> requestTreeView;
@@ -181,7 +181,6 @@ public class MDNSController extends GeneralController {
 			czechRadioButton.setSelected(false);
 			englishRadioButton.setSelected(true);
 		}
-
 		savedDomainNamesChoiseBox.getItems().addAll(settings.getDomainNamesMDNS());
 	}
 
@@ -257,7 +256,7 @@ public class MDNSController extends GeneralController {
 		return result;
 	}
 
-	protected void autobinging(String textFromField, ArrayList<String> fullArray, ChoiceBox<String> box) {
+	protected void autobinging(String textFromField, ArrayList<String> fullArray, ComboBox<String> box) {
 		ArrayList<String> result = autobindingsStringsArray(textFromField, fullArray);
 		if (result.size() == 0) {
 			box.hide();

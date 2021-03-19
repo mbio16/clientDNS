@@ -25,6 +25,7 @@ public class MessageParser {
 	private static final String KEY_ANSWERS = "Answer";
 	private static final String KEY_AUTHORITY = "Authority";
 	public static final String KEY_ADDITIONAL_RECORDS = "Aditional records";
+	private static final String KEY_LENGHT="Lenght";
 	private TRANSPORT_PROTOCOL protocol;
 	private TreeItem<String> main;
 	private int byteSizeResponse;
@@ -69,7 +70,7 @@ public class MessageParser {
 		}
 
 		if (protocol == TRANSPORT_PROTOCOL.TCP) {
-			byteSizeResponse = currentIndex + 1;
+			byteSizeResponse = currentIndex + 2;
 		} else {
 			byteSizeResponse = currentIndex;
 		}

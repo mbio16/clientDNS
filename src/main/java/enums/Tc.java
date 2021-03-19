@@ -1,8 +1,8 @@
 package enums;
 
 public enum TC {
-	TRANCATED((boolean) true),
-	NON_TRANCATED((boolean) false);
+	TRUNCATED((boolean) true),
+	NON_TRUNCATED((boolean) false);
 
 	public boolean code;
 

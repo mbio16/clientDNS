@@ -17,6 +17,7 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import models.Settings;
 
@@ -116,6 +117,8 @@ public class MainController extends GeneralController {
 	private void buttonFired(ActionEvent event) {
 		LOGGER.warning("Calling a module which is not implemented");
 		Alert alert = new Alert(AlertType.ERROR, language.getLanguageBundle().getString("notImplemented"));
+		alert.initModality(Modality.APPLICATION_MODAL);
+		alert.initOwner((Stage) dnsButton.getScene().getWindow());
 		alert.showAndWait();
 
 	}
@@ -127,6 +130,8 @@ public class MainController extends GeneralController {
 			desktop.browse(new URI(BUG_URL));
 		} catch (Exception e) {
 			Alert alert = new Alert(AlertType.ERROR, language.getLanguageBundle().getString("bugButtonError"));
+			alert.initModality(Modality.APPLICATION_MODAL);
+			alert.initOwner((Stage)	dnsButton.getScene().getWindow());
 			alert.showAndWait();
 		}
 	}

@@ -29,9 +29,9 @@ public class Settings {
 	private ArrayList<String> dnsServers;
 	private ArrayList<String> domainNamesDNS;
 	private ArrayList<String> domainNamesMDNS;
-	private static final int MAX_DOMAIN_NAME_RECORDS = 15;
-	private static final int MAX_DNS_SERVER_RECORDS = 2;
-	private static final int MAX_MDNS_NAME_RECORDS = 15;
+	//private static final int MAX_DOMAIN_NAME_RECORDS = 50;
+	//private static final int MAX_DNS_SERVER_RECORDS = 2;
+	//private static final int MAX_MDNS_NAME_RECORDS = 15;
 	private static final Logger LOGGER = Logger.getLogger(Settings.class.getName());
 
 	public Settings() {
@@ -104,10 +104,10 @@ public class Settings {
 	}
 
 	public void addDNSServer(String ip) {
-		if (dnsServers.size() == MAX_DNS_SERVER_RECORDS) {
+		/*if (dnsServers.size() == MAX_DNS_SERVER_RECORDS) {
 			LOGGER.info("Max size, not adding to array");
 			return;
-		}
+		}*/
 		if (Ip.isIpValid(ip)) {
 			if (!dnsServers.contains(ip)) {
 				dnsServers.add(ip);
@@ -120,10 +120,10 @@ public class Settings {
 	}
 
 	public void addMDNSDomain(String domain) {
-		if (domainNamesMDNS.size() == MAX_MDNS_NAME_RECORDS) {
+		/*if (domainNamesMDNS.size() == MAX_MDNS_NAME_RECORDS) {
 			LOGGER.info("Max size, not adding to array");
 			return;
-		}
+		}*/
 		if (DomainConvert.isValidDomainName(domain)) {
 			if (!domainNamesMDNS.contains(domain)) {
 				domainNamesMDNS.add(domain);
@@ -137,10 +137,10 @@ public class Settings {
 	}
 
 	public void addDNSDomain(String domain) {
-		if (domainNamesDNS.size() == MAX_DOMAIN_NAME_RECORDS) {
+		/*if (domainNamesDNS.size() == MAX_DOMAIN_NAME_RECORDS) {
 			LOGGER.info("Max size, not adding to array");
 			return;
-		}
+		}*/
 		if (DomainConvert.isValidDomainName(domain)) {
 			if (!domainNamesDNS.contains(domain)) {
 				domainNamesDNS.add(domain);

@@ -26,7 +26,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioButton;
@@ -40,6 +40,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.control.Alert.AlertType;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import models.DomainConvert;
 import models.Ip;
@@ -140,7 +141,7 @@ public class DNSController extends MDNSController {
 	private ToggleGroup wiresharkFilterToogleGroup;
 	// choice box
 	@FXML
-	private ChoiceBox<String> savedDNSChoiceBox;
+	private ComboBox<String> savedDNSChoiceBox;
 	@FXML
 	private ImageView cloudflareIpv4ImageView;
 	@FXML
@@ -408,6 +409,8 @@ public class DNSController extends MDNSController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			Alert alert = new Alert(AlertType.ERROR, language.getLanguageBundle().getString("windowError"));
+			alert.initModality(Modality.APPLICATION_MODAL);
+			alert.initOwner((Stage) sendButton.getScene().getWindow());
 			alert.showAndWait();
 		}
 	}
@@ -416,12 +419,12 @@ public class DNSController extends MDNSController {
 	private void onRadioButtonChange(ActionEvent event) {
 		if (dnsserverToggleGroup.getSelectedToggle().getUserData() != null) {
 			dnsServerTextField.setText("");
-			copyDataToClipBoard(dnsserverToggleGroup.getSelectedToggle().getUserData().toString());
 		}
 
 	}
 
 	private String getDnsServerIp() throws DnsServerIpIsNotValidException, UnknownHostException {
+		if(dnsServerTextField.getText().equals("") &&  customDNSRadioButton.isSelected()) throw new DnsServerIpIsNotValidException();
 		if (DomainConvert.isValidDomainName(dnsServerTextField.getText()) && customDNSRadioButton.isSelected()) {
 			InetAddress ipaddress = InetAddress.getByName(dnsServerTextField.getText());
 			System.out.println("IP address: " + ipaddress.getHostAddress());
@@ -430,6 +433,8 @@ public class DNSController extends MDNSController {
 			info.setTitle(language.getLanguageBundle().getString("translated"));
 			info.setContentText(dnsServerTextField.getText() + " "
 					+ language.getLanguageBundle().getString("rootServerWasTranslated") + ipAddr);
+			info.initModality(Modality.APPLICATION_MODAL);
+			info.initOwner((Stage) sendButton.getScene().getWindow());
 			info.show();
 			dnsServerTextField.setText(ipAddr);
 			settings.addDNSServer(ipAddr);
@@ -454,6 +459,9 @@ public class DNSController extends MDNSController {
 		try {
 			String domain = (domainNameTextField.getText());
 			LOGGER.info("Domain name: " + domain);
+			if(domain == "") {
+				throw new NotValidDomainNameException();
+			}
 			if ((Ip.isIPv4Address(domain) || Ip.isIpv6Address(domain)) && ptrCheckBox.isSelected()) {
 				LOGGER.info("PTR record request");
 				return domain;
@@ -544,6 +552,8 @@ public class DNSController extends MDNSController {
 
 	public void showAller(String exceptionName) {
 		Alert alert = new Alert(AlertType.ERROR, language.getLanguageBundle().getString(exceptionName));
+		alert.initModality(Modality.APPLICATION_MODAL);
+		alert.initOwner((Stage) sendButton.getScene().getWindow());
 		alert.show();
 	}
 

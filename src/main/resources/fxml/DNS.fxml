@@ -3,7 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.CustomMenuItem?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
@@ -149,6 +149,7 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
+                        <ComboBox fx:id="savedDNSChoiceBox" onAction="#onDnsServerNameChoiseBoxAction" onMouseClicked="#onSavedDNSChoiseBoxFired" prefHeight="25.0" prefWidth="219.0" visibleRowCount="3" GridPane.rowIndex="9" />
                         <RadioButton fx:id="cloudflareIpv4RadioButton" mnemonicParsing="false" onAction="#onRadioButtonChange" text="1.1.1.1 (Cloudflare)">
                            <font>
                               <Font size="15.0" />
@@ -183,7 +184,6 @@
                               <Font size="15.0" />
                            </font>
                         </RadioButton>
-                        <ChoiceBox fx:id="savedDNSChoiceBox" onAction="#onDnsServerNameChoiseBoxAction" onMouseClicked="#onSavedDNSChoiseBoxFired" prefHeight="25.0" prefWidth="263.0" GridPane.rowIndex="9" />
                         <ImageView fx:id="cloudflareIpv4ImageView" fitHeight="20.0" fitWidth="20.0" onMouseClicked="#copyImageViewFired" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1">
                            <image>
                               <Image url="@../images/copy-clipboard.png" />
@@ -362,7 +362,7 @@
                      </rowConstraints>
                      <children>
                         <TextField fx:id="domainNameTextField" onAction="#onDomainNameAction" onKeyTyped="#domainNameKeyPressed" prefHeight="25.0" prefWidth="301.0" />
-                        <ChoiceBox fx:id="savedDomainNamesChoiseBox" onAction="#onDomainNameChoiseBoxAction" onMouseClicked="#onDomainNameChoiseBoxFired" prefHeight="25.0" prefWidth="420.0" GridPane.rowIndex="1" />
+                        <ComboBox fx:id="savedDomainNamesChoiseBox" onAction="#onDomainNameChoiseBoxAction" onMouseClicked="#onDomainNameChoiseBoxFired" prefHeight="25.0" prefWidth="414.0" GridPane.rowIndex="1" />
                      </children>
                   </GridPane>
                </content>

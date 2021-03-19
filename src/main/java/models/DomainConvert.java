@@ -21,11 +21,11 @@ public class DomainConvert {
 		if (domain.equals(null) || domain.equals("")) {
 			return ROOT;
 		}
-		String original = domain;
+		//String original = domain;
 		domain = encodeIDN(domain);
-		if (!isValidDomainName(original)) {
+		/*if (!isValidDomainName(original)) {
 			throw new NotValidDomainNameException();
-		}
+		}*/
 		ArrayList<Byte> resultByte = new ArrayList<Byte>();
 		String splited[] = domain.split("\\.");
 		for (String string : splited) {
@@ -110,26 +110,6 @@ public class DomainConvert {
 		return DomainConvert.decodeDNS(rawMessage, nameStartByte.getValue());
 	}
 
-// Original function	
-//	public static String decodeDNS(byte [] encodedDomain, int startIndex) {
-//		int passed = startIndex;
-//		String result = "";
-//		while(true) {
-//		int size = (int) encodedDomain[passed];
-//		if (size == 0) 
-//		{
-//			return result.substring(0,result.length()-1);
-//		}
-//		else {
-//		for (int i = passed+1; i < passed+size+1; i++) {
-//			result +=(char)encodedDomain[i];
-//		}
-//		passed += size+1;
-//		result += ".";
-//		}
-//		}
-//	}
-
 	public static int getIndexOfLastByteOfName(byte[] wholeAnswerSection, int start) {
 		int position = start;
 		while (true) {
@@ -153,8 +133,18 @@ public class DomainConvert {
 	private static boolean isUTF8Domain(String domain) {
 		try {
 			domain.getBytes("UTF-8");
-			Punycode.toPunycode(domain);
-			return true;
+			String toCompare = domain;
+			String encoded = Punycode.toPunycode(domain);
+			System.out.println(toCompare);
+			System.out.println(encoded);
+			if(encoded.equals(toCompare)) {
+				System.out.println("Not UTF");
+				return false;
+			}
+			else {
+				System.out.println("UTF8");
+				return true;
+			}
 		} catch (Exception e) {
 			return false;
 		}

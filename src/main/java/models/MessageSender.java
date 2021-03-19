@@ -50,6 +50,7 @@ public class MessageSender {
 	private static final String KEY_HEAD = "Head";
 	private static final String KEY_QUERY = "Questions";
 	private static final String KEY_REQUEST = "Request";
+	private static final String KEY_LENGHT="Lenght";
 	private static Logger LOGGER = Logger.getLogger(DomainConvert.class.getName());
 
 	public MessageSender(boolean recursion, boolean dnssec, boolean rrRecords, String domain, Q_COUNT[] types,

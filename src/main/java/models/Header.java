@@ -51,7 +51,7 @@ public class Header {
 		qr = QR.REQUEST;
 		opCode = OP_CODE.QUERY;
 		aa = AA.NON_AUTHORITATIVE;
-		tc = TC.NON_TRANCATED;
+		tc = TC.NON_TRUNCATED;
 		rd = RD.getTypeByCode(recursion);
 		ra = RA.RECURSION_NON_AVAIBLE;
 		ad = AUTHENTICATE_DATA.getTypeByCode(dnssec);
