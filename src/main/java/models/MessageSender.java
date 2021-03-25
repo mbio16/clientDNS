@@ -43,6 +43,7 @@ public class MessageSender {
 	private long startTime;
 	private long stopTime;
 	private TCPConnection tcp;
+	private int responseTcpLenght;
 	private boolean closeConnection;
 	private static final int MAX_MESSAGES_SENT = 3;
 	private static final int TIME_OUT_MILLIS = 2000;
@@ -192,6 +193,7 @@ public class MessageSender {
 				tcp = new TCPConnection(ip);
 			}
 			this.recieveReply = tcp.send(this.messageAsBytes, ip, this.closeConnection);
+			this.responseTcpLenght = tcp.getLenght();
 			stopTime = System.nanoTime();
 		} catch (IOException e) {
 			throw new TimeoutException();
@@ -293,6 +295,10 @@ public class MessageSender {
 
 	public void setCloseConnection(boolean closeConnection) {
 		this.closeConnection = closeConnection;
+	}
+	
+	public int getTCPResponseLenght() {
+		return responseTcpLenght;
 	}
 
 }

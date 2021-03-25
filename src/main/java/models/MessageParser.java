@@ -20,6 +20,7 @@ public class MessageParser {
 	private ArrayList<Response> arcountResponses;
 	private byte[] rawMessage;
 	private int currentIndex;
+	private int tcpLenght;
 	private static final String KEY_HEAD = "Head";
 	private static final String KEY_QUESTIONS = "Questions";
 	private static final String KEY_ANSWERS = "Answer";
@@ -30,7 +31,7 @@ public class MessageParser {
 	private TreeItem<String> main;
 	private int byteSizeResponse;
 
-	public MessageParser(byte[] rawMessage, Header queryHeader, TRANSPORT_PROTOCOL protocol) {
+	public MessageParser(byte[] rawMessage, Header queryHeader, TRANSPORT_PROTOCOL protocol, int tcpLenght) {
 		this.rawMessage = rawMessage;
 		this.queryHeader = queryHeader;
 		this.currentIndex = 0;
@@ -40,6 +41,7 @@ public class MessageParser {
 		this.arcountResponses = new ArrayList<Response>();
 		this.protocol = protocol;
 		this.main = new TreeItem<String>(KEY_ANSWERS);
+		this.tcpLenght = tcpLenght;
 		byteSizeResponse = 0;
 	}
 
@@ -70,7 +72,7 @@ public class MessageParser {
 		}
 
 		if (protocol == TRANSPORT_PROTOCOL.TCP) {
-			byteSizeResponse = currentIndex + 2;
+			byteSizeResponse = tcpLenght + 2;
 		} else {
 			byteSizeResponse = currentIndex;
 		}

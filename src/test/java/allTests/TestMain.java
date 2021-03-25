@@ -10,10 +10,10 @@ import models.TCPConnection;
 public class TestMain {
 
 	public static void main(String[] args) {
-		Q_COUNT[] a = {Q_COUNT.NSEC3PARAM};
+		Q_COUNT[] a = {Q_COUNT.A};
 		MessageSender sender;
 		MessageParser parser;
-		TRANSPORT_PROTOCOL protocol = TRANSPORT_PROTOCOL.UDP;
+		TRANSPORT_PROTOCOL protocol = TRANSPORT_PROTOCOL.TCP;
 		try {
 		/*	sender = new MessageSender(true, true,true,"biolek.net.",a ,protocol,APPLICATION_PROTOCOL.DNS,"8.8.8.8");
 			sender.setCloseConnection(false);
@@ -42,9 +42,9 @@ public class TestMain {
 			System.out.println("Message size query: " + sender.getByteSizeQuery());
 			System.out.println("Messge size response: " + parser.getByteSizeResponse());*/
 			
-			sender = new MessageSender(true, true,true,"кц.рФ",a ,protocol,APPLICATION_PROTOCOL.DNS,"8.8.8.8");
+			sender = new MessageSender(true, true,true,"cz",a ,protocol,APPLICATION_PROTOCOL.DNS,"8.8.8.8");
 			sender.send();
-			parser = new MessageParser(sender.getRecieveReply(),sender.getHeader(),protocol);
+			parser = new MessageParser(sender.getRecieveReply(),sender.getHeader(),protocol,sender.getTCPResponseLenght());
 			parser.parse();
 			System.out.println(sender.getAsJsonString());
 			System.out.println(parser.getAsJsonString());
