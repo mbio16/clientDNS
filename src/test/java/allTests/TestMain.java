@@ -44,7 +44,7 @@ public class TestMain {
 			
 			sender = new MessageSender(true, true,true,"cz",a ,protocol,APPLICATION_PROTOCOL.DNS,"8.8.8.8");
 			sender.send();
-			parser = new MessageParser(sender.getRecieveReply(),sender.getHeader(),protocol,sender.getTCPResponseLenght());
+			parser = new MessageParser(sender.getRecieveReply(),sender.getHeader(),protocol);
 			parser.parse();
 			System.out.println(sender.getAsJsonString());
 			System.out.println(parser.getAsJsonString());

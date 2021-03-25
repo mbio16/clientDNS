@@ -31,7 +31,7 @@ public class MessageParser {
 	private TreeItem<String> main;
 	private int byteSizeResponse;
 
-	public MessageParser(byte[] rawMessage, Header queryHeader, TRANSPORT_PROTOCOL protocol, int tcpLenght) {
+	public MessageParser(byte[] rawMessage, Header queryHeader, TRANSPORT_PROTOCOL protocol) {
 		this.rawMessage = rawMessage;
 		this.queryHeader = queryHeader;
 		this.currentIndex = 0;
@@ -41,7 +41,6 @@ public class MessageParser {
 		this.arcountResponses = new ArrayList<Response>();
 		this.protocol = protocol;
 		this.main = new TreeItem<String>(KEY_ANSWERS);
-		this.tcpLenght = tcpLenght;
 		byteSizeResponse = 0;
 	}
 
@@ -72,7 +71,7 @@ public class MessageParser {
 		}
 
 		if (protocol == TRANSPORT_PROTOCOL.TCP) {
-			byteSizeResponse = tcpLenght + 2;
+			byteSizeResponse = currentIndex + 2;
 		} else {
 			byteSizeResponse = currentIndex;
 		}

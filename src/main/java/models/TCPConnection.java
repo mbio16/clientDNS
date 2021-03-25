@@ -18,11 +18,9 @@ public class TCPConnection {
 	private static final int DNS_PORT = 53;
 	private static final int SOCKET_TIME_OUT_SEC = 3;
 	private byte[] responseMessage;
-	private int messageResponseSize;
 	public TCPConnection(InetAddress ip) {
 		this.destinationIp = ip;
 		responseMessage = null;
-		messageResponseSize = 0;
 	}
 
 	public byte[] send(byte messagesAsBytes[], InetAddress ip, boolean closeConnection)
@@ -72,7 +70,6 @@ public class TCPConnection {
 			UInt16 messageSize = new UInt16().loadFromBytes(sizeRicieve[0], sizeRicieve[1]);
 			// based on size get the dns message it self
 			responseMessage = inputStream.readNBytes(messageSize.getValue());
-			messageResponseSize = messageSize.getValue();
 		} catch (ArrayIndexOutOfBoundsException e) {
 			System.out.println(e.toString());
 			closeAll();
@@ -81,8 +78,5 @@ public class TCPConnection {
 			throw new TimeoutException();
 		}
 	}
-	
-	public int getLenght() {
-		return messageResponseSize;
-	}
+
 }

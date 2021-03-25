@@ -578,7 +578,7 @@ public class DNSController extends MDNSController {
 				closeHoldedConnection();
 			}
 			sender.send();
-			parser = new MessageParser(sender.getRecieveReply(), sender.getHeader(), transport,sender.getTCPResponseLenght());
+			parser = new MessageParser(sender.getRecieveReply(), sender.getHeader(), transport);
 			parser.parse();
 			tcpConnection = sender.getTcp();
 			setControls();

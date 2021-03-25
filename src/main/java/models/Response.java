@@ -99,7 +99,7 @@ public class Response {
 		currentIndex += 2;
 		this.rdata = parseRecord(currentIndex);
 		nameAsString = ". (ROOT)";
-		this.endIndex = currentIndex;
+		this.endIndex = currentIndex-1;
 	}
 
 	private int parseName(int startIndex) {
