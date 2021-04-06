@@ -258,12 +258,12 @@ public class DNSController extends MDNSController {
 			systemIpv6DNSRadioButton.setSelected(false);
 			systemIpv6DNSRadioButton.setText(language.getLanguageBundle().getString("ipv6SystemDNSIsNotEnabled"));
 			systemIpv6DNSRadioButton.setDisable(true);
-			systemIpv6DNSIamgeView.setDisable(true);
-			systemIpv6DNSIamgeView.setUserData(ipDns.getIpv6DnsServer());
+
 		} else {
 			systemIpv6DNSRadioButton.setText(ipDns.getIpv6DnsServer());
 			systemIpv6DNSRadioButton.setUserData(ipDns.getIpv6DnsServer());
 			systemIpv6DNSIamgeView.setDisable(false);
+			systemIpv6DNSIamgeView.setUserData(ipDns.getIpv6DnsServer());
 		}
 	}
 
@@ -358,9 +358,7 @@ public class DNSController extends MDNSController {
 		cznicIpv6RadioButton.setUserData("2001:148f:ffff::1");
 		cloudflareIpv4ImageView.setUserData("1.1.1.1");
 		googleIpv4IamgeView.setUserData("8.8.8.8");
-		;
 		cznicIpv4RadioIamgeView.setUserData("193.17.47.1");
-		;
 		cloudflareIpv6ImageView.setUserData("2606:4700:4700::1111");
 		googleIpv6ImagaView.setUserData("2001:4860:4860::8888");
 		cznicIpv6ImageView.setUserData("2001:148f:ffff::1");
