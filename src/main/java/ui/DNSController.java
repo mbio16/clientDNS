@@ -461,6 +461,11 @@ public class DNSController extends MDNSController {
 			if(domain == "") {
 				throw new NotValidDomainNameException();
 			}
+
+			if ((domain.contains(".arpa")) && ptrCheckBox.isSelected()) {
+				System.out.println("ano");
+				return domain;
+			}
 			if ((Ip.isIPv4Address(domain) || Ip.isIpv6Address(domain)) && ptrCheckBox.isSelected()) {
 				LOGGER.info("PTR record request");
 				return domain;

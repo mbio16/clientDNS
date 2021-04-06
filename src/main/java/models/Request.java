@@ -67,6 +67,9 @@ public class Request {
 	}
 
 	private void ipAddressToPTRFormat() throws NotValidIPException {
+		if(qName.contains(".arpa")) {
+			return;
+		}
 		this.qName = Ip.getIpReversed(qName);
 	}
 

@@ -10,7 +10,7 @@ import models.TCPConnection;
 public class TestMain {
 
 	public static void main(String[] args) {
-		Q_COUNT[] a = {Q_COUNT.A};
+		Q_COUNT[] a = {Q_COUNT.PTR};
 		MessageSender sender;
 		MessageParser parser;
 		TRANSPORT_PROTOCOL protocol = TRANSPORT_PROTOCOL.TCP;
@@ -42,7 +42,7 @@ public class TestMain {
 			System.out.println("Message size query: " + sender.getByteSizeQuery());
 			System.out.println("Messge size response: " + parser.getByteSizeResponse());*/
 			
-			sender = new MessageSender(true, true,true,"cz",a ,protocol,APPLICATION_PROTOCOL.DNS,"8.8.8.8");
+			sender = new MessageSender(true, true,true,"4.4.8.8.in-addr.arpa",a ,protocol,APPLICATION_PROTOCOL.DNS,"8.8.8.8");
 			sender.send();
 			parser = new MessageParser(sender.getRecieveReply(),sender.getHeader(),protocol);
 			parser.parse();

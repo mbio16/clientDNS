@@ -20,7 +20,6 @@ public class MessageParser {
 	private ArrayList<Response> arcountResponses;
 	private byte[] rawMessage;
 	private int currentIndex;
-	private int tcpLenght;
 	private static final String KEY_HEAD = "Head";
 	private static final String KEY_QUESTIONS = "Questions";
 	private static final String KEY_ANSWERS = "Answer";

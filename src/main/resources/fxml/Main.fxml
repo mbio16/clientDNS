@@ -67,7 +67,7 @@
 						<Font size="15.0" />
 					</font>
 				</Label>
-				<Button fx:id="llmrButton" layoutX="27.0" layoutY="62.0" mnemonicParsing="false" onAction="#buttonFired" prefHeight="40.0" prefWidth="72.0" text="LLMR">
+				<Button fx:id="llmrButton" layoutX="27.0" layoutY="62.0" mnemonicParsing="false" onAction="#buttonFired" prefHeight="40.0" prefWidth="72.0" text="LLMNR">
 					<font>
 						<Font name="System Bold" size="15.0" />
 					</font>
