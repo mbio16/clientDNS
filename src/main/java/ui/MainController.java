@@ -19,6 +19,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import models.Language;
 import models.Settings;
 
 public class MainController extends GeneralController {
@@ -149,5 +150,17 @@ public class MainController extends GeneralController {
 		multicastDNSLabel.setText(language.getLanguageBundle().getString(multicastDNSLabel.getId()));
 		encryptedDNSLabel.setText(language.getLanguageBundle().getString(encryptedDNSLabel.getId()));
 		reportBugButton.setText(language.getLanguageBundle().getString(reportBugButton.getId()));
+		switch (language.getCurrentLanguage()) {
+		case Language.CZECH:
+			czechLangRadioButton.setSelected(true);
+			englishLangRadioButton.setSelected(false);
+			break;
+		case Language.ENGLISH:
+			czechLangRadioButton.setSelected(false);
+			englishLangRadioButton.setSelected(true);
+			break;
+		default:
+			break;
+		}
 	}
 }
