@@ -3,6 +3,7 @@ package ui;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
+import application.Main;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -25,6 +26,8 @@ import javafx.scene.control.TreeView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.Image;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import models.Language;
 import models.MessageParser;
@@ -202,7 +205,7 @@ public class MDNSController extends GeneralController {
 	}
 
 	@FXML
-	private void backButtonFirred(ActionEvent event) {
+	protected void backButtonFirred(ActionEvent event) {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(MainController.FXML_FILE_NAME));
 			Stage newStage = new Stage();
@@ -211,9 +214,15 @@ public class MDNSController extends GeneralController {
 			GeneralController controller = (GeneralController) loader.getController();
 			controller.setLanguage(language);
 			controller.setSettings(settings);
+			newStage.initModality(Modality.APPLICATION_MODAL);
+			
+			Stage oldStage = (Stage) sendButton.getScene().getWindow();
+			newStage.setX(oldStage.getX() + (oldStage.getWidth()/4));
+			newStage.setY(oldStage.getY() + (oldStage.getHeight()/4));
+			newStage.getIcons().add(new Image(Main.ICON_URI));
 			newStage.show();
-			Stage mainStage = (Stage) sendButton.getScene().getWindow();
-			mainStage.close();
+			
+			oldStage.close();
 			controller.setLabels();
 			controller.setIpDns(ipDns);
 		} catch (Exception e) {

@@ -1,7 +1,12 @@
 package ui;
 
+import java.util.List;
 import java.util.logging.Logger;
 
+import javafx.collections.ObservableList;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Scene;
+import javafx.stage.Screen;
 import models.Ip;
 import models.Language;
 import models.Settings;
@@ -41,5 +46,25 @@ public class GeneralController {
 
 	public void loadDataFromSettings() {
 		// to be overrited
+	}
+	protected static int getActiveStageLocationX(Scene scene){
+	    List<Screen> interScreens = Screen.getScreensForRectangle(scene.getWindow().getX(),
+	            scene.getWindow().getY(),
+	            scene.getWindow().getWidth(),
+	            scene.getWindow().getHeight());
+	    Screen activeScreen = (Screen) interScreens.get(0);
+	    Rectangle2D r = activeScreen.getBounds();
+	    double position = r.getMinX();
+	    return (int) position;
+	}
+	protected static int getActiveStageLocationY(Scene scene){
+	    List<Screen> interScreens = Screen.getScreensForRectangle(scene.getWindow().getX(),
+	            scene.getWindow().getY(),
+	            scene.getWindow().getWidth(),
+	            scene.getWindow().getHeight());
+	    Screen activeScreen = (Screen) interScreens.get(0);
+	    Rectangle2D r = activeScreen.getBounds();
+	    double position = r.getMinY();
+	    return (int) position;
 	}
 }

@@ -21,9 +21,6 @@ import exceptions.TimeoutException;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -252,7 +249,6 @@ public class DNSController extends MDNSController {
 			systemIpv4DNSRadioButton.setText(ipDns.getIpv4DnsServer());
 			systemIpv4DNSRadioButton.setUserData(ipDns.getIpv4DnsServer());
 			systemIpv4DNSImageView.setDisable(false);
-			systemIpv4DNSImageView.setUserData(ipDns.getIpv4DnsServer());
 		}
 		if (ipDns.getIpv6DnsServer().equals("")) {
 			systemIpv6DNSRadioButton.setSelected(false);
@@ -388,29 +384,31 @@ public class DNSController extends MDNSController {
 		savedDNSChoiceBox.getItems().addAll(settings.getDnsServers());
 	}
 
-	@FXML
-	private void backButtonFirred(ActionEvent event) {
-		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource(MainController.FXML_FILE_NAME));
-			Stage newStage = new Stage();
-			newStage.setScene(new Scene((Parent) loader.load()));
-			GeneralController controller = (GeneralController) loader.getController();
-			controller.setLanguage(language);
-			controller.setSettings(settings);
-			newStage.setTitle(APP_TITTLE);
-			newStage.show();
-			Stage mainStage = (Stage) sendButton.getScene().getWindow();
-			mainStage.close();
-			controller.setLabels();
-			controller.setIpDns(ipDns);
-		} catch (Exception e) {
-			e.printStackTrace();
-			Alert alert = new Alert(AlertType.ERROR, language.getLanguageBundle().getString("windowError"));
-			alert.initModality(Modality.APPLICATION_MODAL);
-			alert.initOwner((Stage) sendButton.getScene().getWindow());
-			alert.showAndWait();
-		}
-	}
+//	@FXML
+//	private void backButtonFirred(ActionEvent event) {
+//		try {
+//			FXMLLoader loader = new FXMLLoader(getClass().getResource(MainController.FXML_FILE_NAME));
+//			Stage newStage = new Stage();
+//			newStage.setScene(new Scene((Parent) loader.load()));
+//			GeneralController controller = (GeneralController) loader.getController();
+//			controller.setLanguage(language);
+//			controller.setSettings(settings);
+//			newStage.setTitle(APP_TITTLE);
+//			newStage.initModality(Modality.APPLICATION_MODAL);
+//			newStage.initOwner((Stage) sendButton.getScene().getWindow());
+//			newStage.show();
+//			Stage mainStage = (Stage) sendButton.getScene().getWindow();
+//			mainStage.close();
+//			controller.setLabels();
+//			controller.setIpDns(ipDns);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			Alert alert = new Alert(AlertType.ERROR, language.getLanguageBundle().getString("windowError"));
+//			alert.initModality(Modality.APPLICATION_MODAL);
+//			alert.initOwner((Stage) sendButton.getScene().getWindow());
+//			alert.showAndWait();
+//		}
+//	}
 
 	@FXML
 	private void onRadioButtonChange(ActionEvent event) {
