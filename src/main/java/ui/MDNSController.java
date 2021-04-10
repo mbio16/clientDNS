@@ -25,6 +25,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.stage.Modality;
@@ -43,9 +44,12 @@ public class MDNSController extends GeneralController {
 	@FXML
 	protected Menu historyMenu;
 	@FXML
-	protected MenuItem backMenuItem;
-	@FXML
 	protected Menu languageMenu;
+
+	@FXML
+	protected MenuItem backMenuItem;
+	@FXML 
+	private MenuItem deleteMDNSDomainNameHistory;
 	@FXML
 	protected RadioMenuItem czechRadioButton;
 	@FXML
@@ -64,13 +68,13 @@ public class MDNSController extends GeneralController {
 
 	// radio buttons
 	@FXML
-	protected RadioButton ipv4RadioButton;
+	private RadioButton ipv4RadioButton;
 	@FXML
-	protected RadioButton ipv6RadioButton;
+	private RadioButton ipv6RadioButton;
 	@FXML
-	protected RadioButton dnssecYesRadioButton;
-	@FXML
-	protected RadioButton dnssecNoRadioButton;
+	private RadioButton multicastResponseRadioButton;
+	@FXML 
+	private RadioButton unicastResponseRadioButton;
 
 	// checkboxes
 	@FXML
@@ -81,10 +85,11 @@ public class MDNSController extends GeneralController {
 	protected CheckBox nsCheckBox;
 	@FXML
 	protected CheckBox mxCheckBox;
-	@FXML
-	protected CheckBox cnameCheckBox;
+
 	@FXML
 	protected CheckBox ptrCheckBox;
+	@FXML
+	protected CheckBox txtCheckBox;
 	@FXML
 	protected CheckBox dnssecRecordsRequestCheckBox;
 	// titledpane
@@ -101,6 +106,9 @@ public class MDNSController extends GeneralController {
 	protected TitledPane queryTitledPane;
 	@FXML
 	protected TitledPane responseTitledPane;
+	@FXML 
+	private TitledPane multicastResponseTitledPane;
+
 
 	// labels
 	@FXML
@@ -113,10 +121,9 @@ public class MDNSController extends GeneralController {
 	protected Label numberOfMessagesValueLabel;
 
 	// toogleGroup
-	protected ToggleGroup ipToggleGroup;
-	protected ToggleGroup dnssecToggleGroup;
-	protected ToggleGroup domainNameToggleGroup;
+	private ToggleGroup ipToggleGroup;
 
+	private ToggleGroup multicastResponseToggleGroup; 
 	@FXML
 	protected ComboBox<String> savedDomainNamesChoiseBox;
 
@@ -138,35 +145,34 @@ public class MDNSController extends GeneralController {
 		ipv4RadioButton.setToggleGroup(ipToggleGroup);
 		ipv6RadioButton.setToggleGroup(ipToggleGroup);
 
-		dnssecToggleGroup = new ToggleGroup();
-		dnssecYesRadioButton.setToggleGroup(dnssecToggleGroup);
-		dnssecNoRadioButton.setToggleGroup(dnssecToggleGroup);
+		multicastResponseToggleGroup = new ToggleGroup();
+		multicastResponseRadioButton.setToggleGroup(multicastResponseToggleGroup);
+		unicastResponseRadioButton.setToggleGroup(multicastResponseToggleGroup);
 
 	}
 
+
 	public void setLabels() {
 		// define group to iterate over it
-		TitledPane titlePaneArray[] = new TitledPane[] { domainNameTitledPane, ipTitledPane, dnssecTitledPane,
-				recordTypeTitledPane, responseTitledPane, queryTitledPane };
-
-		// same for radio buttons
-		RadioButton[] radioButtonArray = new RadioButton[] { dnssecYesRadioButton, dnssecNoRadioButton, };
 
 		Label[] labelsArray = new Label[] { responseTimeLabel, numberOfMessagesLabel };
-
-		dnssecRecordsRequestCheckBox
-				.setText(language.getLanguageBundle().getString(dnssecRecordsRequestCheckBox.getId()));
+		TitledPane[] titlePaneArray = new TitledPane[] {
+				domainNameTitledPane,
+				ipTitledPane,
+				multicastResponseTitledPane,
+				queryTitledPane,
+				responseTitledPane
+				};
+		dnssecRecordsRequestCheckBox.setText(language.getLanguageBundle().getString(dnssecRecordsRequestCheckBox.getId()));
 		// set labels to current language in menu
-		backMenuItem.setText(language.getLanguageBundle().getString(backMenuItem.getId()));
+		
 		actionMenu.setText(language.getLanguageBundle().getString(actionMenu.getId()));
 		languageMenu.setText(language.getLanguageBundle().getString(languageMenu.getId()));
-
+		historyMenu.setText(language.getLanguageBundle().getString(historyMenu.getId()));
+		backMenuItem.setText(language.getLanguageBundle().getString(backMenuItem.getId()));
+		deleteMDNSDomainNameHistory.setText(language.getLanguageBundle().getString(deleteMDNSDomainNameHistory.getId()));
 		for (TitledPane titledPane : titlePaneArray) {
 			titledPane.setText(language.getLanguageBundle().getString(titledPane.getId()));
-		}
-
-		for (RadioButton radioButton : radioButtonArray) {
-			radioButton.setText(language.getLanguageBundle().getString(radioButton.getId()));
 		}
 
 		for (Label label : labelsArray) {
@@ -186,7 +192,23 @@ public class MDNSController extends GeneralController {
 		}
 		savedDomainNamesChoiseBox.getItems().addAll(settings.getDomainNamesMDNS());
 	}
-
+	@FXML
+	private void onDomainNameMDNSChoiseBoxFired(Event event) {
+		savedDomainNamesChoiseBox.getItems().removeAll(savedDomainNamesChoiseBox.getItems());
+		savedDomainNamesChoiseBox.getItems().addAll(settings.getDomainNamesMDNS());
+	}
+	
+	@FXML
+	private void onDomainNameMDNSChoiseBoxAction(Event event) {
+		try {
+			if (!savedDomainNamesChoiseBox.getValue().equals(null)
+					&& !savedDomainNamesChoiseBox.getValue().equals("")) {
+				domainNameTextField.setText(savedDomainNamesChoiseBox.getValue());
+			}
+		} catch (Exception e) {
+			LOGGER.warning(e.toString());
+		}
+	}
 	protected void setDisableJSonButtons(boolean disable) {
 		copyRequestJsonButton.setDisable(disable);
 		copyResponseJsonButton.setDisable(disable);
@@ -279,6 +301,11 @@ public class MDNSController extends GeneralController {
 	}
 
 	@FXML
+	private void deleteMDNSDomainNameHistoryFired(Event event) {
+		settings.eraseMDNSDomainNames();
+		savedDomainNamesChoiseBox.getItems().removeAll(savedDomainNamesChoiseBox.getItems());
+	}
+	@FXML
 	protected void expandAllRequestOnClick(Event event) {
 		expandAll(requestTreeView);
 	}
@@ -288,6 +315,32 @@ public class MDNSController extends GeneralController {
 		expandAll(responseTreeView);
 	}
 
+	@FXML
+	private void domainNameKeyPressed(KeyEvent event) {
+		controlKeys(event, domainNameTextField);
+		autobinging(domainNameTextField.getText(), settings.getDomainNamesMDNS(), savedDomainNamesChoiseBox);
+	}
+	@FXML
+	private void treeViewclicked(Event event) {
+		
+	}
+	
+	protected void controlKeys(KeyEvent e, TextField text) {
+		byte b = e.getCharacter().getBytes()[0];
+		if (b == (byte) 0x08 && text.getText().length() >= 1 && isRightToLeft(text.getText())) {
+			System.out.println(text.getText());
+			text.setText(text.getText().substring(1, text.getText().length()));
+		}
+	}
+	private boolean isRightToLeft(String text) {
+		char[] chars = text.toCharArray();
+		for(char c: chars){
+		    if(c >= 0x500 && c <= 0x6ff){
+		        return true;
+		        		     }
+		}
+		return false;
+	}
 	protected void expandAll(TreeView<String> t) {
 		try {
 			int i = 0;

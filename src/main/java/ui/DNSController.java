@@ -84,6 +84,10 @@ public class DNSController extends MDNSController {
 	@FXML
 	private RadioButton customDNSRadioButton;
 
+	@FXML
+	private RadioButton dnssecYesRadioButton;
+	@FXML
+	private RadioButton dnssecNoRadioButton;
 	// menu items
 	@FXML
 	private MenuItem deleteDomainNameHistory;
@@ -100,7 +104,7 @@ public class DNSController extends MDNSController {
 	@FXML
 	private CheckBox caaCheckBox;
 	@FXML
-	private CheckBox txtCheckBox;
+	private CheckBox cnameCheckBox;
 	@FXML
 	private CheckBox rrsigCheckBox;
 	@FXML
@@ -135,6 +139,7 @@ public class DNSController extends MDNSController {
 	private ToggleGroup iterativeToggleGroup;
 	private ToggleGroup dnsserverToggleGroup;
 	private ToggleGroup wiresharkFilterToogleGroup;
+	private ToggleGroup dnssecToggleGroup;
 	// choice box
 	@FXML
 	private ComboBox<String> savedDNSChoiceBox;
@@ -280,6 +285,7 @@ public class DNSController extends MDNSController {
 		backMenuItem.setText(language.getLanguageBundle().getString(backMenuItem.getId()));
 		actionMenu.setText(language.getLanguageBundle().getString(actionMenu.getId()));
 		languageMenu.setText(language.getLanguageBundle().getString(languageMenu.getId()));
+		historyMenu.setText(language.getLanguageBundle().getString(historyMenu.getId()));
 		for (TitledPane titledPane : titlePaneArray) {
 			titledPane.setText(language.getLanguageBundle().getString(titledPane.getId()));
 		}
@@ -666,23 +672,9 @@ public class DNSController extends MDNSController {
 		autobinging(dnsServerTextField.getText(), settings.getDnsServers(), savedDNSChoiceBox);
 	}
 
-	private void controlKeys(KeyEvent e, TextField text) {
-		byte b = e.getCharacter().getBytes()[0];
-		if (b == (byte) 0x08 && text.getText().length() >= 1 && isRightToLeft(text.getText())) {
-			System.out.println(text.getText());
-			text.setText(text.getText().substring(1, text.getText().length()));
-		}
-	}
 
-	private boolean isRightToLeft(String text) {
-		char[] chars = text.toCharArray();
-		for(char c: chars){
-		    if(c >= 0x500 && c <= 0x6ff){
-		        return true;
-		        		     }
-		}
-		return false;
-	}
+
+
 	@FXML
 	private void deleteDomainNameHistoryFired(Event event) {
 		settings.eraseDomainNames();
