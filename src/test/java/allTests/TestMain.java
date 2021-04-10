@@ -1,53 +1,32 @@
 package allTests;
 import java.util.concurrent.TimeUnit;
 import enums.APPLICATION_PROTOCOL;
+import enums.IP_PROTOCOL;
 import enums.Q_COUNT;
+import enums.RESPONSE_MDNS_TYPE;
 import enums.TRANSPORT_PROTOCOL;
+import models.DomainConvert;
+import models.Header;
 import models.MessageParser;
 import models.MessageSender;
+import models.Request;
 import models.TCPConnection;
 
 public class TestMain {
 
 	public static void main(String[] args) {
-		Q_COUNT[] a = {Q_COUNT.PTR};
+		Q_COUNT[] a = {Q_COUNT.A};
 		MessageSender sender;
 		MessageParser parser;
 		TRANSPORT_PROTOCOL protocol = TRANSPORT_PROTOCOL.TCP;
 		try {
-		/*	sender = new MessageSender(true, true,true,"biolek.net.",a ,protocol,APPLICATION_PROTOCOL.DNS,"8.8.8.8");
-			sender.setCloseConnection(false);
-			sender.send();
-			TCPConnection t = sender.getTcp();
-			parser = new MessageParser(sender.getRecieveReply(),sender.getHeader(),protocol);
-			parser.parse();
+		
+		//	sender = new MessageSender(true,"LožniceMartin.local",a,IP_PROTOCOL.IPv4,RESPONSE_MDNS_TYPE.RESPONSE_UNICAST);
+			//sender.send();
 			
-			System.out.println(sender.getAsJsonString());
-			System.out.println(parser.getAsJsonString());
-			System.out.println("Message size query: " + sender.getByteSizeQuery());
-			System.out.println("Messge size response: " + parser.getByteSizeResponse());
-			sender.getAsTreeItem();
-			parser.getAsTreeItem();
-			
-			TimeUnit.SECONDS.sleep(5);
-			sender = new MessageSender(true, true,true,"seznam.net.",a ,protocol,APPLICATION_PROTOCOL.DNS,"8.8.8.8");
-			sender.setTcp(t);
-			sender.setCloseConnection(true);
-			sender.send();
-			parser = new MessageParser(sender.getRecieveReply(),sender.getHeader(),protocol);
-			parser.parse();
-			
-			System.out.println(sender.getAsJsonString());
-			System.out.println(parser.getAsJsonString());
-			System.out.println("Message size query: " + sender.getByteSizeQuery());
-			System.out.println("Messge size response: " + parser.getByteSizeResponse());*/
-			
-			sender = new MessageSender(true, true,true,"4.4.8.8.in-addr.arpa",a ,protocol,APPLICATION_PROTOCOL.DNS,"8.8.8.8");
-			sender.send();
-			parser = new MessageParser(sender.getRecieveReply(),sender.getHeader(),protocol);
-			parser.parse();
-			System.out.println(sender.getAsJsonString());
-			System.out.println(parser.getAsJsonString());
+		byte [] b  = DomainConvert.encodeMDNS("Ložnice.local");
+		String res = DomainConvert.decodeMDNS(b, 0);
+		System.out.println(res);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -68,6 +68,10 @@ public class Header {
 
 	}
 
+	public Header(int numberOfQueris) {
+		this(false, false, numberOfQueris, true);
+		this.id = new UInt16(0);
+	}
 	public Header() {
 		root = new TreeItem<String>("Head");
 	}

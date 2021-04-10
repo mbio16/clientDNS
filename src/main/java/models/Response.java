@@ -237,6 +237,33 @@ public class Response {
 		}
 		return returnArray;
 	}
+	public byte [] getDnssecAsBytesMDNS(boolean dnssecSignatures) {
+		ArrayList<Byte> bytes = new ArrayList<Byte>();
+		bytes.add((byte) 0x00);
+		bytes.add(Q_COUNT.OPT.code.getAsBytes()[1]);
+		bytes.add(Q_COUNT.OPT.code.getAsBytes()[0]);
+		bytes.add((byte) new UInt16(MessageSender.MAX_UDP_SIZE).getAsBytes()[1]);
+		bytes.add((byte) new UInt16(MessageSender.MAX_UDP_SIZE).getAsBytes()[0]);
+		bytes.add((byte) 0x00);
+		bytes.add((byte) 0x00);
+		if(dnssecSignatures) {
+			bytes.add((byte) new UInt16(DO_BIT_VALUE).getAsBytes()[1]);
+			bytes.add((byte) new UInt16(DO_BIT_VALUE).getAsBytes()[0]);
+		}
+		else {
+			bytes.add((byte) new UInt16(0).getAsBytes()[1]);
+			bytes.add((byte) new UInt16(0).getAsBytes()[0]);
+		}
+		bytes.add((byte) 0x00);
+		bytes.add((byte) 0x00);
+
+		byte[] returnArray = new byte[bytes.size()];
+
+		for (int i = 0; i < returnArray.length; i++) {
+			returnArray[i] = bytes.get(i);
+		}
+		return returnArray;
+	}
 
 	public byte[] getRawMessage() {
 		return rawMessage;

@@ -2,7 +2,9 @@ package models;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 //import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
@@ -23,9 +25,6 @@ public class DomainConvert {
 		}
 		//String original = domain;
 		domain = encodeIDN(domain);
-		/*if (!isValidDomainName(original)) {
-			throw new NotValidDomainNameException();
-		}*/
 		ArrayList<Byte> resultByte = new ArrayList<Byte>();
 		String splited[] = domain.split("\\.");
 		for (String string : splited) {
@@ -44,6 +43,50 @@ public class DomainConvert {
 		return arrayToReturn;
 	}
 
+	public static byte[] encodeMDNS(String domain) throws UnsupportedEncodingException {
+		 domain.getBytes("UTF-8");
+		 
+			ArrayList<Byte> resultByte = new ArrayList<Byte>();
+			String splited[] = domain.split("\\.");
+			for (String string : splited) {
+				byte[] toAdd = string.getBytes("UTF-8");
+				resultByte.add((byte) toAdd.length);
+				for (int i = 0; i < toAdd.length; i++) {
+					resultByte.add(toAdd[i]);
+				}
+			}
+			resultByte.add((byte) 0x00);
+			byte[] arrayToReturn = new byte[resultByte.size()];
+
+			for (int i = 0; i < arrayToReturn.length; i++) {
+				arrayToReturn[i] = resultByte.get(i);
+			}
+			return arrayToReturn;
+	}
+	
+	public static String decodeMDNS(byte []encodedDomain, int startIndex) {
+		int passed = startIndex;
+		String result = "";
+		while (true) {
+			int size = (int) encodedDomain[passed];
+			if (size == 0) {
+				if (result.length() == 0)
+					return result;
+				return result.substring(0, result.length() - 1);
+			} else {
+				if (size != 1) {
+					if (isDnsNameCompressed(encodedDomain, passed)) {
+						return result + getCompressedNameMDNS(encodedDomain, passed);
+					}
+				}
+				
+				byte [] pom = Arrays.copyOfRange(encodedDomain,passed + 1, passed + size + 1);
+ 				result += new String(pom, StandardCharsets.UTF_8);
+				passed += size + 1;
+				result += ".";
+			}
+		}
+	}
 	public static String encodeIDN(String domain) {
 		if (!Charset.forName("US-ASCII").newEncoder().canEncode(domain)) {
 			return Punycode.toPunycode(domain);
@@ -109,7 +152,11 @@ public class DomainConvert {
 		UInt16 nameStartByte = new UInt16(firstTwoBytes.getValue() - COMPRESS_CONTANT_NUMBER);
 		return DomainConvert.decodeDNS(rawMessage, nameStartByte.getValue());
 	}
-
+	private static String getCompressedNameMDNS(byte[] rawMessage, int currentPosition) {
+		UInt16 firstTwoBytes = new UInt16().loadFromBytes(rawMessage[currentPosition], rawMessage[currentPosition + 1]);
+		UInt16 nameStartByte = new UInt16(firstTwoBytes.getValue() - COMPRESS_CONTANT_NUMBER);
+		return DomainConvert.decodeMDNS(rawMessage, nameStartByte.getValue());
+	}
 	public static int getIndexOfLastByteOfName(byte[] wholeAnswerSection, int start) {
 		int position = start;
 		while (true) {

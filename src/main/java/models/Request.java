@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import org.json.simple.JSONObject;
 import enums.Q_COUNT;
 import enums.Q_TYPE;
+import enums.RESPONSE_MDNS_TYPE;
 import exceptions.NotValidDomainNameException;
 import exceptions.NotValidIPException;
 import javafx.scene.control.TreeItem;
@@ -17,6 +18,7 @@ public class Request {
 	private byte[] nameInBytes;
 	private Q_COUNT qCount;
 	private Q_TYPE qtype;
+	private RESPONSE_MDNS_TYPE mdnsType;
 	private static final int BYTE_SIZE_OF_QCLASS_AND_QTYPE = 4;
 	private int size;
 	private int endIndex;
@@ -37,14 +39,25 @@ public class Request {
 		this.qtype = Q_TYPE.IN;
 		this.endIndex = 0;
 		this.size = this.nameInBytes.length + BYTE_SIZE_OF_QCLASS_AND_QTYPE;
-
+		this.mdnsType = null;
 	}
 
+	public Request(String qName, Q_COUNT a,RESPONSE_MDNS_TYPE mdnsType) throws NotValidIPException, UnsupportedEncodingException {
+		this.qName = qName;
+		if (a.equals(Q_COUNT.PTR)) {
+			ipAddressToPTRFormat();
+		}
+		this.nameInBytes = DomainConvert.encodeMDNS(this.qName);
+		this.qCount = a;
+		this.qtype = Q_TYPE.IN;
+		this.mdnsType = mdnsType;
+		this.size = this.nameInBytes.length + BYTE_SIZE_OF_QCLASS_AND_QTYPE;
+	}
 	public Request() {
 	};
 
 	public byte[] getRequestAsBytes() {
-
+		
 		int lenghtOfName = nameInBytes.length;
 
 		byte result[] = new byte[lenghtOfName + 4];
@@ -53,6 +66,14 @@ public class Request {
 		}
 		result[lenghtOfName] = qCount.code.getAsBytes()[1];
 		result[lenghtOfName + 1] = qCount.code.getAsBytes()[0];
+		
+		if(mdnsType != null) {
+			UInt16 newQtype = new UInt16(mdnsType.value + qtype.code.getValue());
+			result[lenghtOfName + 2] = newQtype.getAsBytes()[1];
+			result[lenghtOfName + 3] = newQtype.getAsBytes()[0];
+			return result;
+		}
+		
 		result[lenghtOfName + 2] = qtype.code.getAsBytes()[1];
 		result[lenghtOfName + 3] = qtype.code.getAsBytes()[0];
 		return result;
@@ -76,13 +97,21 @@ public class Request {
 	@Override
 	public String toString() {
 		return "Request [qName=" + qName + ", nameInBytes=" + Arrays.toString(nameInBytes) + ", qCount=" + qCount
-				+ ", qtype=" + qtype + ", endIndex=" + endIndex + "]";
+				+ ", qtype=" + qtype + ", mdnsType=" + mdnsType + ", size=" + size + ", endIndex=" + endIndex
+				+ ", root=" + root + "]";
 	}
 
 	public int getSize() {
 		return size;
 	}
 
+	public void printEncodedQnameInHex() {
+		String res = "";
+		for (byte b : nameInBytes) {
+			res += String.format("%02x", b);
+		}
+		System.out.println(res);
+	}
 	public Request parseRequest(byte[] request, int startIndex) {
 
 		int nameEndIndex = DomainConvert.getIndexOfLastByteOfName(request, startIndex);
@@ -114,4 +143,5 @@ public class Request {
 		jsonObject.put(KEY_QTYPE, qtype);
 		return jsonObject;
 	}
+	
 }

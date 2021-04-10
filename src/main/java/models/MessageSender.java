@@ -5,17 +5,21 @@ import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.MulticastSocket;
 import java.net.Socket;
 
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Timer;
 import java.util.logging.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import com.google.gson.GsonBuilder;
 import enums.APPLICATION_PROTOCOL;
+import enums.IP_PROTOCOL;
 import enums.Q_COUNT;
+import enums.RESPONSE_MDNS_TYPE;
 import enums.TRANSPORT_PROTOCOL;
 import exceptions.CouldNotUseHoldConnectionException;
 import exceptions.MessageTooBigForUDPException;
@@ -32,7 +36,7 @@ public class MessageSender {
 	private static final int DNS_PORT = 53;
 	private byte[] messageAsBytes;
 	private int byteSizeQuery;
-	// private String resolverIP;
+	
 	private InetAddress ip;
 	private int size;
 	private Socket socket;
@@ -43,10 +47,15 @@ public class MessageSender {
 	private long startTime;
 	private long stopTime;
 	private TCPConnection tcp;
+	private IP_PROTOCOL ipProtocol;
+	private RESPONSE_MDNS_TYPE mdnsType;
+	private boolean dnssecSignatures;
 	private boolean closeConnection;
 	private static final int MAX_MESSAGES_SENT = 3;
 	private static final int TIME_OUT_MILLIS = 2000;
 	public static final int MAX_UDP_SIZE = 1232;
+	private static final String IPv4_MDNS="224.0.0.251";
+	private static final int MDNS_PORT = 5353;
 	private static final String KEY_HEAD = "Head";
 	private static final String KEY_QUERY = "Questions";
 	private static final String KEY_REQUEST = "Request";
@@ -55,8 +64,7 @@ public class MessageSender {
 
 	public MessageSender(boolean recursion, boolean dnssec, boolean rrRecords, String domain, Q_COUNT[] types,
 			TRANSPORT_PROTOCOL transport_protocol, APPLICATION_PROTOCOL application_protocol, String resolverIP)
-			throws NotValidIPException, UnsupportedEncodingException, NotValidDomainNameException,
-			UnknownHostException {
+			throws NotValidIPException, UnsupportedEncodingException, NotValidDomainNameException, UnknownHostException {
 		requests = new ArrayList<Request>();
 		header = new Header(recursion, dnssec, types.length, rrRecords);
 		size = Header.getSize();
@@ -72,6 +80,18 @@ public class MessageSender {
 		closeConnection = true;
 	}
 
+	public MessageSender(boolean dnssecSignatures,String domain, Q_COUNT[] types, IP_PROTOCOL ipProtocol, RESPONSE_MDNS_TYPE  mdnsType) throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException {
+		this.application_protocol = APPLICATION_PROTOCOL.MDNS;
+		this.mdnsType = mdnsType;
+		this.ipProtocol = ipProtocol;
+		this.dnssecSignatures = dnssecSignatures;
+		requests = new ArrayList<Request>();
+		header = new Header(types.length);
+		this.size = Header.getSize();
+		addRequests(types, checkAndStripFullyQualifyName(domain), mdnsType);
+		this.messagesSent = 0;
+		
+	}
 	private String checkAndStripFullyQualifyName(String domain) {
 		if (domain.endsWith(".")) {
 			System.out.println("Striping .");
@@ -120,6 +140,14 @@ public class MessageSender {
 		}
 	}
 
+	private void addRequests(Q_COUNT[] types, String domain, RESPONSE_MDNS_TYPE mdnsType)
+			throws NotValidIPException, UnsupportedEncodingException, NotValidDomainNameException {
+		for (Q_COUNT qcount : types) {
+			Request r = new Request(domain,qcount,mdnsType);
+			requests.add(r);
+			size += r.getSize();
+		}
+	}
 	public void send()
 			throws TimeoutException, IOException, MessageTooBigForUDPException, CouldNotUseHoldConnectionException {
 		switch (application_protocol) {
@@ -135,6 +163,7 @@ public class MessageSender {
 			}
 			break;
 		case MDNS:
+			mdns();
 			break;
 		case LLMR:
 			break;
@@ -145,6 +174,16 @@ public class MessageSender {
 		}
 	}
 
+	private void mdns() throws IOException {
+		messageToBytesMDNS();
+		 InetAddress group = InetAddress.getByName(IPv4_MDNS);
+		 MulticastSocket s = new MulticastSocket(MDNS_PORT);
+		 s.joinGroup(group);
+		 DatagramPacket hi = new DatagramPacket(messageAsBytes, messageAsBytes.length,
+		                             group, MDNS_PORT);
+		 s.send(hi);
+		 s.leaveGroup(group);
+	}
 	private void dnsOverUDP() throws TimeoutException, IOException, MessageTooBigForUDPException {
 		if (size > MAX_UDP_SIZE)
 			throw new MessageTooBigForUDPException();
@@ -239,7 +278,30 @@ public class MessageSender {
 		byteSizeQuery = messageAsBytes.length;
 
 	}
-
+	private void messageToBytesMDNS() {
+		int curentIndex = 0;
+		size += new Response().getDnssecAsBytesMDNS(dnssecSignatures).length;
+		this.messageAsBytes = new byte [size];
+		byte head [] = header.getHaderAsBytes();
+		for (int i = 0; i < head.length; i++) {
+			this.messageAsBytes[curentIndex] = head[i];
+			curentIndex++;
+		}
+		for (Request r : requests) {
+			byte requestBytes[] = r.getRequestAsBytes();
+			for (int i = 0; i < requestBytes.length; i++) {
+				this.messageAsBytes[curentIndex] = requestBytes[i];
+				curentIndex++;
+			}
+		}
+		byte opt[] = new Response().getDnssecAsBytesMDNS(dnssecSignatures);
+		int j = 0;
+		for (int i = curentIndex; i < size; i++) {
+			this.messageAsBytes[i] = opt[j];
+			j++;
+		}
+		byteSizeQuery = messageAsBytes.length;
+	}
 	@SuppressWarnings("unchecked")
 	public JSONObject getAsJson() {
 		JSONObject jsonObject = new JSONObject();
