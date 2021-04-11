@@ -103,6 +103,7 @@ public class MessageParser {
 			arcountResponses.add(r);
 			currentIndex = r.getEndIndex() + 1;
 		}
+		byteSizeResponse = currentIndex;
 	}
 	public TreeItem<String> getAsTreeItem() {
 
