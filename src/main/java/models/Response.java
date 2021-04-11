@@ -6,6 +6,8 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 import org.json.simple.JSONObject;
+
+import enums.CACHE;
 import enums.Q_COUNT;
 import enums.Q_TYPE;
 import javafx.scene.control.TreeItem;
@@ -42,6 +44,7 @@ public class Response {
 	private byte version;
 	private UInt16 doBit;
 	private UInt16 size;
+	private CACHE cache;
 	private static final int COMPRESS_CONTANT_NUMBER = 49152;
 	private static final int DO_BIT_VALUE = 32768;
 	private static final String DATA_KEY = "Data";
@@ -49,7 +52,7 @@ public class Response {
 	private static final String TYPE_KEY = "Type";
 	private static final String TTL_KEY = "Time to Live";
 	private static final String CLASS_KEY = "Class";
-
+	private static final String CACHE_KEY = "Cache";
 	private static final String KEY_OPT_UDP_SIZE = "Size";
 	private static final String KEY_OPT_RCODE = "Rcode";
 	private static final String KEY_OPT_VERSION = "EDSN0 version";
@@ -61,10 +64,10 @@ public class Response {
 	}
 
 	public Response parseResponse(byte[] rawMessage, int startIndex)
-			throws UnknownHostException, UnsupportedEncodingException {
+		throws UnknownHostException, UnsupportedEncodingException {
 		this.rawMessage = rawMessage;
 		int currentIndex = startIndex;
-		currentIndex = parseName(currentIndex);
+		currentIndex = parseName(currentIndex,false);
 		this.qcount = Q_COUNT
 				.getTypeByCode(new UInt16().loadFromBytes(rawMessage[currentIndex], rawMessage[currentIndex + 1]));
 		currentIndex += 2;
@@ -83,7 +86,38 @@ public class Response {
 		currentIndex += 2;
 		this.endIndex = currentIndex + this.rdLenght.getValue() - 1;
 		this.rdata = parseRecord(currentIndex);
+		cache = null;
 		return this;
+	}
+	public Response parseResponseMDNS(byte[] rawMessage, int startIndex) 
+		throws UnknownHostException, UnsupportedEncodingException {
+		this.rawMessage = rawMessage;
+		int currentIndex = startIndex;
+		currentIndex = parseName(currentIndex,true);
+		this.qcount = Q_COUNT
+			.getTypeByCode(new UInt16().loadFromBytes(rawMessage[currentIndex], rawMessage[currentIndex + 1]));
+		currentIndex += 2;
+		if (qcount.equals(Q_COUNT.OPT)) {
+			parseAsOPT(currentIndex);
+			return this;
+		}
+		UInt16 pom = new UInt16().loadFromBytes(rawMessage[currentIndex], rawMessage[currentIndex + 1]);
+		this.cache = CACHE.getTypeByCode(pom);
+		if(cache== CACHE.FLUSH_CACHE) {
+			pom = new UInt16(pom.getValue()-CACHE.FLUSH_CACHE.value);
+		}
+		this.qtype = Q_TYPE
+				.getTypeByCode(new UInt16().loadFromBytes(rawMessage[currentIndex], rawMessage[currentIndex + 1]));
+		currentIndex += 2;
+		byte[] ttlBytes = { rawMessage[currentIndex], rawMessage[currentIndex + 1], rawMessage[currentIndex + 2],
+				rawMessage[currentIndex + 3] };
+		this.ttl = ByteBuffer.wrap(ttlBytes).getInt();
+		currentIndex += 4;
+		this.rdLenght = new UInt16().loadFromBytes(rawMessage[currentIndex], rawMessage[currentIndex + 1]);
+		currentIndex += 2;
+		this.endIndex = currentIndex + this.rdLenght.getValue() - 1;
+		this.rdata = parseRecord(currentIndex);
+		return this;	
 	}
 
 	private void parseAsOPT(int currentIndex) throws UnknownHostException, UnsupportedEncodingException {
@@ -102,8 +136,7 @@ public class Response {
 		this.endIndex = currentIndex-1;
 	}
 
-	private int parseName(int startIndex) {
-		// Has to be done seperately (not in DomainConvert), because of end index
+	private int parseName(int startIndex, boolean mdns) {
 		int positionOfNameIndex = startIndex;
 		UInt16 firstTwoBytes = new UInt16().loadFromBytes(rawMessage[startIndex], rawMessage[startIndex + 1]);
 		if (firstTwoBytes.getValue() >= COMPRESS_CONTANT_NUMBER) {
@@ -114,7 +147,12 @@ public class Response {
 		} else {
 			startIndex = DomainConvert.getIndexOfLastByteOfName(rawMessage, startIndex) + 1;
 		}
-		this.nameAsString = DomainConvert.decodeDNS(rawMessage, positionOfNameIndex);
+		if (mdns) {
+			this.nameAsString = DomainConvert.decodeMDNS(rawMessage, positionOfNameIndex);
+		}
+		else {
+			this.nameAsString = DomainConvert.decodeDNS(rawMessage, positionOfNameIndex);
+		}
 		return startIndex;
 	}
 
@@ -161,7 +199,12 @@ public class Response {
 		TreeItem<String> main = new TreeItem<String>(
 				nameAsString + " " + qcount + " " + rdata.getDataForTreeViewName());
 		main.getChildren().add(new TreeItem<String>(NAME_KEY + ": " + nameAsString));
+		
+		if(cache != null) {
+			main.getChildren().add(new TreeItem<String>(CACHE_KEY + ": " + cache));
+		}
 		main.getChildren().add(new TreeItem<String>(TYPE_KEY + ": " + qcount));
+		
 		if (qcount.code != Q_COUNT.OPT.code) {
 			main.getChildren().add(new TreeItem<String>(TTL_KEY + ": " + ttl));
 			main.getChildren().add(new TreeItem<String>(CLASS_KEY + ": " + qtype));
@@ -203,6 +246,9 @@ public class Response {
 		jsonObject.put(CLASS_KEY, qtype);
 		jsonObject.put(TTL_KEY, ttl);
 		jsonObject.put(DATA_KEY, rdata.getAsJson());
+		if(cache != null) {
+			jsonObject.put(CACHE_KEY, cache.toString());
+		}
 		return jsonObject;
 	}
 

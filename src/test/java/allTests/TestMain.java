@@ -15,18 +15,17 @@ import models.TCPConnection;
 public class TestMain {
 
 	public static void main(String[] args) {
-		Q_COUNT[] a = {Q_COUNT.A};
+		Q_COUNT[] a = {Q_COUNT.PTR};
 		MessageSender sender;
 		MessageParser parser;
 		TRANSPORT_PROTOCOL protocol = TRANSPORT_PROTOCOL.TCP;
 		try {
 		
-		//	sender = new MessageSender(true,"LožniceMartin.local",a,IP_PROTOCOL.IPv4,RESPONSE_MDNS_TYPE.RESPONSE_UNICAST);
-			//sender.send();
-			
-		byte [] b  = DomainConvert.encodeMDNS("Ložnice.local");
-		String res = DomainConvert.decodeMDNS(b, 0);
-		System.out.println(res);
+		sender = new MessageSender(true,"192.168.0.166",a,IP_PROTOCOL.IPv6,RESPONSE_MDNS_TYPE.RESPONSE_MULTICAST);
+		sender.send();
+		parser = new MessageParser(sender.getRecieveReply(), sender.getHeader(), null);
+		parser.parseMDNS();
+		System.out.println(parser.getAsJsonString());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

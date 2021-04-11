@@ -11,7 +11,6 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Timer;
 import java.util.logging.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -48,13 +47,13 @@ public class MessageSender {
 	private long stopTime;
 	private TCPConnection tcp;
 	private IP_PROTOCOL ipProtocol;
-	private RESPONSE_MDNS_TYPE mdnsType;
 	private boolean dnssecSignatures;
 	private boolean closeConnection;
 	private static final int MAX_MESSAGES_SENT = 3;
 	private static final int TIME_OUT_MILLIS = 2000;
 	public static final int MAX_UDP_SIZE = 1232;
 	private static final String IPv4_MDNS="224.0.0.251";
+	private static final String IPv6_MDNS="ff02::fb";
 	private static final int MDNS_PORT = 5353;
 	private static final String KEY_HEAD = "Head";
 	private static final String KEY_QUERY = "Questions";
@@ -82,7 +81,6 @@ public class MessageSender {
 
 	public MessageSender(boolean dnssecSignatures,String domain, Q_COUNT[] types, IP_PROTOCOL ipProtocol, RESPONSE_MDNS_TYPE  mdnsType) throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException {
 		this.application_protocol = APPLICATION_PROTOCOL.MDNS;
-		this.mdnsType = mdnsType;
 		this.ipProtocol = ipProtocol;
 		this.dnssecSignatures = dnssecSignatures;
 		requests = new ArrayList<Request>();
@@ -90,7 +88,7 @@ public class MessageSender {
 		this.size = Header.getSize();
 		addRequests(types, checkAndStripFullyQualifyName(domain), mdnsType);
 		this.messagesSent = 0;
-		
+		this.recieveReply = new byte [1232];
 	}
 	private String checkAndStripFullyQualifyName(String domain) {
 		if (domain.endsWith(".")) {
@@ -174,15 +172,44 @@ public class MessageSender {
 		}
 	}
 
-	private void mdns() throws IOException {
+	@SuppressWarnings("resource")
+	private void mdns() throws UnknownHostException, TimeoutException{
 		messageToBytesMDNS();
-		 InetAddress group = InetAddress.getByName(IPv4_MDNS);
-		 MulticastSocket s = new MulticastSocket(MDNS_PORT);
-		 s.joinGroup(group);
-		 DatagramPacket hi = new DatagramPacket(messageAsBytes, messageAsBytes.length,
-		                             group, MDNS_PORT);
-		 s.send(hi);
-		 s.leaveGroup(group);
+		messagesSent = 1;
+		 InetAddress group;
+		if(ipProtocol==IP_PROTOCOL.IPv4) {
+			group = InetAddress.getByName(IPv4_MDNS);
+		}
+		else {
+			group = InetAddress.getByName(IPv6_MDNS);
+		}
+		while(true) {
+		try {
+		 MulticastSocket socket = new MulticastSocket(MDNS_PORT);
+		 socket.setSoTimeout(TIME_OUT_MILLIS);
+		 socket.joinGroup(group);
+		 DatagramPacket datagramPacket = new DatagramPacket(messageAsBytes, messageAsBytes.length,
+                 group, MDNS_PORT);
+		 startTime = System.nanoTime();
+		 socket.send(datagramPacket);
+		
+		DatagramPacket recievePacket = new DatagramPacket(recieveReply, recieveReply.length);
+		socket.receive(recievePacket);
+		socket.receive(recievePacket);
+		stopTime = System.nanoTime();
+		socket.leaveGroup(group);
+		return;
+		}catch (Exception e) {
+			if (messagesSent < 3) {
+				messagesSent++;
+			}	
+			else {
+				throw new TimeoutException();
+				}
+			}
+		}
+		
+		
 	}
 	private void dnsOverUDP() throws TimeoutException, IOException, MessageTooBigForUDPException {
 		if (size > MAX_UDP_SIZE)

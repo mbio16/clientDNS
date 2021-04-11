@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import application.Main;
+import enums.IP_PROTOCOL;
+import enums.Q_COUNT;
+import enums.RESPONSE_MDNS_TYPE;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -256,9 +259,32 @@ public class MDNSController extends GeneralController {
 
 	@FXML
 	protected void sendButtonFired(ActionEvent event) {
-
+		Q_COUNT[] a = {Q_COUNT.A};
+		try {
+		sender = new MessageSender(true,"macMartin.local",a,IP_PROTOCOL.IPv6,RESPONSE_MDNS_TYPE.RESPONSE_MULTICAST);
+		sender.send();
+		parser = new MessageParser(sender.getRecieveReply(), sender.getHeader(), null);
+		parser.parseMDNS();
+		setControls();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			}
+		}
+	private void setControls() {
+		responseTreeView.setRoot(parser.getAsTreeItem());
+		requestTreeView.setRoot(sender.getAsTreeItem());
+		responseTimeValueLabel.setText("" + sender.getTimeElapsed());
+		numberOfMessagesValueLabel.setText("" + sender.getMessageSent());
+		setDisableJSonButtons(false);
+		responseTreeView.getTreeItem(0).setExpanded(true);
+		expandAll(requestTreeView);
+		expandAll(responseTreeView);
+		queryTitledPane.setText(language.getLanguageBundle().getString(queryTitledPane.getId().toString()) + " ("
+				+ sender.getByteSizeQuery() + " B)");
+		responseTitledPane.setText(language.getLanguageBundle().getString(responseTitledPane.getId().toString()) + " ("
+				+ parser.getByteSizeResponse() + " B)");
 	}
-
 	protected void copyDataToClipBoard(String data) {
 		final Clipboard clipboard = Clipboard.getSystemClipboard();
 		final ClipboardContent content = new ClipboardContent();

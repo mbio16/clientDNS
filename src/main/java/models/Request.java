@@ -26,6 +26,7 @@ public class Request {
 	private static final String KEY_NAME = "Name";
 	private static final String KEY_QCOUNT = "Type";
 	private static final String KEY_QTYPE = "Class";
+	private static final String KEY_RESPONSE_TYPE = "Response type";
 	private static final Logger LOGGER = Logger.getLogger(Language.class.getName());
 
 	public Request(String qName, Q_COUNT qCount)
@@ -83,6 +84,9 @@ public class Request {
 		root = new TreeItem<String>(qName + " " + qCount + " " + qtype);
 		root.getChildren().add(new TreeItem<String>(KEY_NAME + ": " + qName));
 		root.getChildren().add(new TreeItem<String>(KEY_QCOUNT + ": " + qCount));
+		if(mdnsType != null) {
+			root.getChildren().add(new TreeItem<String>(KEY_RESPONSE_TYPE + ": " + mdnsType.toString()));
+		}
 		root.getChildren().add(new TreeItem<String>(KEY_QTYPE + ": " + qtype));
 		return root;
 	}
@@ -140,6 +144,9 @@ public class Request {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put(KEY_NAME, qName);
 		jsonObject.put(KEY_QCOUNT, qCount);
+		if(mdnsType != null) {
+			jsonObject.put(KEY_RESPONSE_TYPE, mdnsType.toString());
+		}
 		jsonObject.put(KEY_QTYPE, qtype);
 		return jsonObject;
 	}

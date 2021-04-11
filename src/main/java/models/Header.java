@@ -170,7 +170,6 @@ public class Header {
 		this.ArCount = new UInt16().loadFromBytes(byteHead[10], byteHead[11]);
 		return this;
 	}
-
 	public static int getSize() {
 		return size;
 	}

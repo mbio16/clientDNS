@@ -84,7 +84,7 @@ public class RecordNSEC extends Record {
 
 	@Override
 	public String getDataForTreeViewName() {
-		return name + "..";
+		return name + " ...";
 	}
 
 }
