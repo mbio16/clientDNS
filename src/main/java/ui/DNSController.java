@@ -391,32 +391,6 @@ public class DNSController extends MDNSController {
 		savedDNSChoiceBox.getItems().addAll(settings.getDnsServers());
 	}
 
-//	@FXML
-//	private void backButtonFirred(ActionEvent event) {
-//		try {
-//			FXMLLoader loader = new FXMLLoader(getClass().getResource(MainController.FXML_FILE_NAME));
-//			Stage newStage = new Stage();
-//			newStage.setScene(new Scene((Parent) loader.load()));
-//			GeneralController controller = (GeneralController) loader.getController();
-//			controller.setLanguage(language);
-//			controller.setSettings(settings);
-//			newStage.setTitle(APP_TITTLE);
-//			newStage.initModality(Modality.APPLICATION_MODAL);
-//			newStage.initOwner((Stage) sendButton.getScene().getWindow());
-//			newStage.show();
-//			Stage mainStage = (Stage) sendButton.getScene().getWindow();
-//			mainStage.close();
-//			controller.setLabels();
-//			controller.setIpDns(ipDns);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			Alert alert = new Alert(AlertType.ERROR, language.getLanguageBundle().getString("windowError"));
-//			alert.initModality(Modality.APPLICATION_MODAL);
-//			alert.initOwner((Stage) sendButton.getScene().getWindow());
-//			alert.showAndWait();
-//		}
-//	}
-
 	@FXML
 	private void onRadioButtonChange(ActionEvent event) {
 		if (dnsserverToggleGroup.getSelectedToggle().getUserData() != null) {
@@ -542,22 +516,7 @@ public class DNSController extends MDNSController {
 				+ "\n" + "Application protocol: " + APPLICATION_PROTOCOL.DNS);
 	}
 
-//	private void setControls() {
-//		responseTreeView.setRoot(parser.getAsTreeItem());
-//		requestTreeView.setRoot(sender.getAsTreeItem());
-//		responseTimeValueLabel.setText("" + sender.getTimeElapsed());
-//		numberOfMessagesValueLabel.setText("" + sender.getMessageSent());
-//		setDisableJSonButtons(false);
-//		responseTreeView.getTreeItem(0).setExpanded(true);
-//		expandAll(requestTreeView);
-//		expandAll(responseTreeView);
-//		queryTitledPane.setText(language.getLanguageBundle().getString(queryTitledPane.getId().toString()) + " ("
-//				+ sender.getByteSizeQuery() + " B)");
-//		responseTitledPane.setText(language.getLanguageBundle().getString(responseTitledPane.getId().toString()) + " ("
-//				+ parser.getByteSizeResponse() + " B)");
-//	}
-
-	public void showAller(String exceptionName) {
+	private void showAller(String exceptionName) {
 		Alert alert = new Alert(AlertType.ERROR, language.getLanguageBundle().getString(exceptionName));
 		alert.initModality(Modality.APPLICATION_MODAL);
 		alert.initOwner((Stage) sendButton.getScene().getWindow());

@@ -182,16 +182,8 @@ public class DomainConvert {
 			domain.getBytes("UTF-8");
 			String toCompare = domain;
 			String encoded = Punycode.toPunycode(domain);
-			System.out.println(toCompare);
-			System.out.println(encoded);
-			if(encoded.equals(toCompare)) {
-				System.out.println("Not UTF");
-				return false;
-			}
-			else {
-				System.out.println("UTF8");
-				return true;
-			}
+
+			return !encoded.equals(toCompare);
 		} catch (Exception e) {
 			return false;
 		}
