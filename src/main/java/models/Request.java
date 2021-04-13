@@ -45,13 +45,14 @@ public class Request {
 
 	public Request(String qName, Q_COUNT a,RESPONSE_MDNS_TYPE mdnsType) throws NotValidIPException, UnsupportedEncodingException {
 		this.qName = qName;
+		this.mdnsType = mdnsType;
 		if (a.equals(Q_COUNT.PTR)) {
 			ipAddressToPTRFormat();
 		}
 		this.nameInBytes = DomainConvert.encodeMDNS(this.qName);
 		this.qCount = a;
 		this.qtype = Q_TYPE.IN;
-		this.mdnsType = mdnsType;
+		
 		this.size = this.nameInBytes.length + BYTE_SIZE_OF_QCLASS_AND_QTYPE;
 	}
 	public Request() {
@@ -92,6 +93,11 @@ public class Request {
 	}
 
 	private void ipAddressToPTRFormat() throws NotValidIPException {
+		
+		if(mdnsType != null && qName.contains("_")) {
+			return;
+		}
+		
 		if(qName.contains(".arpa")) {
 			return;
 		}

@@ -21,7 +21,8 @@ public enum Q_COUNT {
 	NSEC3(50), 
 	NSEC(47), 
 	NSEC3PARAM(51),
-	ANY(255);
+	ANY(255),
+	SRV(33);
 
 	public UInt16 code;
 

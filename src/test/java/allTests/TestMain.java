@@ -15,13 +15,13 @@ import models.TCPConnection;
 public class TestMain {
 
 	public static void main(String[] args) {
-		Q_COUNT[] a = {Q_COUNT.PTR};
+		Q_COUNT[] a = {Q_COUNT.SRV};
 		MessageSender sender;
 		MessageParser parser;
 		TRANSPORT_PROTOCOL protocol = TRANSPORT_PROTOCOL.TCP;
 		try {
 		
-		sender = new MessageSender(true,"192.168.0.166",a,IP_PROTOCOL.IPv6,RESPONSE_MDNS_TYPE.RESPONSE_MULTICAST);
+		sender = new MessageSender(false,"macMartin.local",a,IP_PROTOCOL.IPv4,RESPONSE_MDNS_TYPE.RESPONSE_UNICAST);
 		sender.send();
 		parser = new MessageParser(sender.getRecieveReply(), sender.getHeader(), null);
 		parser.parseMDNS();

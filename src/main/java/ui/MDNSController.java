@@ -261,9 +261,9 @@ public class MDNSController extends GeneralController {
 
 	@FXML
 	protected void sendButtonFired(ActionEvent event) {
-		Q_COUNT[] a = {Q_COUNT.A};
+		Q_COUNT[] a = {Q_COUNT.SRV};
 		try {
-		sender = new MessageSender(true,"macMartin.local",a,IP_PROTOCOL.IPv6,RESPONSE_MDNS_TYPE.RESPONSE_MULTICAST);
+		sender = new MessageSender(true,"macMartin.local",a,IP_PROTOCOL.IPv4,RESPONSE_MDNS_TYPE.RESPONSE_MULTICAST);
 		sender.send();
 		parser = new MessageParser(sender.getRecieveReply(), sender.getHeader(), null);
 		parser.parseMDNS();

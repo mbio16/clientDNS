@@ -27,6 +27,7 @@ import records.RecordOPT;
 import records.RecordPTR;
 import records.RecordRRSIG;
 import records.RecordSOA;
+import records.RecordSRV;
 import records.RecordTXT;
 
 public class Response {
@@ -44,6 +45,9 @@ public class Response {
 	private byte version;
 	private UInt16 doBit;
 	private UInt16 size;
+	private String srvService;
+	private String srvProtocol;
+	private String srvName;
 	private CACHE cache;
 	private static final int COMPRESS_CONTANT_NUMBER = 49152;
 	private static final int DO_BIT_VALUE = 32768;
@@ -57,8 +61,11 @@ public class Response {
 	private static final String KEY_OPT_RCODE = "Rcode";
 	private static final String KEY_OPT_VERSION = "EDSN0 version";
 	private static final String KEY_OPT_DO_BIT = "Can handle DNSSEC";
+	private static final String KEY_SRV_SERVICE = "Service";
+	private static final String KEY_SRV_PROTOCOL = "Protocol";
+	private static final String KEY_SRV_NAME = "Name";
 	public static final String ROOT_DOMAIN = ". (ROOT)";
-
+	
 	public Response() {
 
 	}
@@ -101,6 +108,7 @@ public class Response {
 			parseAsOPT(currentIndex);
 			return this;
 		}
+		checkAndParseSRV();
 		UInt16 pom = new UInt16().loadFromBytes(rawMessage[currentIndex], rawMessage[currentIndex + 1]);
 		this.cache = CACHE.getTypeByCode(pom);
 		if(cache== CACHE.FLUSH_CACHE) {
@@ -120,6 +128,20 @@ public class Response {
 		return this;	
 	}
 
+	private void checkAndParseSRV() {
+		if(this.qcount == Q_COUNT.SRV) {
+			srvName = "";
+			String  srvArray [] = this.nameAsString.split("\\.");
+			srvService = srvArray[0];
+			srvProtocol = srvArray[1];
+			for (int i = 2; i < srvArray.length; i++) {
+				if (i+1 == srvArray.length) 
+					srvName += srvArray[i];
+				else
+					srvName += srvArray[i] + ".";
+			}
+		}
+	}
 	private void parseAsOPT(int currentIndex) throws UnknownHostException, UnsupportedEncodingException {
 		size = new UInt16().loadFromBytes(rawMessage[currentIndex], rawMessage[currentIndex + 1]);
 		currentIndex += 2;
@@ -190,6 +212,8 @@ public class Response {
 			return new RecordNSEC3(rawMessage, rdLenght.getValue(), currentIndex);
 		case NSEC3PARAM:
 			return new RecordNSEC3PARAM(rawMessage, rdLenght.getValue(), currentIndex);
+		case SRV:
+			return new RecordSRV(rawMessage, rdLenght.getValue(), currentIndex);
 		default:
 			return null;
 		}
@@ -198,11 +222,21 @@ public class Response {
 	public TreeItem<String> getAsTreeItem() {
 		TreeItem<String> main = new TreeItem<String>(
 				nameAsString + " " + qcount + " " + rdata.getDataForTreeViewName());
+		//check if type is SRV
+		if(qcount == Q_COUNT.SRV) {
+			main.getChildren().add(new TreeItem<String>(KEY_SRV_SERVICE + ": " + srvService));
+			main.getChildren().add(new TreeItem<String>(KEY_SRV_PROTOCOL + ": " + srvProtocol));
+			main.getChildren().add(new TreeItem<String>(KEY_SRV_NAME + ": " + srvName));
+		}else {
 		main.getChildren().add(new TreeItem<String>(NAME_KEY + ": " + nameAsString));
+		}
 		
+		//check if it is mdns
 		if(cache != null) {
 			main.getChildren().add(new TreeItem<String>(CACHE_KEY + ": " + cache));
 		}
+		
+		
 		main.getChildren().add(new TreeItem<String>(TYPE_KEY + ": " + qcount));
 		
 		if (qcount.code != Q_COUNT.OPT.code) {
@@ -223,7 +257,7 @@ public class Response {
 
 		return main;
 	}
-
+	
 	public static TreeItem<String> getOptAsTreeItem() {
 		TreeItem<String> root = new TreeItem<String>(ROOT_DOMAIN + " " + Q_COUNT.OPT);
 		root.getChildren().add(new TreeItem<String>(NAME_KEY + ": " + ROOT_DOMAIN));
@@ -241,11 +275,24 @@ public class Response {
 			return getOPTAsJson();
 		}
 		JSONObject jsonObject = new JSONObject();
+		
+		//check if SRV
+		if(qcount == Q_COUNT.SRV) {
+			jsonObject.put(KEY_SRV_SERVICE,srvService);
+			jsonObject.put(KEY_SRV_PROTOCOL,srvProtocol);
+			jsonObject.put(KEY_SRV_NAME,srvName);
+		}
+		else {
 		jsonObject.put(NAME_KEY, nameAsString);
+		}
+		
+		
 		jsonObject.put(TYPE_KEY, qcount.toString());
 		jsonObject.put(CLASS_KEY, qtype);
 		jsonObject.put(TTL_KEY, ttl);
 		jsonObject.put(DATA_KEY, rdata.getAsJson());
+		
+		//check if mdns
 		if(cache != null) {
 			jsonObject.put(CACHE_KEY, cache.toString());
 		}
