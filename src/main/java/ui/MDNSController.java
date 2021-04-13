@@ -1,5 +1,6 @@
 package ui;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
@@ -7,6 +8,9 @@ import application.Main;
 import enums.IP_PROTOCOL;
 import enums.Q_COUNT;
 import enums.RESPONSE_MDNS_TYPE;
+import exceptions.MoreRecordsTypesWithPTRException;
+import exceptions.NonRecordSelectedException;
+import exceptions.NotValidDomainNameException;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -33,6 +37,8 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import models.DomainConvert;
+import models.Ip;
 import models.Language;
 import models.MessageParser;
 import models.MessageSender;
@@ -85,10 +91,9 @@ public class MDNSController extends GeneralController {
 	@FXML
 	protected CheckBox aaaaCheckBox;
 	@FXML
-	protected CheckBox nsCheckBox;
+	protected CheckBox nsecCheckBox;
 	@FXML
-	protected CheckBox mxCheckBox;
-
+	private CheckBox srvCheckBox;
 	@FXML
 	protected CheckBox ptrCheckBox;
 	@FXML
@@ -196,6 +201,77 @@ public class MDNSController extends GeneralController {
 			englishRadioButton.setSelected(true);
 		}
 		savedDomainNamesChoiseBox.getItems().addAll(settings.getDomainNamesMDNS());
+		
+		setUserDataRecords();
+		setIpUserData();
+		setMDNSType();
+		
+	}
+	private void setMDNSType() {
+		multicastResponseRadioButton.setUserData(RESPONSE_MDNS_TYPE.RESPONSE_MULTICAST);
+		unicastResponseRadioButton.setUserData(RESPONSE_MDNS_TYPE.RESPONSE_UNICAST);
+	}
+	private void setIpUserData() {
+		ipv4RadioButton.setUserData(IP_PROTOCOL.IPv4);
+		ipv6RadioButton.setUserData(IP_PROTOCOL.IPv6);
+	}
+	
+	private void setUserDataRecords() {
+		aCheckBox.setUserData(Q_COUNT.A);
+		aaaaCheckBox.setUserData(Q_COUNT.AAAA);
+		ptrCheckBox.setUserData(Q_COUNT.PTR);
+		nsecCheckBox.setUserData(Q_COUNT.NSEC);
+		txtCheckBox.setUserData(Q_COUNT.TXT);
+		srvCheckBox.setUserData(Q_COUNT.SRV);
+		anyCheckBox.setUserData(Q_COUNT.ANY);
+	}
+	
+	private Q_COUNT [] getRecordTypes()  throws MoreRecordsTypesWithPTRException, NonRecordSelectedException {
+		ArrayList<Q_COUNT> list = new ArrayList<Q_COUNT>();
+		CheckBox[] checkBoxArray = { 
+				aCheckBox,
+				aaaaCheckBox,
+				ptrCheckBox,
+				txtCheckBox,
+				nsecCheckBox,
+				srvCheckBox,
+				anyCheckBox 
+				};
+		for (int i = 0; i < checkBoxArray.length; i++) {
+			if (checkBoxArray[i].isSelected()) {
+				list.add((Q_COUNT) checkBoxArray[i].getUserData());
+			}
+		}
+		if (list.contains(Q_COUNT.PTR) && list.size() > 1) {
+			throw new MoreRecordsTypesWithPTRException();
+		}
+		if (list.size() == 0) {
+			throw new NonRecordSelectedException();
+		}
+		Q_COUNT returnList[] = new Q_COUNT[list.size()];
+		for (int i = 0; i < returnList.length; i++) {
+			returnList[i] = list.get(i);
+		}
+		return returnList;
+	}
+	
+	private String getDomain() throws UnsupportedEncodingException, NotValidDomainNameException {
+		String domain = domainNameTextField.getText();
+		
+		if(ptrCheckBox.isSelected()) {
+			if(Ip.isIpValid(domain) || domain.contains(".arpa") || domain.contains("_")) {
+				return domain;
+			}
+			else {
+				throw new NotValidDomainNameException();
+			}
+		}
+		if (DomainConvert.isValidDomainName(domain)) {
+			return domain;
+		}
+
+			DomainConvert.encodeMDNS(domain);
+			return domain;
 	}
 	@FXML
 	private void onDomainNameMDNSChoiseBoxFired(Event event) {
@@ -261,9 +337,19 @@ public class MDNSController extends GeneralController {
 
 	@FXML
 	protected void sendButtonFired(ActionEvent event) {
-		Q_COUNT[] a = {Q_COUNT.SRV};
 		try {
-		sender = new MessageSender(true,"macMartin.local",a,IP_PROTOCOL.IPv4,RESPONSE_MDNS_TYPE.RESPONSE_MULTICAST);
+		Q_COUNT records [] = getRecordTypes();
+		String domain = getDomain();
+		boolean dnssec = dnssecRecordsRequestCheckBox.isSelected();
+		IP_PROTOCOL networkProtocol = (IP_PROTOCOL) ipToggleGroup.getSelectedToggle().getUserData();
+		RESPONSE_MDNS_TYPE mdnsType = (RESPONSE_MDNS_TYPE) multicastResponseToggleGroup.getSelectedToggle().getUserData();
+		
+		sender = new MessageSender(
+				dnssec,
+				domain,
+				records,
+				networkProtocol,
+				mdnsType);
 		sender.send();
 		parser = new MessageParser(sender.getRecieveReply(), sender.getHeader(), null);
 		parser.parseMDNS();

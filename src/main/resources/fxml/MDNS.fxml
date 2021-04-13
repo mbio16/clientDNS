@@ -231,12 +231,12 @@
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
-                              <CheckBox fx:id="nsCheckBox" mnemonicParsing="false" text="NS">
+                              <CheckBox fx:id="nsecCheckBox" mnemonicParsing="false" text="NSEC" GridPane.columnIndex="1">
                                  <font>
                                     <Font size="15.0" />
                                  </font>
                               </CheckBox>
-                              <CheckBox fx:id="mxCheckBox" mnemonicParsing="false" text="MX" GridPane.columnIndex="1">
+                              <CheckBox fx:id="ptrCheckBox" mnemonicParsing="false" text="PTR">
                                  <font>
                                     <Font size="15.0" />
                                  </font>
@@ -257,7 +257,7 @@
                                     <Font size="15.0" />
                                  </font>
                               </CheckBox>
-                              <CheckBox fx:id="ptrCheckBox" mnemonicParsing="false" text="PTR" GridPane.columnIndex="1">
+                              <CheckBox fx:id="nsCheckBox" mnemonicParsing="false" text="SRV" GridPane.columnIndex="1">
                                  <font>
                                     <Font size="15.0" />
                                  </font>
@@ -272,6 +272,13 @@
                            <rowConstraints>
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                            </rowConstraints>
+                           <children>
+                              <CheckBox fx:id="anyCheckBox" mnemonicParsing="false" text="ANY">
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                              </CheckBox>
+                           </children>
                         </GridPane>
                         <GridPane GridPane.rowIndex="4">
                            <columnConstraints>
@@ -304,6 +311,15 @@
                            <columnConstraints>
                               <ColumnConstraints hgrow="SOMETIMES" maxWidth="130.0" minWidth="10.0" prefWidth="130.0" />
                               <ColumnConstraints hgrow="SOMETIMES" maxWidth="72.0" minWidth="10.0" prefWidth="23.0" />
+                           </columnConstraints>
+                           <rowConstraints>
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                           </rowConstraints>
+                        </GridPane>
+                        <GridPane>
+                           <columnConstraints>
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="71.0" minWidth="10.0" prefWidth="66.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="87.0" minWidth="10.0" percentWidth="55.0" prefWidth="85.0" />
                            </columnConstraints>
                            <rowConstraints>
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />

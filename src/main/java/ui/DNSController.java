@@ -106,11 +106,14 @@ public class DNSController extends MDNSController {
 	@FXML
 	private CheckBox cnameCheckBox;
 	@FXML
+	private CheckBox nsCheckBox;
+	@FXML
+	private CheckBox mxCheckBox;
+	@FXML
 	private CheckBox rrsigCheckBox;
 	@FXML
 	private CheckBox holdConectionCheckbox;
-	@FXML
-	private CheckBox nsecCheckBox;
+
 	@FXML
 	private CheckBox nsec3paramCheckBox;
 	@FXML
@@ -366,7 +369,7 @@ public class DNSController extends MDNSController {
 		cznicIpv6ImageView.setUserData("2001:148f:ffff::1");
 
 	}
-
+	
 	private void setUserDataRecords() {
 		aCheckBox.setUserData(Q_COUNT.A);
 		aaaaCheckBox.setUserData(Q_COUNT.AAAA);
