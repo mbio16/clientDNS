@@ -95,6 +95,8 @@ public class MDNSController extends GeneralController {
 	protected CheckBox txtCheckBox;
 	@FXML
 	protected CheckBox dnssecRecordsRequestCheckBox;
+	@FXML
+	protected CheckBox anyCheckBox;
 	// titledpane
 
 	@FXML
@@ -271,7 +273,7 @@ public class MDNSController extends GeneralController {
 			e.printStackTrace();
 			}
 		}
-	private void setControls() {
+	protected void setControls() {
 		responseTreeView.setRoot(parser.getAsTreeItem());
 		requestTreeView.setRoot(sender.getAsTreeItem());
 		responseTimeValueLabel.setText("" + sender.getTimeElapsed());

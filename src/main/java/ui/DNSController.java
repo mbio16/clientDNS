@@ -383,6 +383,7 @@ public class DNSController extends MDNSController {
 		nsecCheckBox.setUserData(Q_COUNT.NSEC);
 		nsec3CheckBox.setUserData(Q_COUNT.NSEC3);
 		nsec3paramCheckBox.setUserData(Q_COUNT.NSEC3PARAM);
+		anyCheckBox.setUserData(Q_COUNT.ANY);
 	}
 
 	public void loadDataFromSettings() {
@@ -489,7 +490,7 @@ public class DNSController extends MDNSController {
 		ArrayList<Q_COUNT> list = new ArrayList<Q_COUNT>();
 		CheckBox[] checkBoxArray = { aCheckBox, aaaaCheckBox, nsCheckBox, mxCheckBox, soaCheckBox, cnameCheckBox,
 				ptrCheckBox, dnskeyCheckBox, dsCheckBox, caaCheckBox, txtCheckBox, rrsigCheckBox, nsecCheckBox,
-				nsec3CheckBox, nsec3paramCheckBox };
+				nsec3CheckBox, nsec3paramCheckBox,anyCheckBox };
 		for (int i = 0; i < checkBoxArray.length; i++) {
 			if (checkBoxArray[i].isSelected()) {
 				list.add((Q_COUNT) checkBoxArray[i].getUserData());
@@ -541,20 +542,20 @@ public class DNSController extends MDNSController {
 				+ "\n" + "Application protocol: " + APPLICATION_PROTOCOL.DNS);
 	}
 
-	private void setControls() {
-		responseTreeView.setRoot(parser.getAsTreeItem());
-		requestTreeView.setRoot(sender.getAsTreeItem());
-		responseTimeValueLabel.setText("" + sender.getTimeElapsed());
-		numberOfMessagesValueLabel.setText("" + sender.getMessageSent());
-		setDisableJSonButtons(false);
-		responseTreeView.getTreeItem(0).setExpanded(true);
-		expandAll(requestTreeView);
-		expandAll(responseTreeView);
-		queryTitledPane.setText(language.getLanguageBundle().getString(queryTitledPane.getId().toString()) + " ("
-				+ sender.getByteSizeQuery() + " B)");
-		responseTitledPane.setText(language.getLanguageBundle().getString(responseTitledPane.getId().toString()) + " ("
-				+ parser.getByteSizeResponse() + " B)");
-	}
+//	private void setControls() {
+//		responseTreeView.setRoot(parser.getAsTreeItem());
+//		requestTreeView.setRoot(sender.getAsTreeItem());
+//		responseTimeValueLabel.setText("" + sender.getTimeElapsed());
+//		numberOfMessagesValueLabel.setText("" + sender.getMessageSent());
+//		setDisableJSonButtons(false);
+//		responseTreeView.getTreeItem(0).setExpanded(true);
+//		expandAll(requestTreeView);
+//		expandAll(responseTreeView);
+//		queryTitledPane.setText(language.getLanguageBundle().getString(queryTitledPane.getId().toString()) + " ("
+//				+ sender.getByteSizeQuery() + " B)");
+//		responseTitledPane.setText(language.getLanguageBundle().getString(responseTitledPane.getId().toString()) + " ("
+//				+ parser.getByteSizeResponse() + " B)");
+//	}
 
 	public void showAller(String exceptionName) {
 		Alert alert = new Alert(AlertType.ERROR, language.getLanguageBundle().getString(exceptionName));

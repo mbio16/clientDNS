@@ -385,6 +385,7 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
                         <GridPane>
@@ -543,13 +544,18 @@
                             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                              <CheckBox fx:id="nsec3paramCheckBox" mnemonicParsing="false" text="NSEC3PARAM">
+                              <CheckBox fx:id="anyCheckBox" mnemonicParsing="false" text="ANY">
                                  <font>
                                     <Font size="15.0" />
                                  </font>
                               </CheckBox>
                            </children>
                         </GridPane>
+                        <CheckBox fx:id="nsec3paramCheckBox" mnemonicParsing="false" text="NSEC3PARAM" GridPane.rowIndex="8">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </CheckBox>
                      </children>
                   </GridPane>
                </content>
