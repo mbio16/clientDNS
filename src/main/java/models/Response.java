@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import org.json.simple.JSONObject;
 
+import enums.APPLICATION_PROTOCOL;
 import enums.CACHE;
 import enums.Q_COUNT;
 import enums.Q_TYPE;
@@ -51,6 +52,7 @@ public class Response {
 	private CACHE cache;
 	private static final int COMPRESS_CONTANT_NUMBER = 49152;
 	private static final int DO_BIT_VALUE = 32768;
+	private static final int MAX_UDP_SIZE = 1232;
 	private static final String DATA_KEY = "Data";
 	private static final String NAME_KEY = "Name";
 	private static final String TYPE_KEY = "Type";
@@ -60,6 +62,7 @@ public class Response {
 	private static final String KEY_OPT_UDP_SIZE = "Size";
 	private static final String KEY_OPT_RCODE = "Rcode";
 	private static final String KEY_OPT_VERSION = "EDSN0 version";
+	private static final String KEY_FLUSH_CACHE = "Flush cache";
 	private static final String KEY_OPT_DO_BIT = "Can handle DNSSEC";
 	private static final String KEY_SRV_SERVICE = "Service";
 	private static final String KEY_SRV_PROTOCOL = "Protocol";
@@ -115,7 +118,7 @@ public class Response {
 			pom = new UInt16(pom.getValue()-CACHE.FLUSH_CACHE.value);
 		}
 		this.qtype = Q_TYPE
-				.getTypeByCode(new UInt16().loadFromBytes(rawMessage[currentIndex], rawMessage[currentIndex + 1]));
+				.getTypeByCode(pom);
 		currentIndex += 2;
 		byte[] ttlBytes = { rawMessage[currentIndex], rawMessage[currentIndex + 1], rawMessage[currentIndex + 2],
 				rawMessage[currentIndex + 3] };
@@ -258,21 +261,40 @@ public class Response {
 		return main;
 	}
 	
-	public static TreeItem<String> getOptAsTreeItem() {
+	public static TreeItem<String> getOptAsTreeItem(boolean dnssec, boolean mdns) {
 		TreeItem<String> root = new TreeItem<String>(ROOT_DOMAIN + " " + Q_COUNT.OPT);
 		root.getChildren().add(new TreeItem<String>(NAME_KEY + ": " + ROOT_DOMAIN));
 		root.getChildren().add(new TreeItem<String>(TYPE_KEY + ": " + Q_COUNT.OPT));
 		root.getChildren().add(new TreeItem<String>(KEY_OPT_RCODE + ": " + 0));
 		root.getChildren().add(new TreeItem<String>(KEY_OPT_VERSION + ": " + 0));
-		root.getChildren().add(new TreeItem<String>(KEY_OPT_UDP_SIZE + ": " + 1232));
-		root.getChildren().add(new TreeItem<String>(KEY_OPT_DO_BIT + ": " + "true"));
+		if (mdns) {
+			root.getChildren().add(new TreeItem<String>(KEY_FLUSH_CACHE + ": "+ CACHE.NO_FLUSH_CACHE.code));
+		}
+		root.getChildren().add(new TreeItem<String>(KEY_OPT_UDP_SIZE + ": " + MAX_UDP_SIZE));
+		root.getChildren().add(new TreeItem<String>(KEY_OPT_DO_BIT + ": " + dnssec));
 		return root;
 	}
 
 	@SuppressWarnings("unchecked")
-	public JSONObject getAsJson() {
+	public static JSONObject getOptRequestAsJson(boolean dnssec, boolean mdns) {
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put(ROOT_DOMAIN,Q_COUNT.OPT);
+		jsonObject.put(NAME_KEY,ROOT_DOMAIN);
+		jsonObject.put(TYPE_KEY,Q_COUNT.OPT);
+		jsonObject.put(KEY_OPT_RCODE,0);
+		jsonObject.put(KEY_OPT_VERSION , 0);
+		if (mdns) {
+			jsonObject.put(KEY_FLUSH_CACHE,CACHE.NO_FLUSH_CACHE.code);
+		}
+		jsonObject.put(KEY_OPT_UDP_SIZE,MAX_UDP_SIZE);
+		jsonObject.put(KEY_OPT_DO_BIT,dnssec);
+		return jsonObject;
+	}
+	@SuppressWarnings("unchecked")
+	public JSONObject getAsJson(APPLICATION_PROTOCOL applicationProtocol) {
+		boolean mdns = (applicationProtocol == APPLICATION_PROTOCOL.MDNS);
 		if (qcount.equals(Q_COUNT.OPT)) {
-			return getOPTAsJson();
+			return getOPTAsJson(mdns);
 		}
 		JSONObject jsonObject = new JSONObject();
 		
@@ -300,11 +322,15 @@ public class Response {
 	}
 
 	@SuppressWarnings("unchecked")
-	private JSONObject getOPTAsJson() {
+	private JSONObject getOPTAsJson(boolean mdns) {
 		JSONObject json = new JSONObject();
 		json.put(KEY_OPT_UDP_SIZE, size.getValue());
+		if(mdns) {
+		json.put(KEY_FLUSH_CACHE, cache);
+		}
 		json.put(KEY_OPT_RCODE, (int) rCode);
 		json.put(KEY_OPT_VERSION, (int) version);
+
 		json.put(KEY_OPT_DO_BIT, doBit.getValue() >= DO_BIT_VALUE ? true : false);
 		return json;
 	}
@@ -330,6 +356,7 @@ public class Response {
 		}
 		return returnArray;
 	}
+	
 	public byte [] getDnssecAsBytesMDNS(boolean dnssecSignatures) {
 		ArrayList<Byte> bytes = new ArrayList<Byte>();
 		bytes.add((byte) 0x00);

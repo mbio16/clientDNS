@@ -335,6 +335,20 @@ public class MDNSController extends GeneralController {
 		}
 	}
 
+	private void logAction(Q_COUNT [] records, String domain, boolean dnssec, IP_PROTOCOL networkProtocol,RESPONSE_MDNS_TYPE mdnsType) {
+		String res = "";
+		res += "Domain: " + domain + "\n";
+		res += "DNSSEC: " + dnssec + "\n";
+		res += "IP: " + networkProtocol.toString() + "\n";
+		res += "MDNS response: " + mdnsType.toString() + "\n";
+		res += "Records: \n";
+		
+		for (Q_COUNT q_COUNT : records) {
+			res += "\t" + q_COUNT.toString() + "\n";
+		}
+		LOGGER.info(res);
+		
+	}
 	@FXML
 	protected void sendButtonFired(ActionEvent event) {
 		try {
@@ -343,7 +357,7 @@ public class MDNSController extends GeneralController {
 		boolean dnssec = dnssecRecordsRequestCheckBox.isSelected();
 		IP_PROTOCOL networkProtocol = (IP_PROTOCOL) ipToggleGroup.getSelectedToggle().getUserData();
 		RESPONSE_MDNS_TYPE mdnsType = (RESPONSE_MDNS_TYPE) multicastResponseToggleGroup.getSelectedToggle().getUserData();
-		
+		logAction(records, domain, dnssec, networkProtocol, mdnsType);
 		sender = new MessageSender(
 				dnssec,
 				domain,

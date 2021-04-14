@@ -257,7 +257,7 @@
                                     <Font size="15.0" />
                                  </font>
                               </CheckBox>
-                              <CheckBox fx:id="nsCheckBox" mnemonicParsing="false" text="SRV" GridPane.columnIndex="1">
+                              <CheckBox fx:id="srvCheckBox" mnemonicParsing="false" text="SRV" GridPane.columnIndex="1">
                                  <font>
                                     <Font size="15.0" />
                                  </font>

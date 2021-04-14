@@ -21,8 +21,9 @@ public class TestMain {
 		TRANSPORT_PROTOCOL protocol = TRANSPORT_PROTOCOL.TCP;
 		try {
 		
-		sender = new MessageSender(false,"macMartin.local",a,IP_PROTOCOL.IPv4,RESPONSE_MDNS_TYPE.RESPONSE_UNICAST);
+		sender = new MessageSender(false,"macMartin.local",a,IP_PROTOCOL.IPv4,RESPONSE_MDNS_TYPE.RESPONSE_MULTICAST);
 		sender.send();
+		sender.getAsJsonString();
 		parser = new MessageParser(sender.getRecieveReply(), sender.getHeader(), null);
 		parser.parseMDNS();
 		System.out.println(parser.getAsJsonString());

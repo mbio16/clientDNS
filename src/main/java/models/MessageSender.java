@@ -47,7 +47,8 @@ public class MessageSender {
 	private long stopTime;
 	private TCPConnection tcp;
 	private IP_PROTOCOL ipProtocol;
-	private boolean dnssecSignatures;
+	private RESPONSE_MDNS_TYPE mdnsType;
+	private boolean mdnsDnssecSignatures;
 	private boolean closeConnection;
 	private static final int MAX_MESSAGES_SENT = 3;
 	private static final int TIME_OUT_MILLIS = 2000;
@@ -58,6 +59,7 @@ public class MessageSender {
 	private static final String KEY_HEAD = "Head";
 	private static final String KEY_QUERY = "Questions";
 	private static final String KEY_REQUEST = "Request";
+	public static final String KEY_ADDITIONAL_RECORDS = "Aditional records";
 	private static final String KEY_LENGHT="Lenght";
 	private static Logger LOGGER = Logger.getLogger(DomainConvert.class.getName());
 
@@ -79,13 +81,14 @@ public class MessageSender {
 		closeConnection = true;
 	}
 
-	public MessageSender(boolean dnssecSignatures,String domain, Q_COUNT[] types, IP_PROTOCOL ipProtocol, RESPONSE_MDNS_TYPE  mdnsType) throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException {
+	public MessageSender(boolean mdnsDnssecSignatures,String domain, Q_COUNT[] types, IP_PROTOCOL ipProtocol, RESPONSE_MDNS_TYPE  mdnsType) throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException {
 		this.application_protocol = APPLICATION_PROTOCOL.MDNS;
 		this.ipProtocol = ipProtocol;
-		this.dnssecSignatures = dnssecSignatures;
+		this.mdnsDnssecSignatures = mdnsDnssecSignatures;
 		requests = new ArrayList<Request>();
 		header = new Header(types.length);
 		this.size = Header.getSize();
+		this.mdnsType = mdnsType;
 		addRequests(types, checkAndStripFullyQualifyName(domain), mdnsType);
 		this.messagesSent = 0;
 		this.recieveReply = new byte [1232];
@@ -103,12 +106,17 @@ public class MessageSender {
 		root = new TreeItem<String>(KEY_REQUEST);
 		root.getChildren().add(header.getAsTreeItem());
 		addRequestToTreeItem();
+		//OPT in DNS
 		if (rrRecords) {
 			TreeItem<String> optRecord = new TreeItem<String>(MessageParser.KEY_ADDITIONAL_RECORDS);
-			optRecord.getChildren().add(Response.getOptAsTreeItem());
+			optRecord.getChildren().add(Response.getOptAsTreeItem(true,false));
 			root.getChildren().add(optRecord);
 		}
-		
+		if(mdnsType != null){
+			TreeItem<String> optRecord = new TreeItem<String>(MessageParser.KEY_ADDITIONAL_RECORDS);
+			optRecord.getChildren().add(Response.getOptAsTreeItem(mdnsDnssecSignatures,true));
+			root.getChildren().add(optRecord);
+		}
 		if(transport_protocol == TRANSPORT_PROTOCOL.TCP) {
 			TreeItem<String> tcpTreeItem = new TreeItem<String>("");
 			tcpTreeItem.getChildren().add(new TreeItem<String>(KEY_LENGHT + ": " + (byteSizeQuery - 2)));
@@ -307,7 +315,7 @@ public class MessageSender {
 	}
 	private void messageToBytesMDNS() {
 		int curentIndex = 0;
-		size += new Response().getDnssecAsBytesMDNS(dnssecSignatures).length;
+		size += new Response().getDnssecAsBytesMDNS(mdnsDnssecSignatures).length;
 		this.messageAsBytes = new byte [size];
 		byte head [] = header.getHaderAsBytes();
 		for (int i = 0; i < head.length; i++) {
@@ -321,7 +329,7 @@ public class MessageSender {
 				curentIndex++;
 			}
 		}
-		byte opt[] = new Response().getDnssecAsBytesMDNS(dnssecSignatures);
+		byte opt[] = new Response().getDnssecAsBytesMDNS(mdnsDnssecSignatures);
 		int j = 0;
 		for (int i = curentIndex; i < size; i++) {
 			this.messageAsBytes[i] = opt[j];
@@ -340,6 +348,15 @@ public class MessageSender {
 		}
 		jsonObject.put(KEY_QUERY, jsonArray);
 		if (transport_protocol == TRANSPORT_PROTOCOL.TCP) jsonObject.put(KEY_LENGHT, (byteSizeQuery -2));
+		
+		//opt record
+		if (header.getArCount().getValue()==1) {
+			boolean mdns = (mdnsType != null);
+			if(mdns)
+				jsonObject.put(KEY_ADDITIONAL_RECORDS,Response.getOptRequestAsJson(mdnsDnssecSignatures, mdns));
+			else
+				jsonObject.put(KEY_ADDITIONAL_RECORDS,Response.getOptRequestAsJson(true, mdns));
+			}
 		return jsonObject;
 	}
 

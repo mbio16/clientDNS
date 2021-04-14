@@ -21,6 +21,7 @@ public class MessageParser {
 	private ArrayList<Response> arcountResponses;
 	private byte[] rawMessage;
 	private int currentIndex;
+	private APPLICATION_PROTOCOL applicationProtocol;
 	private static final String KEY_HEAD = "Head";
 	private static final String KEY_QUESTIONS = "Questions";
 	private static final String KEY_ANSWERS = "Answer";
@@ -45,6 +46,7 @@ public class MessageParser {
 	}
 
 	public void parse() throws QueryIdNotMatchException, UnknownHostException, UnsupportedEncodingException {
+		applicationProtocol = APPLICATION_PROTOCOL.DNS;
 		header = new Header().parseHead(rawMessage);
 		checkId();
 		currentIndex += Header.getSize();
@@ -79,6 +81,7 @@ public class MessageParser {
 	}
 
 	public void parseMDNS() throws QueryIdNotMatchException, UnknownHostException, UnsupportedEncodingException {
+		applicationProtocol = APPLICATION_PROTOCOL.MDNS;
 		header = new Header().parseHead(rawMessage);
 		checkId();
 		currentIndex += Header.getSize();
@@ -167,13 +170,13 @@ public class MessageParser {
 		}
 
 		for (Response response : ancountResponses) {
-			an.add(response.getAsJson());
+			an.add(response.getAsJson(applicationProtocol));
 		}
 		for (Response response : nscountResponses) {
-			ns.add(response.getAsJson());
+			ns.add(response.getAsJson(applicationProtocol));
 		}
 		for (Response response : arcountResponses) {
-			ar.add(response.getAsJson());
+			ar.add(response.getAsJson(applicationProtocol));
 		}
 
 		main.put(KEY_HEAD, header.getAsJson());
