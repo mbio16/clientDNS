@@ -1,6 +1,8 @@
 package models;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -9,9 +11,28 @@ import java.net.MulticastSocket;
 import java.net.Socket;
 
 import java.net.SocketTimeoutException;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpVersion;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.CoreProtocolPNames;
+import org.apache.http.params.HttpParams;
+import org.apache.http.util.EntityUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import com.google.gson.GsonBuilder;
@@ -174,12 +195,37 @@ public class MessageSender {
 		case LLMR:
 			break;
 		case DOH:
+			doh();
 			break;
 		default:
 			break;
 		}
 	}
+	private void doh() {
+	try {
+	//URIBuilder builder = new URIBuilder("https://cloudflare-dns.com/dns-query");
+		URIBuilder builder = new URIBuilder("https://dns.google/resolve");
+	builder.addParameter("name", "seznam.cz");
+	builder.addParameter("type", "A");
+	builder.addParameter("do","true");
+	HttpPost request = new HttpPost(builder.build());
+	request.addHeader("accept","application/dns-json");
+	request.addHeader("content-type","application/dns-json");
+	CloseableHttpClient httpClient = HttpClients.createDefault();
+	CloseableHttpResponse response = httpClient.execute(request);
 
+         
+         if (response.getStatusLine().getStatusCode() == 200) {
+        	 String res = EntityUtils.toString(response.getEntity());
+             System.out.println(res);
+         }
+	 }
+	 catch (Exception e) {
+		// TODO: handle exception
+		 e.printStackTrace();
+	}
+	}
+	
 	@SuppressWarnings("resource")
 	private void mdns() throws UnknownHostException, TimeoutException{
 		messageToBytesMDNS();
