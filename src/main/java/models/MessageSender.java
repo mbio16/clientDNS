@@ -184,13 +184,15 @@ public class MessageSender {
 	private void mdns() throws UnknownHostException, TimeoutException{
 		messageToBytesMDNS();
 		messagesSent = 1;
-		 InetAddress group;
+		InetAddress group;
+		DatagramSocket unicastSocket; 
 		if(ipProtocol==IP_PROTOCOL.IPv4) {
 			group = InetAddress.getByName(IPv4_MDNS);
 		}
 		else {
 			group = InetAddress.getByName(IPv6_MDNS);
 		}
+
 		while(true) {
 		try {
 		 MulticastSocket socket = new MulticastSocket(MDNS_PORT);
@@ -200,13 +202,24 @@ public class MessageSender {
                  group, MDNS_PORT);
 		 startTime = System.nanoTime();
 		 socket.send(datagramPacket);
-		
-		DatagramPacket recievePacket = new DatagramPacket(recieveReply, recieveReply.length);
+		 DatagramPacket recievePacket = new DatagramPacket(recieveReply, recieveReply.length);
+		if(mdnsType == RESPONSE_MDNS_TYPE.RESPONSE_UNICAST) {
+			socket.leaveGroup(group);
+			unicastSocket = new DatagramSocket(MDNS_PORT);
+			unicastSocket.receive(recievePacket);
+			unicastSocket.close();
+			socket.close();
+			return;
+			
+		}
+		else {
 		socket.receive(recievePacket);
 		socket.receive(recievePacket);
 		stopTime = System.nanoTime();
 		socket.leaveGroup(group);
+		socket.close();
 		return;
+		}
 		}catch (Exception e) {
 			if (messagesSent < 3) {
 				messagesSent++;
@@ -232,6 +245,7 @@ public class MessageSender {
 				if (messagesSent == MAX_MESSAGES_SENT) {
 					throw new TimeoutException();
 				}
+
 
 				DatagramPacket responsePacket = new DatagramPacket(recieveReply, recieveReply.length);
 				DatagramPacket datagramPacket = new DatagramPacket(messageAsBytes, messageAsBytes.length, ip, DNS_PORT);

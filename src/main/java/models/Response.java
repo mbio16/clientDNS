@@ -67,6 +67,7 @@ public class Response {
 	private static final String KEY_SRV_SERVICE = "Service";
 	private static final String KEY_SRV_PROTOCOL = "Protocol";
 	private static final String KEY_SRV_NAME = "Name";
+	private static final String KEY_OPT_OPTIONS = "Options";
 	public static final String ROOT_DOMAIN = ". (ROOT)";
 	
 	public Response() {
@@ -330,8 +331,13 @@ public class Response {
 		}
 		json.put(KEY_OPT_RCODE, (int) rCode);
 		json.put(KEY_OPT_VERSION, (int) version);
-
+		
 		json.put(KEY_OPT_DO_BIT, doBit.getValue() >= DO_BIT_VALUE ? true : false);
+		
+		RecordOPT r = (RecordOPT) rdata;
+		if (!r.getIsNull()) {
+			json.put(KEY_OPT_OPTIONS,rdata.getAsJson());
+		}
 		return json;
 	}
 

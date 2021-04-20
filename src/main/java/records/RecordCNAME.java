@@ -15,7 +15,8 @@ public class RecordCNAME extends Record {
 	}
 
 	private void parseRecord() {
-		name = DomainConvert.decodeDNS(rawMessage, startIndex);
+		//decode MDNS becase DNS is ascii and MDSN is utf-8
+		name = DomainConvert.decodeMDNS(rawMessage, startIndex);
 	}
 
 	@Override

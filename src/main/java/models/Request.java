@@ -93,11 +93,6 @@ public class Request {
 	}
 
 	private void ipAddressToPTRFormat() throws NotValidIPException {
-		
-		if(mdnsType != null && qName.contains("_")) {
-			return;
-		}
-		
 		if(qName.contains(".arpa")) {
 			return;
 		}

@@ -35,7 +35,6 @@ import javafx.scene.control.TreeView;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import models.DomainConvert;
@@ -126,6 +125,8 @@ public class DNSController extends MDNSController {
 	private RadioMenuItem IpwithTCPAsFilter;
 	@FXML
 	private RadioMenuItem IpWithUDPandTcpAsFilter;
+
+	
 	@FXML
 	private CheckBox nsec3CheckBox;
 
@@ -519,12 +520,7 @@ public class DNSController extends MDNSController {
 				+ "\n" + "Application protocol: " + APPLICATION_PROTOCOL.DNS);
 	}
 
-	private void showAller(String exceptionName) {
-		Alert alert = new Alert(AlertType.ERROR, language.getLanguageBundle().getString(exceptionName));
-		alert.initModality(Modality.APPLICATION_MODAL);
-		alert.initOwner((Stage) sendButton.getScene().getWindow());
-		alert.show();
-	}
+
 
 	@FXML
 	protected void sendButtonFired(ActionEvent event) {
@@ -574,10 +570,7 @@ public class DNSController extends MDNSController {
 		savedDNSChoiceBox.getItems().addAll(settings.getDnsServers());
 	}
 
-	@FXML
-	private void onDomainNameAction(ActionEvent e) {
-		sendButtonFired(e);
-	}
+
 
 	@FXML
 	private void clicked(MouseEvent event) {

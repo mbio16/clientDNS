@@ -15,13 +15,13 @@ import models.TCPConnection;
 public class TestMain {
 
 	public static void main(String[] args) {
-		Q_COUNT[] a = {Q_COUNT.SRV};
+		Q_COUNT[] a = {Q_COUNT.ANY};
 		MessageSender sender;
 		MessageParser parser;
 		TRANSPORT_PROTOCOL protocol = TRANSPORT_PROTOCOL.TCP;
 		try {
 		
-		sender = new MessageSender(false,"macMartin.local",a,IP_PROTOCOL.IPv4,RESPONSE_MDNS_TYPE.RESPONSE_MULTICAST);
+		sender = new MessageSender(false,"Samsung-Galaxy-S20.local",a,IP_PROTOCOL.IPv4,RESPONSE_MDNS_TYPE.RESPONSE_MULTICAST);
 		sender.send();
 		sender.getAsJsonString();
 		parser = new MessageParser(sender.getRecieveReply(), sender.getHeader(), null);

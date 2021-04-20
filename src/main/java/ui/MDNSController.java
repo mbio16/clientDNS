@@ -1,5 +1,6 @@
 package ui;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
@@ -8,9 +9,14 @@ import application.Main;
 import enums.IP_PROTOCOL;
 import enums.Q_COUNT;
 import enums.RESPONSE_MDNS_TYPE;
+import exceptions.CouldNotUseHoldConnectionException;
+import exceptions.MessageTooBigForUDPException;
 import exceptions.MoreRecordsTypesWithPTRException;
 import exceptions.NonRecordSelectedException;
 import exceptions.NotValidDomainNameException;
+import exceptions.NotValidIPException;
+import exceptions.QueryIdNotMatchException;
+import exceptions.TimeoutException;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -63,6 +69,12 @@ public class MDNSController extends GeneralController {
 	protected RadioMenuItem czechRadioButton;
 	@FXML
 	protected RadioMenuItem englishRadioButton;
+	@FXML 
+	private MenuItem mdnsMenuItem;
+	@FXML 
+	private MenuItem iPv4MulticastMenuItem;
+	@FXML 
+	private MenuItem iPv6MulticastMenuItem;
 	@FXML
 	protected Button copyRequestJsonButton;
 	@FXML
@@ -205,7 +217,12 @@ public class MDNSController extends GeneralController {
 		setUserDataRecords();
 		setIpUserData();
 		setMDNSType();
-		
+		setUserDataWireshark();
+	}
+	private void setUserDataWireshark() {
+		mdnsMenuItem.setUserData("udp.port == 5353");
+		iPv4MulticastMenuItem.setUserData("ip.addr == 224.0.0.251 && udp.port == 5353");
+		iPv6MulticastMenuItem.setUserData("ipv6.addr == ff02::fb && udp.port == 5353");
 	}
 	private void setMDNSType() {
 		multicastResponseRadioButton.setUserData(RESPONSE_MDNS_TYPE.RESPONSE_MULTICAST);
@@ -259,7 +276,7 @@ public class MDNSController extends GeneralController {
 		String domain = domainNameTextField.getText();
 		
 		if(ptrCheckBox.isSelected()) {
-			if(Ip.isIpValid(domain) || domain.contains(".arpa") || domain.contains("_")) {
+			if(Ip.isIpValid(domain) || domain.contains(".arpa")) {
 				return domain;
 			}
 			else {
@@ -273,6 +290,12 @@ public class MDNSController extends GeneralController {
 			DomainConvert.encodeMDNS(domain);
 			return domain;
 	}
+	@FXML
+	private void getWiresharkFilter(ActionEvent event) {
+		MenuItem item = (MenuItem) event.getSource();
+		copyDataToClipBoard((String) item.getUserData());
+	}
+	
 	@FXML
 	private void onDomainNameMDNSChoiseBoxFired(Event event) {
 		savedDomainNamesChoiseBox.getItems().removeAll(savedDomainNamesChoiseBox.getItems());
@@ -349,6 +372,13 @@ public class MDNSController extends GeneralController {
 		LOGGER.info(res);
 		
 	}
+	protected void showAller(String exceptionName) {
+		Alert alert = new Alert(AlertType.ERROR, language.getLanguageBundle().getString(exceptionName));
+		alert.initModality(Modality.APPLICATION_MODAL);
+		alert.initOwner((Stage) sendButton.getScene().getWindow());
+		alert.show();
+	}
+	
 	@FXML
 	protected void sendButtonFired(ActionEvent event) {
 		try {
@@ -367,12 +397,27 @@ public class MDNSController extends GeneralController {
 		sender.send();
 		parser = new MessageParser(sender.getRecieveReply(), sender.getHeader(), null);
 		parser.parseMDNS();
+		settings.addMDNSDomain(domain);
 		setControls();
 		}
-		catch (Exception e) {
-			e.printStackTrace();
-			}
+		catch (NotValidDomainNameException | NotValidIPException
+				| MoreRecordsTypesWithPTRException | NonRecordSelectedException | TimeoutException | IOException
+				| QueryIdNotMatchException | MessageTooBigForUDPException | CouldNotUseHoldConnectionException e) {
+			String fullClassName = e.getClass().getSimpleName();
+			LOGGER.info(fullClassName);
+			if (sender != null)
+				numberOfMessagesValueLabel.setText("" + sender.getMessageSent());
+			showAller(fullClassName);
+		} catch (Exception e) {
+			LOGGER.warning(e.toString());
+			showAller("Exception");
 		}
+		}
+	
+	@FXML
+	protected void onDomainNameAction(ActionEvent e) {
+		sendButtonFired(e);
+	}
 	protected void setControls() {
 		responseTreeView.setRoot(parser.getAsTreeItem());
 		requestTreeView.setRoot(sender.getAsTreeItem());
