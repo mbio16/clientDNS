@@ -2,6 +2,7 @@ package ui;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.BindException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
@@ -399,6 +400,9 @@ public class MDNSController extends GeneralController {
 		parser.parseMDNS();
 		settings.addMDNSDomain(domain);
 		setControls();
+		}
+		catch (BindException e) {
+			showAller("BindException");
 		}
 		catch (NotValidDomainNameException | NotValidIPException
 				| MoreRecordsTypesWithPTRException | NonRecordSelectedException | TimeoutException | IOException

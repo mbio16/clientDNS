@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -227,7 +228,7 @@ public class MessageSender {
 	}
 	
 	@SuppressWarnings("resource")
-	private void mdns() throws UnknownHostException, TimeoutException{
+	private void mdns() throws UnknownHostException, TimeoutException, BindException{
 		messageToBytesMDNS();
 		messagesSent = 1;
 		InetAddress group;
@@ -242,15 +243,17 @@ public class MessageSender {
 		while(true) {
 		try {
 		 MulticastSocket socket = new MulticastSocket(MDNS_PORT);
-		 socket.setSoTimeout(TIME_OUT_MILLIS);
+		 
 		 socket.joinGroup(group);
 		 DatagramPacket datagramPacket = new DatagramPacket(messageAsBytes, messageAsBytes.length,
                  group, MDNS_PORT);
 		 startTime = System.nanoTime();
+		 socket.setSoTimeout(TIME_OUT_MILLIS);
 		 socket.send(datagramPacket);
 		 DatagramPacket recievePacket = new DatagramPacket(recieveReply, recieveReply.length);
 		if(mdnsType == RESPONSE_MDNS_TYPE.RESPONSE_UNICAST) {
 			socket.leaveGroup(group);
+			socket.close();
 			unicastSocket = new DatagramSocket(MDNS_PORT);
 			unicastSocket.receive(recievePacket);
 			unicastSocket.close();
@@ -266,7 +269,12 @@ public class MessageSender {
 		socket.close();
 		return;
 		}
-		}catch (Exception e) {
+		}
+		catch (BindException e) {
+			throw new BindException();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
 			if (messagesSent < 3) {
 				messagesSent++;
 			}	
