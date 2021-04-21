@@ -630,7 +630,7 @@
                   <Insets right="2.0" top="5.0" />
                </padding>
                <BorderPane.margin>
-                  <Insets bottom="15.0" />
+                  <Insets bottom="15.0" right="2.0" />
                </BorderPane.margin>
             </TitledPane>
          </center>
