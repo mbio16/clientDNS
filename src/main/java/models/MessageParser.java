@@ -22,6 +22,7 @@ public class MessageParser {
 	private byte[] rawMessage;
 	private int currentIndex;
 	private APPLICATION_PROTOCOL applicationProtocol;
+	private JSONObject httpResponse;
 	private static final String KEY_HEAD = "Head";
 	private static final String KEY_QUESTIONS = "Questions";
 	private static final String KEY_ANSWERS = "Answer";
@@ -43,8 +44,12 @@ public class MessageParser {
 		this.protocol = protocol;
 		this.main = new TreeItem<String>(KEY_ANSWERS);
 		byteSizeResponse = 0;
+		this.httpResponse = null;
 	}
 
+	public MessageParser(JSONObject response) {
+		this.httpResponse = response;
+	}
 	public void parse() throws QueryIdNotMatchException, UnknownHostException, UnsupportedEncodingException {
 		applicationProtocol = APPLICATION_PROTOCOL.DNS;
 		header = new Header().parseHead(rawMessage);
@@ -190,6 +195,9 @@ public class MessageParser {
 	}
 
 	public String getAsJsonString() {
+		if (this.httpResponse != null) {
+			return new GsonBuilder().setPrettyPrinting().create().toJson(httpResponse);
+		}
 		return new GsonBuilder().setPrettyPrinting().create().toJson(getAsJson());
 	}
 

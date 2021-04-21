@@ -12,30 +12,22 @@ import java.net.MulticastSocket;
 import java.net.Socket;
 
 import java.net.SocketTimeoutException;
-import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpVersion;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.CoreProtocolPNames;
-import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import com.google.gson.GsonBuilder;
 import enums.APPLICATION_PROTOCOL;
 import enums.IP_PROTOCOL;
@@ -43,9 +35,11 @@ import enums.Q_COUNT;
 import enums.RESPONSE_MDNS_TYPE;
 import enums.TRANSPORT_PROTOCOL;
 import exceptions.CouldNotUseHoldConnectionException;
+import exceptions.HttpCodeException;
 import exceptions.MessageTooBigForUDPException;
 import exceptions.NotValidDomainNameException;
 import exceptions.NotValidIPException;
+import exceptions.OtherHttpException;
 import exceptions.TimeoutException;
 import javafx.scene.control.TreeItem;
 
@@ -57,8 +51,9 @@ public class MessageSender {
 	private static final int DNS_PORT = 53;
 	private byte[] messageAsBytes;
 	private int byteSizeQuery;
-	
+	private String domainAsString;
 	private InetAddress ip;
+	private String resolver;
 	private int size;
 	private Socket socket;
 	private int messagesSent;
@@ -67,11 +62,15 @@ public class MessageSender {
 	private TreeItem<String> root;
 	private long startTime;
 	private long stopTime;
+	private boolean dnssec;
 	private TCPConnection tcp;
 	private IP_PROTOCOL ipProtocol;
 	private RESPONSE_MDNS_TYPE mdnsType;
 	private boolean mdnsDnssecSignatures;
 	private boolean closeConnection;
+	private Q_COUNT [] qcountTypes;
+	private HttpPost httpRequest;
+	private JSONObject httpResponse;
 	private static final int MAX_MESSAGES_SENT = 3;
 	private static final int TIME_OUT_MILLIS = 2000;
 	public static final int MAX_UDP_SIZE = 1232;
@@ -95,9 +94,15 @@ public class MessageSender {
 		// this.resolverIP = resolverIP;
 		this.transport_protocol = transport_protocol;
 		this.application_protocol = application_protocol;
-		this.ip = InetAddress.getByName(resolverIP);
+		if (application_protocol != APPLICATION_PROTOCOL.DOH ) {
+			this.ip = InetAddress.getByName(resolverIP);
+		}
+		this.resolver = resolverIP;
 		this.recieveReply = new byte[1232];
 		this.rrRecords = rrRecords;
+		this.dnssec = dnssec;
+		this.qcountTypes = types;
+		this.domainAsString = domain;
 		messagesSent = 0;
 		tcp = null;
 		closeConnection = true;
@@ -177,7 +182,7 @@ public class MessageSender {
 		}
 	}
 	public void send()
-			throws TimeoutException, IOException, MessageTooBigForUDPException, CouldNotUseHoldConnectionException {
+			throws TimeoutException, IOException, MessageTooBigForUDPException, CouldNotUseHoldConnectionException, HttpCodeException, OtherHttpException,ParseException {
 		switch (application_protocol) {
 		case DNS:
 			switch (transport_protocol) {
@@ -202,28 +207,35 @@ public class MessageSender {
 			break;
 		}
 	}
-	private void doh() {
+	private void doh() throws HttpCodeException,OtherHttpException,ParseException {
 	try {
-	//URIBuilder builder = new URIBuilder("https://cloudflare-dns.com/dns-query");
-		URIBuilder builder = new URIBuilder("https://dns.google/resolve");
-	builder.addParameter("name", "seznam.cz");
-	builder.addParameter("type", "A");
-	builder.addParameter("do","true");
-	HttpPost request = new HttpPost(builder.build());
-	request.addHeader("accept","application/dns-json");
-	request.addHeader("content-type","application/dns-json");
+	String uri  = addParamtoUri(resolver+"?","name",domainAsString);
+	uri = addParamtoUri(uri,"type",qcountTypes[0].toString());
+	uri = addParamtoUri(uri, "do","" +rrRecords);
+	uri = addParamtoUri(uri,"cd",""+!dnssec);
+	System.out.println(uri);
+	HttpPost request = new HttpPost(uri);
+	request.addHeader("Accept","application/dns-json");
+	request.addHeader("User-Agent", "Klient-DNS");
+	request.addHeader("Accept-Encoding","gzip, deflate, br");
+	this.httpRequest = request;
 	CloseableHttpClient httpClient = HttpClients.createDefault();
 	CloseableHttpResponse response = httpClient.execute(request);
-
-         
          if (response.getStatusLine().getStatusCode() == 200) {
-        	 String res = EntityUtils.toString(response.getEntity());
-             System.out.println(res);
+             parseResponseDoh(EntityUtils.toString(response.getEntity()));
          }
+         else {
+			throw new HttpCodeException(response.getStatusLine().getStatusCode());
+		}
 	 }
+	catch (HttpCodeException e) {
+		throw e;
+	}
+	catch (ParseException e) {
+		throw e;
+	}
 	 catch (Exception e) {
-		// TODO: handle exception
-		 e.printStackTrace();
+		throw new OtherHttpException();
 	}
 	}
 	
@@ -243,7 +255,6 @@ public class MessageSender {
 		while(true) {
 		try {
 		 MulticastSocket socket = new MulticastSocket(MDNS_PORT);
-		 
 		 socket.joinGroup(group);
 		 DatagramPacket datagramPacket = new DatagramPacket(messageAsBytes, messageAsBytes.length,
                  group, MDNS_PORT);
@@ -344,7 +355,14 @@ public class MessageSender {
 	public void closeTCPConnection() throws IOException {
 		tcp.closeAll();
 	}
-
+	
+	private  void parseResponseDoh(String response) throws ParseException {
+		JSONParser parser = new JSONParser();  
+		this.httpResponse = (JSONObject) parser.parse(response);  
+	}
+	private String addParamtoUri(String uri, String paramName, String paramValue) {
+		return uri + "&" + paramName + "=" + paramValue;
+	}
 	private void messageToBytes() {
 		int curentIndex = 0;
 		if (rrRecords) {
@@ -429,6 +447,13 @@ public class MessageSender {
 		return jsonObject;
 	}
 
+	public String getDohRequest() {
+		String result = httpRequest.toString() + "\n";
+		for (org.apache.http.Header httpHeader :httpRequest.getAllHeaders()) {
+			result +=  httpHeader.toString() + "\n";
+		}
+		return result;
+	}
 	public String getAsJsonString() {
 		return new GsonBuilder().setPrettyPrinting().create().toJson(getAsJson());
 	}
@@ -468,6 +493,11 @@ public class MessageSender {
 
 	public void setCloseConnection(boolean closeConnection) {
 		this.closeConnection = closeConnection;
+	}
+
+
+	public JSONObject getHttpResponse() {
+		return httpResponse;
 	}
 
 }
