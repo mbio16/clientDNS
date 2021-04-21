@@ -442,12 +442,21 @@ public class MDNSController extends GeneralController {
 	@FXML
 	protected void copyJsonRequestDataFired(ActionEvent event) {
 		copyDataToClipBoard(sender.getAsJsonString());
+		informWindow(language.getLanguageBundle().getString("requestJsonCopy"));
+		
 
 	}
 
+	protected void informWindow(String textToShow) {
+		Alert alert = new Alert(AlertType.INFORMATION, textToShow);
+		alert.initModality(Modality.APPLICATION_MODAL);
+		alert.initOwner((Stage) sendButton.getScene().getWindow());
+		alert.show();
+	}
 	@FXML
 	protected void copyJsonResponseDataFired(ActionEvent event) {
 		copyDataToClipBoard(parser.getAsJsonString());
+		informWindow(language.getLanguageBundle().getString("responseJsonCopy"));
 	}
 
 	protected ArrayList<String> autobindingsStringsArray(String textToFind, ArrayList<String> arrayToCompare) {

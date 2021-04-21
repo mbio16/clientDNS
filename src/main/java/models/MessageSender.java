@@ -281,7 +281,7 @@ public class MessageSender {
 	private void dnsOverUDP() throws TimeoutException, IOException, MessageTooBigForUDPException {
 		if (size > MAX_UDP_SIZE)
 			throw new MessageTooBigForUDPException();
-		messagesSent = 0;
+		messagesSent = 1;
 		messageToBytes();
 		DatagramSocket datagramSocket = new DatagramSocket();
 		boolean run = true;
@@ -321,6 +321,7 @@ public class MessageSender {
 	private void dnsOverTcp() throws TimeoutException, CouldNotUseHoldConnectionException {
 		messageToBytes();
 		try {
+			messagesSent = 1;
 			startTime = System.nanoTime();
 			if (tcp == null) {
 				tcp = new TCPConnection(ip);
