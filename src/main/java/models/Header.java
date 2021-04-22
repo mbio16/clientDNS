@@ -68,6 +68,10 @@ public class Header {
 
 	}
 
+	public Header(int numberOfQueris) {
+		this(false, false, numberOfQueris, true);
+		this.id = new UInt16(0);
+	}
 	public Header() {
 		root = new TreeItem<String>("Head");
 	}
@@ -166,7 +170,6 @@ public class Header {
 		this.ArCount = new UInt16().loadFromBytes(byteHead[10], byteHead[11]);
 		return this;
 	}
-
 	public static int getSize() {
 		return size;
 	}

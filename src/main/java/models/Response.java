@@ -6,6 +6,9 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 import org.json.simple.JSONObject;
+
+import enums.APPLICATION_PROTOCOL;
+import enums.CACHE;
 import enums.Q_COUNT;
 import enums.Q_TYPE;
 import javafx.scene.control.TreeItem;
@@ -25,6 +28,7 @@ import records.RecordOPT;
 import records.RecordPTR;
 import records.RecordRRSIG;
 import records.RecordSOA;
+import records.RecordSRV;
 import records.RecordTXT;
 
 public class Response {
@@ -42,29 +46,39 @@ public class Response {
 	private byte version;
 	private UInt16 doBit;
 	private UInt16 size;
+	private String srvService;
+	private String srvProtocol;
+	private String srvName;
+	private CACHE cache;
 	private static final int COMPRESS_CONTANT_NUMBER = 49152;
 	private static final int DO_BIT_VALUE = 32768;
+	private static final int MAX_UDP_SIZE = 1232;
 	private static final String DATA_KEY = "Data";
 	private static final String NAME_KEY = "Name";
 	private static final String TYPE_KEY = "Type";
 	private static final String TTL_KEY = "Time to Live";
 	private static final String CLASS_KEY = "Class";
-
+	private static final String CACHE_KEY = "Cache";
 	private static final String KEY_OPT_UDP_SIZE = "Size";
 	private static final String KEY_OPT_RCODE = "Rcode";
 	private static final String KEY_OPT_VERSION = "EDSN0 version";
+	private static final String KEY_FLUSH_CACHE = "Flush cache";
 	private static final String KEY_OPT_DO_BIT = "Can handle DNSSEC";
+	private static final String KEY_SRV_SERVICE = "Service";
+	private static final String KEY_SRV_PROTOCOL = "Protocol";
+	private static final String KEY_SRV_NAME = "Name";
+	private static final String KEY_OPT_OPTIONS = "Options";
 	public static final String ROOT_DOMAIN = ". (ROOT)";
-
+	
 	public Response() {
 
 	}
 
 	public Response parseResponse(byte[] rawMessage, int startIndex)
-			throws UnknownHostException, UnsupportedEncodingException {
+		throws UnknownHostException, UnsupportedEncodingException {
 		this.rawMessage = rawMessage;
 		int currentIndex = startIndex;
-		currentIndex = parseName(currentIndex);
+		currentIndex = parseName(currentIndex,false);
 		this.qcount = Q_COUNT
 				.getTypeByCode(new UInt16().loadFromBytes(rawMessage[currentIndex], rawMessage[currentIndex + 1]));
 		currentIndex += 2;
@@ -83,9 +97,55 @@ public class Response {
 		currentIndex += 2;
 		this.endIndex = currentIndex + this.rdLenght.getValue() - 1;
 		this.rdata = parseRecord(currentIndex);
+		cache = null;
 		return this;
 	}
+	public Response parseResponseMDNS(byte[] rawMessage, int startIndex) 
+		throws UnknownHostException, UnsupportedEncodingException {
+		this.rawMessage = rawMessage;
+		int currentIndex = startIndex;
+		currentIndex = parseName(currentIndex,true);
+		this.qcount = Q_COUNT
+			.getTypeByCode(new UInt16().loadFromBytes(rawMessage[currentIndex], rawMessage[currentIndex + 1]));
+		currentIndex += 2;
+		if (qcount.equals(Q_COUNT.OPT)) {
+			parseAsOPT(currentIndex);
+			return this;
+		}
+		checkAndParseSRV();
+		UInt16 pom = new UInt16().loadFromBytes(rawMessage[currentIndex], rawMessage[currentIndex + 1]);
+		this.cache = CACHE.getTypeByCode(pom);
+		if(cache== CACHE.FLUSH_CACHE) {
+			pom = new UInt16(pom.getValue()-CACHE.FLUSH_CACHE.value);
+		}
+		this.qtype = Q_TYPE
+				.getTypeByCode(pom);
+		currentIndex += 2;
+		byte[] ttlBytes = { rawMessage[currentIndex], rawMessage[currentIndex + 1], rawMessage[currentIndex + 2],
+				rawMessage[currentIndex + 3] };
+		this.ttl = ByteBuffer.wrap(ttlBytes).getInt();
+		currentIndex += 4;
+		this.rdLenght = new UInt16().loadFromBytes(rawMessage[currentIndex], rawMessage[currentIndex + 1]);
+		currentIndex += 2;
+		this.endIndex = currentIndex + this.rdLenght.getValue() - 1;
+		this.rdata = parseRecord(currentIndex);
+		return this;	
+	}
 
+	private void checkAndParseSRV() {
+		if(this.qcount == Q_COUNT.SRV) {
+			srvName = "";
+			String  srvArray [] = this.nameAsString.split("\\.");
+			srvService = srvArray[0];
+			srvProtocol = srvArray[1];
+			for (int i = 2; i < srvArray.length; i++) {
+				if (i+1 == srvArray.length) 
+					srvName += srvArray[i];
+				else
+					srvName += srvArray[i] + ".";
+			}
+		}
+	}
 	private void parseAsOPT(int currentIndex) throws UnknownHostException, UnsupportedEncodingException {
 		size = new UInt16().loadFromBytes(rawMessage[currentIndex], rawMessage[currentIndex + 1]);
 		currentIndex += 2;
@@ -102,8 +162,7 @@ public class Response {
 		this.endIndex = currentIndex-1;
 	}
 
-	private int parseName(int startIndex) {
-		// Has to be done seperately (not in DomainConvert), because of end index
+	private int parseName(int startIndex, boolean mdns) {
 		int positionOfNameIndex = startIndex;
 		UInt16 firstTwoBytes = new UInt16().loadFromBytes(rawMessage[startIndex], rawMessage[startIndex + 1]);
 		if (firstTwoBytes.getValue() >= COMPRESS_CONTANT_NUMBER) {
@@ -114,7 +173,12 @@ public class Response {
 		} else {
 			startIndex = DomainConvert.getIndexOfLastByteOfName(rawMessage, startIndex) + 1;
 		}
-		this.nameAsString = DomainConvert.decodeDNS(rawMessage, positionOfNameIndex);
+		if (mdns) {
+			this.nameAsString = DomainConvert.decodeMDNS(rawMessage, positionOfNameIndex);
+		}
+		else {
+			this.nameAsString = DomainConvert.decodeDNS(rawMessage, positionOfNameIndex);
+		}
 		return startIndex;
 	}
 
@@ -152,6 +216,8 @@ public class Response {
 			return new RecordNSEC3(rawMessage, rdLenght.getValue(), currentIndex);
 		case NSEC3PARAM:
 			return new RecordNSEC3PARAM(rawMessage, rdLenght.getValue(), currentIndex);
+		case SRV:
+			return new RecordSRV(rawMessage, rdLenght.getValue(), currentIndex);
 		default:
 			return null;
 		}
@@ -160,8 +226,23 @@ public class Response {
 	public TreeItem<String> getAsTreeItem() {
 		TreeItem<String> main = new TreeItem<String>(
 				nameAsString + " " + qcount + " " + rdata.getDataForTreeViewName());
+		//check if type is SRV
+		if(qcount == Q_COUNT.SRV) {
+			main.getChildren().add(new TreeItem<String>(KEY_SRV_SERVICE + ": " + srvService));
+			main.getChildren().add(new TreeItem<String>(KEY_SRV_PROTOCOL + ": " + srvProtocol));
+			main.getChildren().add(new TreeItem<String>(KEY_SRV_NAME + ": " + srvName));
+		}else {
 		main.getChildren().add(new TreeItem<String>(NAME_KEY + ": " + nameAsString));
+		}
+		
+		//check if it is mdns
+		if(cache != null) {
+			main.getChildren().add(new TreeItem<String>(CACHE_KEY + ": " + cache));
+		}
+		
+		
 		main.getChildren().add(new TreeItem<String>(TYPE_KEY + ": " + qcount));
+		
 		if (qcount.code != Q_COUNT.OPT.code) {
 			main.getChildren().add(new TreeItem<String>(TTL_KEY + ": " + ttl));
 			main.getChildren().add(new TreeItem<String>(CLASS_KEY + ": " + qtype));
@@ -180,39 +261,83 @@ public class Response {
 
 		return main;
 	}
-
-	public static TreeItem<String> getOptAsTreeItem() {
+	
+	public static TreeItem<String> getOptAsTreeItem(boolean dnssec, boolean mdns) {
 		TreeItem<String> root = new TreeItem<String>(ROOT_DOMAIN + " " + Q_COUNT.OPT);
 		root.getChildren().add(new TreeItem<String>(NAME_KEY + ": " + ROOT_DOMAIN));
 		root.getChildren().add(new TreeItem<String>(TYPE_KEY + ": " + Q_COUNT.OPT));
 		root.getChildren().add(new TreeItem<String>(KEY_OPT_RCODE + ": " + 0));
 		root.getChildren().add(new TreeItem<String>(KEY_OPT_VERSION + ": " + 0));
-		root.getChildren().add(new TreeItem<String>(KEY_OPT_UDP_SIZE + ": " + 1232));
-		root.getChildren().add(new TreeItem<String>(KEY_OPT_DO_BIT + ": " + "true"));
+		if (mdns) {
+			root.getChildren().add(new TreeItem<String>(KEY_FLUSH_CACHE + ": "+ CACHE.NO_FLUSH_CACHE.code));
+		}
+		root.getChildren().add(new TreeItem<String>(KEY_OPT_UDP_SIZE + ": " + MAX_UDP_SIZE));
+		root.getChildren().add(new TreeItem<String>(KEY_OPT_DO_BIT + ": " + dnssec));
 		return root;
 	}
 
 	@SuppressWarnings("unchecked")
-	public JSONObject getAsJson() {
+	public static JSONObject getOptRequestAsJson(boolean dnssec, boolean mdns) {
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put(ROOT_DOMAIN,Q_COUNT.OPT);
+		jsonObject.put(NAME_KEY,ROOT_DOMAIN);
+		jsonObject.put(TYPE_KEY,Q_COUNT.OPT);
+		jsonObject.put(KEY_OPT_RCODE,0);
+		jsonObject.put(KEY_OPT_VERSION , 0);
+		if (mdns) {
+			jsonObject.put(KEY_FLUSH_CACHE,CACHE.NO_FLUSH_CACHE.code);
+		}
+		jsonObject.put(KEY_OPT_UDP_SIZE,MAX_UDP_SIZE);
+		jsonObject.put(KEY_OPT_DO_BIT,dnssec);
+		return jsonObject;
+	}
+	@SuppressWarnings("unchecked")
+	public JSONObject getAsJson(APPLICATION_PROTOCOL applicationProtocol) {
+		boolean mdns = (applicationProtocol == APPLICATION_PROTOCOL.MDNS);
 		if (qcount.equals(Q_COUNT.OPT)) {
-			return getOPTAsJson();
+			return getOPTAsJson(mdns);
 		}
 		JSONObject jsonObject = new JSONObject();
+		
+		//check if SRV
+		if(qcount == Q_COUNT.SRV) {
+			jsonObject.put(KEY_SRV_SERVICE,srvService);
+			jsonObject.put(KEY_SRV_PROTOCOL,srvProtocol);
+			jsonObject.put(KEY_SRV_NAME,srvName);
+		}
+		else {
 		jsonObject.put(NAME_KEY, nameAsString);
+		}
+		
+		
 		jsonObject.put(TYPE_KEY, qcount.toString());
 		jsonObject.put(CLASS_KEY, qtype);
 		jsonObject.put(TTL_KEY, ttl);
 		jsonObject.put(DATA_KEY, rdata.getAsJson());
+		
+		//check if mdns
+		if(cache != null) {
+			jsonObject.put(CACHE_KEY, cache.toString());
+		}
 		return jsonObject;
 	}
 
 	@SuppressWarnings("unchecked")
-	private JSONObject getOPTAsJson() {
+	private JSONObject getOPTAsJson(boolean mdns) {
 		JSONObject json = new JSONObject();
 		json.put(KEY_OPT_UDP_SIZE, size.getValue());
+		if(mdns) {
+		json.put(KEY_FLUSH_CACHE, cache);
+		}
 		json.put(KEY_OPT_RCODE, (int) rCode);
 		json.put(KEY_OPT_VERSION, (int) version);
+		
 		json.put(KEY_OPT_DO_BIT, doBit.getValue() >= DO_BIT_VALUE ? true : false);
+		
+		RecordOPT r = (RecordOPT) rdata;
+		if (!r.getIsNull()) {
+			json.put(KEY_OPT_OPTIONS,rdata.getAsJson());
+		}
 		return json;
 	}
 
@@ -227,6 +352,34 @@ public class Response {
 		bytes.add((byte) 0x00);
 		bytes.add((byte) new UInt16(DO_BIT_VALUE).getAsBytes()[1]);
 		bytes.add((byte) new UInt16(DO_BIT_VALUE).getAsBytes()[0]);
+		bytes.add((byte) 0x00);
+		bytes.add((byte) 0x00);
+
+		byte[] returnArray = new byte[bytes.size()];
+
+		for (int i = 0; i < returnArray.length; i++) {
+			returnArray[i] = bytes.get(i);
+		}
+		return returnArray;
+	}
+	
+	public byte [] getDnssecAsBytesMDNS(boolean dnssecSignatures) {
+		ArrayList<Byte> bytes = new ArrayList<Byte>();
+		bytes.add((byte) 0x00);
+		bytes.add(Q_COUNT.OPT.code.getAsBytes()[1]);
+		bytes.add(Q_COUNT.OPT.code.getAsBytes()[0]);
+		bytes.add((byte) new UInt16(MessageSender.MAX_UDP_SIZE).getAsBytes()[1]);
+		bytes.add((byte) new UInt16(MessageSender.MAX_UDP_SIZE).getAsBytes()[0]);
+		bytes.add((byte) 0x00);
+		bytes.add((byte) 0x00);
+		if(dnssecSignatures) {
+			bytes.add((byte) new UInt16(DO_BIT_VALUE).getAsBytes()[1]);
+			bytes.add((byte) new UInt16(DO_BIT_VALUE).getAsBytes()[0]);
+		}
+		else {
+			bytes.add((byte) new UInt16(0).getAsBytes()[1]);
+			bytes.add((byte) new UInt16(0).getAsBytes()[0]);
+		}
 		bytes.add((byte) 0x00);
 		bytes.add((byte) 0x00);
 

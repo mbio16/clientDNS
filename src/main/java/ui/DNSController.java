@@ -35,7 +35,6 @@ import javafx.scene.control.TreeView;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import models.DomainConvert;
@@ -84,6 +83,10 @@ public class DNSController extends MDNSController {
 	@FXML
 	private RadioButton customDNSRadioButton;
 
+	@FXML
+	private RadioButton dnssecYesRadioButton;
+	@FXML
+	private RadioButton dnssecNoRadioButton;
 	// menu items
 	@FXML
 	private MenuItem deleteDomainNameHistory;
@@ -100,13 +103,16 @@ public class DNSController extends MDNSController {
 	@FXML
 	private CheckBox caaCheckBox;
 	@FXML
-	private CheckBox txtCheckBox;
+	private CheckBox cnameCheckBox;
+	@FXML
+	private CheckBox nsCheckBox;
+	@FXML
+	private CheckBox mxCheckBox;
 	@FXML
 	private CheckBox rrsigCheckBox;
 	@FXML
 	private CheckBox holdConectionCheckbox;
-	@FXML
-	private CheckBox nsecCheckBox;
+
 	@FXML
 	private CheckBox nsec3paramCheckBox;
 	@FXML
@@ -119,6 +125,8 @@ public class DNSController extends MDNSController {
 	private RadioMenuItem IpwithTCPAsFilter;
 	@FXML
 	private RadioMenuItem IpWithUDPandTcpAsFilter;
+
+	
 	@FXML
 	private CheckBox nsec3CheckBox;
 
@@ -135,6 +143,7 @@ public class DNSController extends MDNSController {
 	private ToggleGroup iterativeToggleGroup;
 	private ToggleGroup dnsserverToggleGroup;
 	private ToggleGroup wiresharkFilterToogleGroup;
+	private ToggleGroup dnssecToggleGroup;
 	// choice box
 	@FXML
 	private ComboBox<String> savedDNSChoiceBox;
@@ -280,6 +289,7 @@ public class DNSController extends MDNSController {
 		backMenuItem.setText(language.getLanguageBundle().getString(backMenuItem.getId()));
 		actionMenu.setText(language.getLanguageBundle().getString(actionMenu.getId()));
 		languageMenu.setText(language.getLanguageBundle().getString(languageMenu.getId()));
+		historyMenu.setText(language.getLanguageBundle().getString(historyMenu.getId()));
 		for (TitledPane titledPane : titlePaneArray) {
 			titledPane.setText(language.getLanguageBundle().getString(titledPane.getId()));
 		}
@@ -360,7 +370,7 @@ public class DNSController extends MDNSController {
 		cznicIpv6ImageView.setUserData("2001:148f:ffff::1");
 
 	}
-
+	
 	private void setUserDataRecords() {
 		aCheckBox.setUserData(Q_COUNT.A);
 		aaaaCheckBox.setUserData(Q_COUNT.AAAA);
@@ -377,38 +387,13 @@ public class DNSController extends MDNSController {
 		nsecCheckBox.setUserData(Q_COUNT.NSEC);
 		nsec3CheckBox.setUserData(Q_COUNT.NSEC3);
 		nsec3paramCheckBox.setUserData(Q_COUNT.NSEC3PARAM);
+		anyCheckBox.setUserData(Q_COUNT.ANY);
 	}
 
 	public void loadDataFromSettings() {
 		savedDomainNamesChoiseBox.getItems().addAll(settings.getDomainNamesDNS());
 		savedDNSChoiceBox.getItems().addAll(settings.getDnsServers());
 	}
-
-//	@FXML
-//	private void backButtonFirred(ActionEvent event) {
-//		try {
-//			FXMLLoader loader = new FXMLLoader(getClass().getResource(MainController.FXML_FILE_NAME));
-//			Stage newStage = new Stage();
-//			newStage.setScene(new Scene((Parent) loader.load()));
-//			GeneralController controller = (GeneralController) loader.getController();
-//			controller.setLanguage(language);
-//			controller.setSettings(settings);
-//			newStage.setTitle(APP_TITTLE);
-//			newStage.initModality(Modality.APPLICATION_MODAL);
-//			newStage.initOwner((Stage) sendButton.getScene().getWindow());
-//			newStage.show();
-//			Stage mainStage = (Stage) sendButton.getScene().getWindow();
-//			mainStage.close();
-//			controller.setLabels();
-//			controller.setIpDns(ipDns);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			Alert alert = new Alert(AlertType.ERROR, language.getLanguageBundle().getString("windowError"));
-//			alert.initModality(Modality.APPLICATION_MODAL);
-//			alert.initOwner((Stage) sendButton.getScene().getWindow());
-//			alert.showAndWait();
-//		}
-//	}
 
 	@FXML
 	private void onRadioButtonChange(ActionEvent event) {
@@ -483,7 +468,7 @@ public class DNSController extends MDNSController {
 		ArrayList<Q_COUNT> list = new ArrayList<Q_COUNT>();
 		CheckBox[] checkBoxArray = { aCheckBox, aaaaCheckBox, nsCheckBox, mxCheckBox, soaCheckBox, cnameCheckBox,
 				ptrCheckBox, dnskeyCheckBox, dsCheckBox, caaCheckBox, txtCheckBox, rrsigCheckBox, nsecCheckBox,
-				nsec3CheckBox, nsec3paramCheckBox };
+				nsec3CheckBox, nsec3paramCheckBox,anyCheckBox };
 		for (int i = 0; i < checkBoxArray.length; i++) {
 			if (checkBoxArray[i].isSelected()) {
 				list.add((Q_COUNT) checkBoxArray[i].getUserData());
@@ -535,27 +520,7 @@ public class DNSController extends MDNSController {
 				+ "\n" + "Application protocol: " + APPLICATION_PROTOCOL.DNS);
 	}
 
-	private void setControls() {
-		responseTreeView.setRoot(parser.getAsTreeItem());
-		requestTreeView.setRoot(sender.getAsTreeItem());
-		responseTimeValueLabel.setText("" + sender.getTimeElapsed());
-		numberOfMessagesValueLabel.setText("" + sender.getMessageSent());
-		setDisableJSonButtons(false);
-		responseTreeView.getTreeItem(0).setExpanded(true);
-		expandAll(requestTreeView);
-		expandAll(responseTreeView);
-		queryTitledPane.setText(language.getLanguageBundle().getString(queryTitledPane.getId().toString()) + " ("
-				+ sender.getByteSizeQuery() + " B)");
-		responseTitledPane.setText(language.getLanguageBundle().getString(responseTitledPane.getId().toString()) + " ("
-				+ parser.getByteSizeResponse() + " B)");
-	}
 
-	public void showAller(String exceptionName) {
-		Alert alert = new Alert(AlertType.ERROR, language.getLanguageBundle().getString(exceptionName));
-		alert.initModality(Modality.APPLICATION_MODAL);
-		alert.initOwner((Stage) sendButton.getScene().getWindow());
-		alert.show();
-	}
 
 	@FXML
 	protected void sendButtonFired(ActionEvent event) {
@@ -605,10 +570,7 @@ public class DNSController extends MDNSController {
 		savedDNSChoiceBox.getItems().addAll(settings.getDnsServers());
 	}
 
-	@FXML
-	private void onDomainNameAction(ActionEvent e) {
-		sendButtonFired(e);
-	}
+
 
 	@FXML
 	private void clicked(MouseEvent event) {
@@ -666,23 +628,9 @@ public class DNSController extends MDNSController {
 		autobinging(dnsServerTextField.getText(), settings.getDnsServers(), savedDNSChoiceBox);
 	}
 
-	private void controlKeys(KeyEvent e, TextField text) {
-		byte b = e.getCharacter().getBytes()[0];
-		if (b == (byte) 0x08 && text.getText().length() >= 1 && isRightToLeft(text.getText())) {
-			System.out.println(text.getText());
-			text.setText(text.getText().substring(1, text.getText().length()));
-		}
-	}
 
-	private boolean isRightToLeft(String text) {
-		char[] chars = text.toCharArray();
-		for(char c: chars){
-		    if(c >= 0x500 && c <= 0x6ff){
-		        return true;
-		        		     }
-		}
-		return false;
-	}
+
+
 	@FXML
 	private void deleteDomainNameHistoryFired(Event event) {
 		settings.eraseDomainNames();

@@ -108,6 +108,7 @@ public class MainController extends GeneralController {
 			controller.setLabels();
 			controller.loadDataFromSettings();
 		} catch (Exception e) {
+			e.printStackTrace();
 			LOGGER.severe("Could not open new window:" + e.toString());
 			Alert alert = new Alert(AlertType.ERROR, language.getLanguageBundle().getString("windowError"));
 			alert.showAndWait();

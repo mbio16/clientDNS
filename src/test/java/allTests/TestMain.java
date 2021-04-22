@@ -1,53 +1,39 @@
 package allTests;
 import java.util.concurrent.TimeUnit;
 import enums.APPLICATION_PROTOCOL;
+import enums.IP_PROTOCOL;
 import enums.Q_COUNT;
+import enums.RESPONSE_MDNS_TYPE;
 import enums.TRANSPORT_PROTOCOL;
+import models.DomainConvert;
+import models.Header;
 import models.MessageParser;
 import models.MessageSender;
+import models.Request;
 import models.TCPConnection;
 
 public class TestMain {
 
 	public static void main(String[] args) {
-		Q_COUNT[] a = {Q_COUNT.PTR};
+		Q_COUNT[] a = {Q_COUNT.A};
 		MessageSender sender;
 		MessageParser parser;
-		TRANSPORT_PROTOCOL protocol = TRANSPORT_PROTOCOL.TCP;
+		TRANSPORT_PROTOCOL protocol = TRANSPORT_PROTOCOL.UDP;
 		try {
-		/*	sender = new MessageSender(true, true,true,"biolek.net.",a ,protocol,APPLICATION_PROTOCOL.DNS,"8.8.8.8");
-			sender.setCloseConnection(false);
-			sender.send();
-			TCPConnection t = sender.getTcp();
-			parser = new MessageParser(sender.getRecieveReply(),sender.getHeader(),protocol);
-			parser.parse();
-			
-			System.out.println(sender.getAsJsonString());
-			System.out.println(parser.getAsJsonString());
-			System.out.println("Message size query: " + sender.getByteSizeQuery());
-			System.out.println("Messge size response: " + parser.getByteSizeResponse());
-			sender.getAsTreeItem();
-			parser.getAsTreeItem();
-			
-			TimeUnit.SECONDS.sleep(5);
-			sender = new MessageSender(true, true,true,"seznam.net.",a ,protocol,APPLICATION_PROTOCOL.DNS,"8.8.8.8");
-			sender.setTcp(t);
-			sender.setCloseConnection(true);
-			sender.send();
-			parser = new MessageParser(sender.getRecieveReply(),sender.getHeader(),protocol);
-			parser.parse();
-			
-			System.out.println(sender.getAsJsonString());
-			System.out.println(parser.getAsJsonString());
-			System.out.println("Message size query: " + sender.getByteSizeQuery());
-			System.out.println("Messge size response: " + parser.getByteSizeResponse());*/
-			
-			sender = new MessageSender(true, true,true,"4.4.8.8.in-addr.arpa",a ,protocol,APPLICATION_PROTOCOL.DNS,"8.8.8.8");
-			sender.send();
-			parser = new MessageParser(sender.getRecieveReply(),sender.getHeader(),protocol);
-			parser.parse();
-			System.out.println(sender.getAsJsonString());
-			System.out.println(parser.getAsJsonString());
+		
+//		sender = new MessageSender(false,"macMartin.local",a,IP_PROTOCOL.IPv6,RESPONSE_MDNS_TYPE.RESPONSE_MULTICAST);
+//		sender.send();
+//		sender.getAsJsonString();
+//		parser = new MessageParser(sender.getRecieveReply(), sender.getHeader(), null);
+//		parser.parseMDNS();
+//		System.out.println(parser.getAsJsonString());
+//			https://dns.google/resolve?
+		//sender = new MessageSender(true, false, false, "seznam.cz", a, protocol,APPLICATION_PROTOCOL.DOH,"https://cloudflare-dns.com/dns-query");
+		sender = new MessageSender(true, false, true, "seznam.cz", a, protocol,APPLICATION_PROTOCOL.DOH,"https://dns.google/resolve");
+		sender.send();
+		parser = new MessageParser(sender.getHttpResponse());
+		System.out.println(sender.getDohRequest());
+		System.out.println(parser.getAsJsonString());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

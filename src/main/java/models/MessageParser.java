@@ -7,6 +7,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import com.google.gson.GsonBuilder;
 
+import enums.APPLICATION_PROTOCOL;
 import enums.TRANSPORT_PROTOCOL;
 import exceptions.QueryIdNotMatchException;
 import javafx.scene.control.TreeItem;
@@ -20,6 +21,8 @@ public class MessageParser {
 	private ArrayList<Response> arcountResponses;
 	private byte[] rawMessage;
 	private int currentIndex;
+	private APPLICATION_PROTOCOL applicationProtocol;
+	private JSONObject httpResponse;
 	private static final String KEY_HEAD = "Head";
 	private static final String KEY_QUESTIONS = "Questions";
 	private static final String KEY_ANSWERS = "Answer";
@@ -41,9 +44,14 @@ public class MessageParser {
 		this.protocol = protocol;
 		this.main = new TreeItem<String>(KEY_ANSWERS);
 		byteSizeResponse = 0;
+		this.httpResponse = null;
 	}
 
+	public MessageParser(JSONObject response) {
+		this.httpResponse = response;
+	}
 	public void parse() throws QueryIdNotMatchException, UnknownHostException, UnsupportedEncodingException {
+		applicationProtocol = APPLICATION_PROTOCOL.DNS;
 		header = new Header().parseHead(rawMessage);
 		checkId();
 		currentIndex += Header.getSize();
@@ -77,6 +85,34 @@ public class MessageParser {
 
 	}
 
+	public void parseMDNS() throws QueryIdNotMatchException, UnknownHostException, UnsupportedEncodingException {
+		applicationProtocol = APPLICATION_PROTOCOL.MDNS;
+		header = new Header().parseHead(rawMessage);
+		checkId();
+		currentIndex += Header.getSize();
+		for (int i = 0; i < header.getQdCount().intValue(); i++) {
+			Request r = new Request().parseRequest(rawMessage, currentIndex);
+			qcountRequests.add(r);
+			currentIndex += r.getSize();
+		}
+
+		for (int i = 0; i < header.getAnCount().intValue(); i++) {
+			Response r = new Response().parseResponseMDNS(rawMessage, currentIndex);
+			ancountResponses.add(r);
+			currentIndex = r.getEndIndex() + 1;
+		}
+		for (int i = 0; i < header.getNsCount().intValue(); i++) {
+			Response r = new Response().parseResponseMDNS(rawMessage, currentIndex);
+			nscountResponses.add(r);
+			currentIndex = r.getEndIndex() + 1;
+		}
+		for (int i = 0; i < header.getArCount().intValue(); i++) {
+			Response r = new Response().parseResponseMDNS(rawMessage, currentIndex);
+			arcountResponses.add(r);
+			currentIndex = r.getEndIndex() + 1;
+		}
+		byteSizeResponse = currentIndex;
+	}
 	public TreeItem<String> getAsTreeItem() {
 
 		main.getChildren().add(header.getAsTreeItem());
@@ -120,7 +156,6 @@ public class MessageParser {
 			throw new QueryIdNotMatchException();
 		}
 	}
-
 	@Override
 	public String toString() {
 		return "MessageParser [queryHeader=" + queryHeader + ", header=" + header + ", qcountResponses="
@@ -140,13 +175,13 @@ public class MessageParser {
 		}
 
 		for (Response response : ancountResponses) {
-			an.add(response.getAsJson());
+			an.add(response.getAsJson(applicationProtocol));
 		}
 		for (Response response : nscountResponses) {
-			ns.add(response.getAsJson());
+			ns.add(response.getAsJson(applicationProtocol));
 		}
 		for (Response response : arcountResponses) {
-			ar.add(response.getAsJson());
+			ar.add(response.getAsJson(applicationProtocol));
 		}
 
 		main.put(KEY_HEAD, header.getAsJson());
@@ -160,6 +195,9 @@ public class MessageParser {
 	}
 
 	public String getAsJsonString() {
+		if (this.httpResponse != null) {
+			return new GsonBuilder().setPrettyPrinting().create().toJson(httpResponse);
+		}
 		return new GsonBuilder().setPrettyPrinting().create().toJson(getAsJson());
 	}
 

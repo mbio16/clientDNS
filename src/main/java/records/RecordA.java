@@ -8,7 +8,7 @@ public class RecordA extends Record {
 
 	protected InetAddress ipAddress;
 	protected String ipAddressAsString;
-	private static final String KEY_ADDRESS = "Ipv4";
+	protected String KEY_ADDRESS = "Ipv4";
 
 	public RecordA(byte[] rawMessage, int lenght, int startIndex) throws UnknownHostException {
 		super(rawMessage, lenght, startIndex);

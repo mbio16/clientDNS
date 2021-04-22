@@ -21,7 +21,11 @@
 	    <artifactId>javafx-fxml</artifactId>
 	    <version>15.0.1</version>
 		</dependency>
-	    
+	    <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient</artifactId>
+        <version>4.5.10</version>
+    </dependency>
 		 <!-- https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple -->
 		<dependency>
 		    <groupId>com.googlecode.json-simple</groupId>
