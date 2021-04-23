@@ -151,6 +151,8 @@ public class MainController extends GeneralController {
 		multicastDNSLabel.setText(language.getLanguageBundle().getString(multicastDNSLabel.getId()));
 		encryptedDNSLabel.setText(language.getLanguageBundle().getString(encryptedDNSLabel.getId()));
 		reportBugButton.setText(language.getLanguageBundle().getString(reportBugButton.getId()));
+		Stage stage = (Stage) basicDNSLabel.getScene().getWindow();
+		stage.setTitle(language.getLanguageBundle().getString(APP_TITTLE));
 		switch (language.getCurrentLanguage()) {
 		case Language.CZECH:
 			czechLangRadioButton.setSelected(true);

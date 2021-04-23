@@ -219,6 +219,13 @@ public class MDNSController extends GeneralController {
 		setIpUserData();
 		setMDNSType();
 		setUserDataWireshark();
+		setTitle();
+	}
+	
+	protected void  setTitle() {
+		Stage stage = (Stage) sendButton.getScene().getWindow();
+		System.out.println(language.getLanguageBundle().getString(APP_TITTLE));
+		stage.setTitle(language.getLanguageBundle().getString(APP_TITTLE));
 	}
 	private void setUserDataWireshark() {
 		mdnsMenuItem.setUserData("udp.port == 5353");

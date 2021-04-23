@@ -340,6 +340,7 @@ public class DNSController extends MDNSController {
 		deleteDNSServersHistory.setText(language.getLanguageBundle().getString(deleteDNSServersHistory.getId()));
 
 		wiresharkLabel.setText(language.getLanguageBundle().getString(wiresharkLabel.getId()));
+		setTitle();
 	}
 
 	private void setUserDataWiresharkRadioMenuItem() {
