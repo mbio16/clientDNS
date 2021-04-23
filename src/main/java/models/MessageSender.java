@@ -209,7 +209,9 @@ public class MessageSender {
 	}
 	private void doh() throws HttpCodeException,OtherHttpException,ParseException {
 	try {
-	String uri  = addParamtoUri(resolver+"?","name",domainAsString);
+	String [] domainToResolve = resolver.split("/");
+	
+	String uri  = addParamtoUri("https://"+resolver+"?","name",domainAsString);
 	uri = addParamtoUri(uri,"type",qcountTypes[0].toString());
 	uri = addParamtoUri(uri, "do","" +rrRecords);
 	uri = addParamtoUri(uri,"cd",""+!dnssec);
@@ -220,9 +222,15 @@ public class MessageSender {
 	request.addHeader("Accept-Encoding","gzip, deflate, br");
 	this.httpRequest = request;
 	CloseableHttpClient httpClient = HttpClients.createDefault();
+	startTime = System.nanoTime();
+	InetAddress.getByName(domainToResolve[0]);
 	CloseableHttpResponse response = httpClient.execute(request);
+	stopTime = System.nanoTime();
+	
          if (response.getStatusLine().getStatusCode() == 200) {
-             parseResponseDoh(EntityUtils.toString(response.getEntity()));
+             
+        	 parseResponseDoh(EntityUtils.toString(response.getEntity()));
+        	 httpClient.close();
          }
          else {
 			throw new HttpCodeException(response.getStatusLine().getStatusCode());
