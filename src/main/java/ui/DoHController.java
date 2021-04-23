@@ -1,6 +1,7 @@
 package ui;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
 
 public class DoHController extends DNSController {
@@ -9,6 +10,10 @@ public class DoHController extends DNSController {
 	
 	@FXML
 	private TextArea requestTextArea;
+	@FXML
+	private RadioButton jsonApiRadioButton;
+	@FXML
+	private RadioButton wireRadioButton;
 	
 	
 	public DoHController() {
@@ -23,6 +28,12 @@ public class DoHController extends DNSController {
 	
 	public void setLabels() {
 		
+		
+		setUserDataRecords();
+	}
+	
+	public void loadDataFromSettings() {
+		this.savedDomainNamesChoiseBox.getItems().setAll(settings.getDomainNamesDNS());
 	}
 
 }

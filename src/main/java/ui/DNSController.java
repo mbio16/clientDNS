@@ -31,7 +31,6 @@ import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.control.TreeView;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -53,7 +52,7 @@ public class DNSController extends MDNSController {
 	private TextField dnsServerTextField;
 
 	@FXML
-	private Label wiresharkLabel;
+	protected Label wiresharkLabel;
 
 	// radio buttons
 	@FXML
@@ -369,7 +368,7 @@ public class DNSController extends MDNSController {
 
 	}
 	
-	private void setUserDataRecords() {
+	protected void setUserDataRecords() {
 		aCheckBox.setUserData(Q_COUNT.A);
 		aaaaCheckBox.setUserData(Q_COUNT.AAAA);
 		cnameCheckBox.setUserData(Q_COUNT.CNAME);
@@ -567,22 +566,6 @@ public class DNSController extends MDNSController {
 		savedDNSChoiceBox.getItems().removeAll(savedDNSChoiceBox.getItems());
 		savedDNSChoiceBox.getItems().addAll(settings.getDnsServers());
 	}
-
-
-
-	@FXML
-	private void clicked(MouseEvent event) {
-		if (event.getClickCount() == 2) {
-			@SuppressWarnings("unchecked")
-			TreeView<String> v = (TreeView<String>) event.getSource();
-			String value = v.getSelectionModel().getSelectedItem().getValue();
-			String[] array = value.toString().split(": ");
-			if (array.length != 1) {
-				copyDataToClipBoard(array[1]);
-			}
-		}
-	}
-
 	@FXML
 	private void onDomainNameChoiseBoxAction(ActionEvent event) {
 		try {

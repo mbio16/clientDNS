@@ -89,12 +89,12 @@
                             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                              <RadioButton fx:id="cloudflareIpv4RadioButton" mnemonicParsing="false" onAction="#onRadioButtonChange" text="cloudflare-dns.com">
+                              <RadioButton fx:id="cloudflareIpv4RadioButton" mnemonicParsing="false" text="cloudflare-dns.com">
                                  <font>
                                     <Font size="15.0" />
                                  </font>
                               </RadioButton>
-                              <RadioButton fx:id="googleIpv4RadioButton" mnemonicParsing="false" onAction="#onRadioButtonChange" text="dns.google" GridPane.rowIndex="1">
+                              <RadioButton fx:id="googleIpv4RadioButton" mnemonicParsing="false" text="dns.google" GridPane.rowIndex="1">
                                  <font>
                                     <Font size="15.0" />
                                  </font>
@@ -165,12 +165,12 @@
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
-                              <RadioButton fx:id="recursiveQueryRadioButton" mnemonicParsing="false" prefHeight="21.0" prefWidth="205.0" selected="true" text="JSON api">
+                              <RadioButton fx:id="jsonApiRadioButton" mnemonicParsing="false" prefHeight="21.0" prefWidth="205.0" selected="true" text="JSON api">
                                  <font>
                                     <Font size="15.0" />
                                  </font>
                               </RadioButton>
-                              <RadioButton fx:id="iterativeQueryRadioButton" disable="true" mnemonicParsing="false" prefHeight="21.0" prefWidth="182.0" text="Wire" GridPane.rowIndex="1">
+                              <RadioButton fx:id="wireRadioButton" disable="true" mnemonicParsing="false" prefHeight="21.0" prefWidth="182.0" text="Wire" GridPane.rowIndex="1">
                                  <font>
                                     <Font size="15.0" />
                                  </font>
@@ -179,7 +179,7 @@
                         </GridPane>
                      </content>
                   </TitledPane>
-                  <Button fx:id="sendButton" layoutX="9.0" layoutY="653.0" mnemonicParsing="false" onAction="#sendButtonFired" prefHeight="44.0" prefWidth="427.0" text="Odeslat">
+                  <Button fx:id="sendButton" layoutX="9.0" layoutY="653.0" mnemonicParsing="false" prefHeight="44.0" prefWidth="427.0" text="Odeslat">
                      <font>
                         <Font size="20.0" />
                      </font>
@@ -196,8 +196,8 @@
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
-                              <TextField fx:id="domainNameTextField" onAction="#onDomainNameAction" onKeyTyped="#domainNameKeyPressed" prefHeight="25.0" prefWidth="301.0" />
-                              <ComboBox fx:id="savedDomainNamesChoiseBox" onAction="#onDomainNameChoiseBoxAction" onMouseClicked="#onDomainNameChoiseBoxFired" prefHeight="25.0" prefWidth="414.0" GridPane.rowIndex="1" />
+                              <TextField fx:id="domainNameTextField" onKeyTyped="#domainNameKeyPressed" prefHeight="25.0" prefWidth="301.0" />
+                              <ComboBox fx:id="savedDomainNamesChoiseBox" onMouseClicked="#onDomainNameChoiseBoxFired" prefHeight="25.0" prefWidth="414.0" GridPane.rowIndex="1" />
                            </children>
                         </GridPane>
                      </content>
@@ -430,7 +430,7 @@
                <bottom>
                   <TitledPane fx:id="responseTitledPane" animated="false" collapsible="false" minWidth="310.0" onMouseClicked="#expandAllResponseOnClick" prefHeight="433.0" prefWidth="582.0" text="Odpověď" BorderPane.alignment="CENTER">
                      <content>
-                        <TreeView fx:id="responseTreeView" onMouseClicked="#clicked" prefHeight="402.0" prefWidth="547.0" />
+                        <TreeView fx:id="responseTreeView" onMouseClicked="#treeViewClicked" prefHeight="402.0" prefWidth="547.0" />
                      </content>
                      <padding>
                         <Insets top="5.0" />
@@ -445,12 +445,12 @@
          <bottom>
             <AnchorPane prefHeight="46.0" prefWidth="195.0" BorderPane.alignment="CENTER">
                <children>
-                  <Button fx:id="copyResponseJsonButton" disable="true" layoutX="372.0" layoutY="-6.0" minWidth="100.0" mnemonicParsing="false" onAction="#copyJsonResponseDataFired" prefHeight="40.0" prefWidth="85.0" text="Odpověď JSON">
+                  <Button fx:id="copyResponseJsonButton" disable="true" layoutX="372.0" layoutY="-6.0" minWidth="100.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="85.0" text="Odpověď JSON">
                      <padding>
                         <Insets top="5.0" />
                      </padding>
                   </Button>
-                  <Button fx:id="copyRequestJsonButton" disable="true" layoutX="245.0" layoutY="-5.0" minWidth="85.0" mnemonicParsing="false" onAction="#copyJsonRequestDataFired" prefHeight="40.0" prefWidth="85.0" text="Dotaz JSON">
+                  <Button fx:id="copyRequestJsonButton" disable="true" layoutX="245.0" layoutY="-5.0" minWidth="85.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="85.0" text="Dotaz JSON">
                      <padding>
                         <Insets top="5.0" />
                      </padding>

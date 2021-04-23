@@ -40,6 +40,7 @@ import javafx.scene.control.TreeView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.stage.Modality;
@@ -324,6 +325,18 @@ public class MDNSController extends GeneralController {
 	protected void setDisableJSonButtons(boolean disable) {
 		copyRequestJsonButton.setDisable(disable);
 		copyResponseJsonButton.setDisable(disable);
+	}
+	@FXML
+	protected void treeViewClicked(MouseEvent event) {
+		if (event.getClickCount() == 2) {
+			@SuppressWarnings("unchecked")
+			TreeView<String> v = (TreeView<String>) event.getSource();
+			String value = v.getSelectionModel().getSelectedItem().getValue();
+			String[] array = value.toString().split(": ");
+			if (array.length != 1) {
+				copyDataToClipBoard(array[1]);
+			}
+		}
 	}
 
 	@FXML

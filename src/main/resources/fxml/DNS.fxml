@@ -565,7 +565,7 @@
                <center>
                   <TitledPane fx:id="queryTitledPane" animated="false" collapsible="false" maxHeight="700.0" maxWidth="310.0" onMouseClicked="#expandAllRequestOnClick" prefHeight="686.0" prefWidth="310.0" text="Dotaz">
                      <content>
-                        <TreeView fx:id="requestTreeView" minWidth="250.0" onMouseClicked="#clicked" prefHeight="619.0" prefWidth="308.0" />
+                        <TreeView fx:id="requestTreeView" minWidth="250.0" onMouseClicked="#treeViewClicked" prefHeight="619.0" prefWidth="308.0" />
                      </content>
                   </TitledPane>
                </center>
@@ -624,7 +624,7 @@
          <center>
             <TitledPane fx:id="responseTitledPane" animated="false" collapsible="false" minWidth="310.0" onMouseClicked="#expandAllResponseOnClick" prefHeight="719.0" prefWidth="310.0" text="Odpověď" BorderPane.alignment="CENTER">
                <content>
-                  <TreeView fx:id="responseTreeView" onMouseClicked="#clicked" prefHeight="600.0" prefWidth="306.0" />
+                  <TreeView fx:id="responseTreeView" onMouseClicked="#treeViewClicked" prefHeight="600.0" prefWidth="306.0" />
                </content>
                <padding>
                   <Insets right="2.0" top="5.0" />
