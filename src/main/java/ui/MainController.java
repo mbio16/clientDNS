@@ -85,13 +85,9 @@ public class MainController extends GeneralController {
 
 	@FXML
 	private void definedButtonFired(ActionEvent event) {
-		String fxml_file = "";
-		if (event.getSource().equals(dnsButton)) {
-			fxml_file = DNSController.FXML_FILE_NAME;
-		}
-		if (event.getSource().equals(mdnsButton)) {
-			fxml_file = MDNSController.FXML_FILE_NAME;
-		}
+		
+		Button button = (Button) event.getSource();
+		String fxml_file = (String) button.getUserData();
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml_file));
 			Stage newStage = new Stage();
@@ -148,11 +144,15 @@ public class MainController extends GeneralController {
 
 	public void setLabels() {
 		basicDNSLabel.setText(language.getLanguageBundle().getString(basicDNSLabel.getId()));
+		dnsButton.setUserData(DNSController.FXML_FILE_NAME);
 		multicastDNSLabel.setText(language.getLanguageBundle().getString(multicastDNSLabel.getId()));
+		mdnsButton.setUserData(MDNSController.FXML_FILE_NAME);
 		encryptedDNSLabel.setText(language.getLanguageBundle().getString(encryptedDNSLabel.getId()));
+		dohButton.setUserData(DoHController.FXML_FILE_NAME);
 		reportBugButton.setText(language.getLanguageBundle().getString(reportBugButton.getId()));
 		Stage stage = (Stage) basicDNSLabel.getScene().getWindow();
 		stage.setTitle(language.getLanguageBundle().getString(APP_TITTLE));
+		
 		switch (language.getCurrentLanguage()) {
 		case Language.CZECH:
 			czechLangRadioButton.setSelected(true);

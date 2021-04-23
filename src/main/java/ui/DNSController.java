@@ -84,9 +84,9 @@ public class DNSController extends MDNSController {
 	private RadioButton customDNSRadioButton;
 
 	@FXML
-	private RadioButton dnssecYesRadioButton;
+	protected RadioButton dnssecYesRadioButton;
 	@FXML
-	private RadioButton dnssecNoRadioButton;
+	protected RadioButton dnssecNoRadioButton;
 	// menu items
 	@FXML
 	private MenuItem deleteDomainNameHistory;
@@ -95,46 +95,43 @@ public class DNSController extends MDNSController {
 
 	// checkboxes
 	@FXML
-	private CheckBox soaCheckBox;
+	protected CheckBox soaCheckBox;
 	@FXML
-	private CheckBox dnskeyCheckBox;
+	protected CheckBox dnskeyCheckBox;
 	@FXML
-	private CheckBox dsCheckBox;
+	protected CheckBox dsCheckBox;
 	@FXML
-	private CheckBox caaCheckBox;
+	protected CheckBox caaCheckBox;
 	@FXML
-	private CheckBox cnameCheckBox;
+	protected CheckBox cnameCheckBox;
 	@FXML
-	private CheckBox nsCheckBox;
+	protected CheckBox nsCheckBox;
 	@FXML
-	private CheckBox mxCheckBox;
+	protected CheckBox mxCheckBox;
 	@FXML
-	private CheckBox rrsigCheckBox;
+	protected CheckBox rrsigCheckBox;
 	@FXML
-	private CheckBox holdConectionCheckbox;
-
+	protected CheckBox holdConectionCheckbox;
 	@FXML
-	private CheckBox nsec3paramCheckBox;
+	protected CheckBox nsec3paramCheckBox;
 	@FXML
-	private RadioMenuItem justIp;
+	protected RadioMenuItem justIp;
 	@FXML
-	private RadioMenuItem IpAsFilter;
+	protected RadioMenuItem IpAsFilter;
 	@FXML
 	private RadioMenuItem IpWithUDPAsFilter;
 	@FXML
 	private RadioMenuItem IpwithTCPAsFilter;
 	@FXML
 	private RadioMenuItem IpWithUDPandTcpAsFilter;
-
-	
 	@FXML
-	private CheckBox nsec3CheckBox;
+	protected CheckBox nsec3CheckBox;
 
 	// titledpane
 	@FXML
 	private TitledPane transportTitledPane;
 	@FXML
-	private TitledPane dnsServerTitledPane;
+	protected TitledPane dnsServerTitledPane;
 	@FXML
 	private TitledPane iterativeTitledPane;
 
@@ -148,9 +145,9 @@ public class DNSController extends MDNSController {
 	@FXML
 	private ComboBox<String> savedDNSChoiceBox;
 	@FXML
-	private ImageView cloudflareIpv4ImageView;
+	protected ImageView cloudflareIpv4ImageView;
 	@FXML
-	private ImageView googleIpv4IamgeView;
+	protected ImageView googleIpv4IamgeView;
 	@FXML
 	private ImageView cznicIpv4RadioIamgeView;
 	@FXML

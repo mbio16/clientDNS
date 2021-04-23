@@ -11,6 +11,7 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.RadioMenuItem?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.control.TreeView?>
@@ -23,7 +24,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="59.0" prefWidth="593.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.DNSController">
+<BorderPane prefHeight="59.0" prefWidth="593.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.DoHController">
    <top>
       <MenuBar prefHeight="25.0" prefWidth="1521.0" BorderPane.alignment="CENTER">
         <menus>
@@ -51,11 +52,11 @@
                         <Label fx:id="wiresharkLabel" style="-fx-background-color: #D3D3D3;" text="Filtr nastavuje parametry pro kopírování DNS serveru. Filtr lze získat pro daný server kliknutím na ikonu &quot;kopie&quot;." />
                      </content>
                   </CustomMenuItem>
-                  <RadioMenuItem fx:id="justIp" mnemonicParsing="false" selected="true" text="Pouze IP adresa" />
-                  <RadioMenuItem fx:id="IpAsFilter" mnemonicParsing="false" text="IP adresa jako filtr" />
-                  <RadioMenuItem fx:id="IpWithUDPAsFilter" mnemonicParsing="false" text="IP adresa s UDP jako filtr" />
-                  <RadioMenuItem fx:id="IpwithTCPAsFilter" mnemonicParsing="false" text="IP adresa s TCP jako filtr" />
-                  <RadioMenuItem fx:id="IpWithUDPandTcpAsFilter" mnemonicParsing="false" text="IP adresa s UDP a TCP jako filtr" />
+                  <RadioMenuItem mnemonicParsing="false" selected="true" text="Pouze IP adresa" />
+                  <RadioMenuItem mnemonicParsing="false" text="IP adresa jako filtr" />
+                  <RadioMenuItem mnemonicParsing="false" text="IP adresa s TCP jako filtr" />
+                  <RadioMenuItem mnemonicParsing="false" text="IP adresa s TCP a DNS jako filtr" />
+                  <RadioMenuItem mnemonicParsing="false" text="IP adresa s TCP, a DNS překladem HTTP domény" />
                </items>
             </Menu>
         </menus>
@@ -88,12 +89,12 @@
                             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                              <RadioButton fx:id="cloudflareIpv4RadioButton" mnemonicParsing="false" onAction="#onRadioButtonChange" text="1.1.1.1 (Cloudflare)">
+                              <RadioButton fx:id="cloudflareIpv4RadioButton" mnemonicParsing="false" onAction="#onRadioButtonChange" text="cloudflare-dns.com">
                                  <font>
                                     <Font size="15.0" />
                                  </font>
                               </RadioButton>
-                              <RadioButton fx:id="googleIpv4RadioButton" mnemonicParsing="false" onAction="#onRadioButtonChange" text="8.8.8.8 (Google)" GridPane.rowIndex="1">
+                              <RadioButton fx:id="googleIpv4RadioButton" mnemonicParsing="false" onAction="#onRadioButtonChange" text="dns.google" GridPane.rowIndex="1">
                                  <font>
                                     <Font size="15.0" />
                                  </font>
@@ -418,12 +419,12 @@
                </BorderPane.margin>
                <top>
                   <TitledPane fx:id="queryTitledPane" animated="false" collapsible="false" maxHeight="700.0" maxWidth="561.0" minWidth="500.0" onMouseClicked="#expandAllRequestOnClick" prefHeight="213.0" prefWidth="561.0" text="Dotaz" BorderPane.alignment="CENTER">
-                     <content>
-                        <TreeView fx:id="requestTreeView" minWidth="250.0" onMouseClicked="#clicked" prefHeight="187.0" prefWidth="561.0" />
-                     </content>
                      <BorderPane.margin>
                         <Insets right="5.0" top="5.0" />
                      </BorderPane.margin>
+                     <content>
+                        <TextArea editable="false" prefHeight="200.0" prefWidth="200.0" />
+                     </content>
                   </TitledPane>
                </top>
                <bottom>

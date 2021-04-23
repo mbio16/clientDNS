@@ -102,7 +102,7 @@
 						<Font size="15.0" />
 					</font>
 				</Label>
-				<Button fx:id="dohButton" layoutX="26.0" layoutY="62.0" mnemonicParsing="false" onAction="#buttonFired" prefHeight="40.0" prefWidth="72.0" text="DoH">
+				<Button fx:id="dohButton" layoutX="26.0" layoutY="62.0" mnemonicParsing="false" onAction="#definedButtonFired" prefHeight="40.0" prefWidth="72.0" text="DoH">
 					<font>
 						<Font name="System Bold" size="15.0" />
 					</font>
