@@ -209,7 +209,6 @@ public class MessageSender {
 	}
 	private void doh() throws HttpCodeException,OtherHttpException,ParseException {
 	try {
-	String [] domainToResolve = resolver.split("/");
 	
 	String uri  = addParamtoUri("https://"+resolver+"?","name",domainAsString);
 	uri = addParamtoUri(uri,"type",qcountTypes[0].toString());
@@ -223,7 +222,6 @@ public class MessageSender {
 	this.httpRequest = request;
 	CloseableHttpClient httpClient = HttpClients.createDefault();
 	startTime = System.nanoTime();
-	InetAddress.getByName(domainToResolve[0]);
 	CloseableHttpResponse response = httpClient.execute(request);
 	stopTime = System.nanoTime();
 	

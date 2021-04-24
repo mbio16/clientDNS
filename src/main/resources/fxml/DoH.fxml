@@ -42,7 +42,6 @@
             <Menu fx:id="historyMenu" mnemonicParsing="false" text="Historie">
               <items>
                 <MenuItem fx:id="deleteDomainNameHistory" mnemonicParsing="false" onAction="#deleteDomainNameHistoryFired" text="Smazat historii doménových jmen" />
-                  <MenuItem fx:id="deleteDNSServersHistory" mnemonicParsing="false" onAction="#deleteDNSServerHistoryFired" text="Smazat historii DNS serverů" />
               </items>
             </Menu>
             <Menu mnemonicParsing="false" text="Wireshark">
@@ -52,11 +51,9 @@
                         <Label fx:id="wiresharkLabel" style="-fx-background-color: #D3D3D3;" text="Filtr nastavuje parametry pro kopírování DNS serveru. Filtr lze získat pro daný server kliknutím na ikonu &quot;kopie&quot;." />
                      </content>
                   </CustomMenuItem>
-                  <RadioMenuItem mnemonicParsing="false" selected="true" text="Pouze IP adresa" />
-                  <RadioMenuItem mnemonicParsing="false" text="IP adresa jako filtr" />
-                  <RadioMenuItem mnemonicParsing="false" text="IP adresa s TCP jako filtr" />
-                  <RadioMenuItem mnemonicParsing="false" text="IP adresa s TCP a DNS jako filtr" />
-                  <RadioMenuItem mnemonicParsing="false" text="IP adresa s TCP, a DNS překladem HTTP domény" />
+                  <RadioMenuItem fx:id="justIp" mnemonicParsing="false" selected="true" text="Pouze IP adresa" />
+                  <RadioMenuItem fx:id="ipAsFilter" mnemonicParsing="false" text="IP adresa jako filtr" />
+                  <RadioMenuItem fx:id="ipwithTCPAsFilter" mnemonicParsing="false" text="IP adresa s TCP jako filtr" />
                </items>
             </Menu>
         </menus>
@@ -89,17 +86,17 @@
                             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                              <RadioButton fx:id="cloudflareIpv4RadioButton" mnemonicParsing="false" text="cloudflare-dns.com">
+                              <RadioButton fx:id="cloudflareRadionButton" mnemonicParsing="false" selected="true" text="cloudflare-dns.com">
                                  <font>
                                     <Font size="15.0" />
                                  </font>
                               </RadioButton>
-                              <RadioButton fx:id="googleIpv4RadioButton" mnemonicParsing="false" text="dns.google" GridPane.rowIndex="1">
+                              <RadioButton fx:id="googleRadioButton" mnemonicParsing="false" text="dns.google" GridPane.rowIndex="1">
                                  <font>
                                     <Font size="15.0" />
                                  </font>
                               </RadioButton>
-                              <ImageView fx:id="cloudflareIpv4ImageView" fitHeight="20.0" fitWidth="20.0" onMouseClicked="#copyImageViewFired" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1">
+                              <ImageView fx:id="cloudflareImageView" fitHeight="20.0" fitWidth="20.0" onMouseClicked="#copyImageViewFired" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1">
                                  <image>
                                     <Image url="@../images/copy-clipboard.png" />
                                  </image>
@@ -107,7 +104,7 @@
                                     <Insets bottom="2.0" left="5.0" right="5.0" top="2.0" />
                                  </GridPane.margin>
                               </ImageView>
-                              <ImageView fx:id="googleIpv4IamgeView" fitHeight="20.0" fitWidth="20.0" onMouseClicked="#copyImageViewFired" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                              <ImageView fx:id="googleImageView" fitHeight="20.0" fitWidth="20.0" onMouseClicked="#copyImageViewFired" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                  <image>
                                     <Image url="@../images/copy-clipboard.png" />
                                  </image>

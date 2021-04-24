@@ -52,10 +52,10 @@
                      </content>
                   </CustomMenuItem>
                   <RadioMenuItem fx:id="justIp" mnemonicParsing="false" selected="true" text="Pouze IP adresa" />
-                  <RadioMenuItem fx:id="IpAsFilter" mnemonicParsing="false" text="IP adresa jako filtr" />
-                  <RadioMenuItem fx:id="IpWithUDPAsFilter" mnemonicParsing="false" text="IP adresa s UDP jako filtr" />
-                  <RadioMenuItem fx:id="IpwithTCPAsFilter" mnemonicParsing="false" text="IP adresa s TCP jako filtr" />
-                  <RadioMenuItem fx:id="IpWithUDPandTcpAsFilter" mnemonicParsing="false" text="IP adresa s UDP a TCP jako filtr" />
+                  <RadioMenuItem fx:id="ipAsFilter" mnemonicParsing="false" text="IP adresa jako filtr" />
+                  <RadioMenuItem fx:id="ipWithUDPAsFilter" mnemonicParsing="false" text="IP adresa s UDP jako filtr" />
+                  <RadioMenuItem fx:id="ipwithTCPAsFilter" mnemonicParsing="false" text="IP adresa s TCP jako filtr" />
+                  <RadioMenuItem fx:id="ipWithUDPandTcpAsFilter" mnemonicParsing="false" text="IP adresa s UDP a TCP jako filtr" />
                </items>
             </Menu>
         </menus>

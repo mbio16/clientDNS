@@ -3,6 +3,8 @@ package models;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
@@ -15,11 +17,13 @@ public class Ip {
 	private ArrayList<String> ipv4DnsServers;
 	private ArrayList<String> ipv6DnsServers;
 	private static final String COMMAND = "powershell.exe $ip=Get-NetIPConfiguration; $ip.'DNSServer' | ForEach-Object -Process {$_.ServerAddresses}";
-
+	private String clouflareIp;
+	private String googleIp;
 	public Ip() {
 		try {
 			setupArrays();
 			parseDnsServersIp();
+			getDoHIps();
 		} catch (Exception e) {
 		}
 	}
@@ -46,6 +50,10 @@ public class Ip {
 		stdout.close();
 	}
 
+	private void getDoHIps() throws UnknownHostException {
+		clouflareIp = InetAddress.getByName("cloudflare-dns.com").getHostAddress();
+		googleIp = InetAddress.getByName("dns.google").getHostAddress();
+	}
 	public String getIpv4DnsServer() {
 		if (ipv4DnsServers.size() == 0) {
 			return "";
@@ -122,5 +130,15 @@ public class Ip {
 		} catch (Exception e) {
 			return "No primary address";
 		}
+		
+		
+	}
+
+	public String getClouflareIp() {
+		return clouflareIp;
+	}
+
+	public String getGoogleIp() {
+		return googleIp;
 	}
 }

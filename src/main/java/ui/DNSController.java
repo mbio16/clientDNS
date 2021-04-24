@@ -88,7 +88,7 @@ public class DNSController extends MDNSController {
 	protected RadioButton dnssecNoRadioButton;
 	// menu items
 	@FXML
-	private MenuItem deleteDomainNameHistory;
+	protected MenuItem deleteDomainNameHistory;
 	@FXML
 	private MenuItem deleteDNSServersHistory;
 
@@ -116,13 +116,13 @@ public class DNSController extends MDNSController {
 	@FXML
 	protected RadioMenuItem justIp;
 	@FXML
-	protected RadioMenuItem IpAsFilter;
+	protected RadioMenuItem ipAsFilter;
 	@FXML
-	private RadioMenuItem IpWithUDPAsFilter;
+	private RadioMenuItem ipWithUDPAsFilter;
 	@FXML
-	private RadioMenuItem IpwithTCPAsFilter;
+	protected RadioMenuItem ipwithTCPAsFilter;
 	@FXML
-	private RadioMenuItem IpWithUDPandTcpAsFilter;
+	private RadioMenuItem ipWithUDPandTcpAsFilter;
 	@FXML
 	protected CheckBox nsec3CheckBox;
 
@@ -132,14 +132,14 @@ public class DNSController extends MDNSController {
 	@FXML
 	protected TitledPane dnsServerTitledPane;
 	@FXML
-	private TitledPane iterativeTitledPane;
+	protected TitledPane iterativeTitledPane;
 
 	// toogleGroup
 	private ToggleGroup transportToggleGroup;
 	private ToggleGroup iterativeToggleGroup;
-	private ToggleGroup dnsserverToggleGroup;
-	private ToggleGroup wiresharkFilterToogleGroup;
-	private ToggleGroup dnssecToggleGroup;
+	protected ToggleGroup dnsserverToggleGroup;
+	protected ToggleGroup wiresharkFilterToogleGroup;
+	protected ToggleGroup dnssecToggleGroup;
 	// choice box
 	@FXML
 	private ComboBox<String> savedDNSChoiceBox;
@@ -198,10 +198,10 @@ public class DNSController extends MDNSController {
 
 		wiresharkFilterToogleGroup = new ToggleGroup();
 		justIp.setToggleGroup(wiresharkFilterToogleGroup);
-		IpAsFilter.setToggleGroup(wiresharkFilterToogleGroup);
-		IpWithUDPAsFilter.setToggleGroup(wiresharkFilterToogleGroup);
-		IpwithTCPAsFilter.setToggleGroup(wiresharkFilterToogleGroup);
-		IpWithUDPandTcpAsFilter.setToggleGroup(wiresharkFilterToogleGroup);
+		ipAsFilter.setToggleGroup(wiresharkFilterToogleGroup);
+		ipWithUDPAsFilter.setToggleGroup(wiresharkFilterToogleGroup);
+		ipwithTCPAsFilter.setToggleGroup(wiresharkFilterToogleGroup);
+		ipWithUDPandTcpAsFilter.setToggleGroup(wiresharkFilterToogleGroup);
 	}
 
 	@FXML
@@ -279,8 +279,8 @@ public class DNSController extends MDNSController {
 
 		Label[] labelsArray = new Label[] { responseTimeLabel, numberOfMessagesLabel };
 
-		RadioMenuItem[] radioMenuItemsArray = new RadioMenuItem[] { justIp, IpAsFilter, IpWithUDPAsFilter,
-				IpwithTCPAsFilter, IpWithUDPandTcpAsFilter };
+		RadioMenuItem[] radioMenuItemsArray = new RadioMenuItem[] { justIp, ipAsFilter, ipWithUDPAsFilter,
+				ipwithTCPAsFilter, ipWithUDPandTcpAsFilter };
 		// set labels to current language in menu
 		backMenuItem.setText(language.getLanguageBundle().getString(backMenuItem.getId()));
 		actionMenu.setText(language.getLanguageBundle().getString(actionMenu.getId()));
@@ -305,17 +305,10 @@ public class DNSController extends MDNSController {
 		sendButton.setText(language.getLanguageBundle().getString(sendButton.getId()));
 
 		holdConectionCheckbox.setText(language.getLanguageBundle().getString(holdConectionCheckbox.getId()));
-		if (language.getCurrentLanguage().equals(Language.CZECH)) {
-			czechRadioButton.setSelected(true);
-			englishRadioButton.setSelected(false);
-		} else {
-			czechRadioButton.setSelected(false);
-			englishRadioButton.setSelected(true);
-		}
-
 		dnssecRecordsRequestCheckBox
 				.setText(language.getLanguageBundle().getString(dnssecRecordsRequestCheckBox.getId()));
 
+		setLanguageRadioButton();
 		// set system dns
 		setSystemDNS();
 		// setUserData
@@ -341,10 +334,10 @@ public class DNSController extends MDNSController {
 
 	private void setUserDataWiresharkRadioMenuItem() {
 		justIp.setUserData(WIRESHARK_FILTER.JUST_IP);
-		IpAsFilter.setUserData(WIRESHARK_FILTER.IP_FILTER);
-		IpWithUDPAsFilter.setUserData(WIRESHARK_FILTER.IP_WITH_UDP);
-		IpwithTCPAsFilter.setUserData(WIRESHARK_FILTER.IP_WITH_TCP);
-		IpWithUDPandTcpAsFilter.setUserData(WIRESHARK_FILTER.IP_WITH_UDP_AND_TCP);
+		ipAsFilter.setUserData(WIRESHARK_FILTER.IP_FILTER);
+		ipWithUDPAsFilter.setUserData(WIRESHARK_FILTER.IP_WITH_UDP);
+		ipwithTCPAsFilter.setUserData(WIRESHARK_FILTER.IP_WITH_TCP);
+		ipWithUDPandTcpAsFilter.setUserData(WIRESHARK_FILTER.IP_WITH_UDP_AND_TCP);
 	}
 
 	private void setUserDataTransportProtocol() {

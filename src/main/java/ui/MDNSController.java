@@ -207,13 +207,7 @@ public class MDNSController extends GeneralController {
 		sendButton.setText(language.getLanguageBundle().getString(sendButton.getId()));
 		copyResponseJsonButton.setText(language.getLanguageBundle().getString(copyResponseJsonButton.getId()));
 		copyRequestJsonButton.setText(language.getLanguageBundle().getString(copyRequestJsonButton.getId()));
-		if (language.getCurrentLanguage().equals(Language.CZECH)) {
-			czechRadioButton.setSelected(true);
-			englishRadioButton.setSelected(false);
-		} else {
-			czechRadioButton.setSelected(false);
-			englishRadioButton.setSelected(true);
-		}
+
 		savedDomainNamesChoiseBox.getItems().addAll(settings.getDomainNamesMDNS());
 		
 		setUserDataRecords();
@@ -221,8 +215,18 @@ public class MDNSController extends GeneralController {
 		setMDNSType();
 		setUserDataWireshark();
 		setTitle();
+		setLanguageRadioButton();
 	}
 	
+	protected void setLanguageRadioButton() {
+		if (language.getCurrentLanguage().equals(Language.CZECH)) {
+			czechRadioButton.setSelected(true);
+			englishRadioButton.setSelected(false);
+		} else {
+			czechRadioButton.setSelected(false);
+			englishRadioButton.setSelected(true);
+		}
+	}
 	protected void  setTitle() {
 		Stage stage = (Stage) sendButton.getScene().getWindow();
 		System.out.println(language.getLanguageBundle().getString(APP_TITTLE));
