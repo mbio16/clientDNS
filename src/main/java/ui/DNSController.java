@@ -425,7 +425,7 @@ public class DNSController extends MDNSController {
 
 	}
 
-	private String getDomain() throws NotValidDomainNameException {
+	protected String getDomain() throws NotValidDomainNameException {
 		try {
 			String domain = (domainNameTextField.getText());
 			LOGGER.info("Domain name: " + domain);
@@ -434,12 +434,11 @@ public class DNSController extends MDNSController {
 			}
 
 			if ((domain.contains(".arpa")) && ptrCheckBox.isSelected()) {
-				System.out.println("ano");
 				return domain;
 			}
 			if ((Ip.isIPv4Address(domain) || Ip.isIpv6Address(domain)) && ptrCheckBox.isSelected()) {
 				LOGGER.info("PTR record request");
-				return domain;
+				return Ip.getIpReversed(domain);
 			}
 			if (DomainConvert.isValidDomainName(domain)) {
 				settings.addDNSDomain(domain);
@@ -454,7 +453,7 @@ public class DNSController extends MDNSController {
 		}
 	}
 
-	private Q_COUNT[] getRecordTypes() throws MoreRecordsTypesWithPTRException, NonRecordSelectedException {
+	protected Q_COUNT[] getRecordTypes() throws MoreRecordsTypesWithPTRException, NonRecordSelectedException {
 		ArrayList<Q_COUNT> list = new ArrayList<Q_COUNT>();
 		CheckBox[] checkBoxArray = { aCheckBox, aaaaCheckBox, nsCheckBox, mxCheckBox, soaCheckBox, cnameCheckBox,
 				ptrCheckBox, dnskeyCheckBox, dsCheckBox, caaCheckBox, txtCheckBox, rrsigCheckBox, nsecCheckBox,
@@ -560,7 +559,7 @@ public class DNSController extends MDNSController {
 		savedDNSChoiceBox.getItems().addAll(settings.getDnsServers());
 	}
 	@FXML
-	private void onDomainNameChoiseBoxAction(ActionEvent event) {
+	protected void onDomainNameChoiseBoxAction(ActionEvent event) {
 		try {
 			if (!savedDomainNamesChoiseBox.getValue().equals(null)
 					&& !savedDomainNamesChoiseBox.getValue().equals("")) {
@@ -572,7 +571,7 @@ public class DNSController extends MDNSController {
 	}
 
 	@FXML
-	private void onDomainNameChoiseBoxFired() {
+	protected void onDomainNameChoiseBoxFired() {
 		savedDomainNamesChoiseBox.getItems().removeAll(savedDomainNamesChoiseBox.getItems());
 		savedDomainNamesChoiseBox.getItems().addAll(settings.getDomainNamesDNS());
 	}
@@ -590,8 +589,7 @@ public class DNSController extends MDNSController {
 	}
 
 	@FXML
-	private void domainNameKeyPressed(KeyEvent event) {
-		controlKeys(event, domainNameTextField);
+	protected void domainNameKeyPressed(KeyEvent event) {		controlKeys(event, domainNameTextField);
 		autobinging(domainNameTextField.getText(), settings.getDomainNamesDNS(), savedDomainNamesChoiseBox);
 	}
 

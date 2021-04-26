@@ -3,7 +3,9 @@ package ui;
 import com.sun.jdi.event.Event;
 
 import enums.DOH_FORMAT;
+import enums.Q_COUNT;
 import enums.WIRESHARK_FILTER;
+import exceptions.NotValidDomainNameException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Menu;
@@ -13,7 +15,10 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import models.DomainConvert;
+import models.Ip;
 
 public class DoHController extends DNSController {
 	
@@ -139,6 +144,27 @@ public class DoHController extends DNSController {
 		}
 		copyDataToClipBoard(result);
 	}
+		
+
+	
+	@FXML
+	protected void sendButtonFired(ActionEvent event) {
+		try {
+		String domain = getDomain();
+		boolean dnssec = dnssecYesRadioButton.isSelected();
+		boolean signatures = dnssecRecordsRequestCheckBox.isSelected();
+		Q_COUNT [] qcount = getRecordTypes();
+		String resolver = (String) dnsserverToggleGroup.getSelectedToggle().getUserData();
+		
+		
+		System.out.println(domain);
+		}
+		catch (Exception e) {
+			// TODO: handle exception
+		}
+		}
+
+	
 	public void loadDataFromSettings() {
 		this.savedDomainNamesChoiseBox.getItems().setAll(settings.getDomainNamesDNS());
 	}
