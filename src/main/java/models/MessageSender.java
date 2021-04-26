@@ -13,12 +13,15 @@ import java.net.Socket;
 
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.net.http.HttpRequest;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -69,7 +72,7 @@ public class MessageSender {
 	private boolean mdnsDnssecSignatures;
 	private boolean closeConnection;
 	private Q_COUNT [] qcountTypes;
-	private HttpPost httpRequest;
+	private String httpRequest;
 	private JSONObject httpResponse;
 	private static final int MAX_MESSAGES_SENT = 3;
 	private static final int TIME_OUT_MILLIS = 2000;
@@ -82,6 +85,12 @@ public class MessageSender {
 	private static final String KEY_REQUEST = "Request";
 	public static final String KEY_ADDITIONAL_RECORDS = "Aditional records";
 	private static final String KEY_LENGHT="Lenght";
+	private static final String [] httpRequestParamsName = new String [] {
+			"name",
+			"type",
+			"do",
+			"cd"
+	};
 	private static Logger LOGGER = Logger.getLogger(DomainConvert.class.getName());
 
 	public MessageSender(boolean recursion, boolean dnssec, boolean rrRecords, String domain, Q_COUNT[] types,
@@ -209,26 +218,33 @@ public class MessageSender {
 	}
 	private void doh() throws HttpCodeException,OtherHttpException,ParseException {
 	try {
-	
-	String uri  = addParamtoUri("https://"+resolver+"?","name",domainAsString);
-	uri = addParamtoUri(uri,"type",qcountTypes[0].toString());
-	uri = addParamtoUri(uri, "do","" +rrRecords);
-	uri = addParamtoUri(uri,"cd",""+!dnssec);
+	String httpsDomain = resolver.split("/")[0];
+	CloseableHttpResponse response;
+	;
+	String [] values = new String [] {
+			domainAsString,
+			qcountAsString(),
+			""+ rrRecords,
+			""+ !dnssec
+	};
+	String uri  = addParamtoUris(resolver, httpRequestParamsName, values);
 	System.out.println(uri);
-	HttpPost request = new HttpPost(uri);
-	request.addHeader("Accept","application/dns-json");
-	request.addHeader("User-Agent", "Klient-DNS");
-	request.addHeader("Accept-Encoding","gzip, deflate, br");
-	this.httpRequest = request;
-	CloseableHttpClient httpClient = HttpClients.createDefault();
-	startTime = System.nanoTime();
-	CloseableHttpResponse response = httpClient.execute(request);
-	stopTime = System.nanoTime();
-	
-         if (response.getStatusLine().getStatusCode() == 200) {
-             
-        	 parseResponseDoh(EntityUtils.toString(response.getEntity()));
-        	 httpClient.close();
+	switch (httpsDomain) {
+	case "dns.google":
+		response = sendAndRecieveDoH(uri, httpsDomain,false);
+		break;
+	case "cloudflare-dns.com":
+		response = sendAndRecieveDoH(uri,httpsDomain,true);
+		break;
+	default:
+		response = null;
+		break;
+	}
+
+       if (response.getStatusLine().getStatusCode() == 200) {
+        	 String content = EntityUtils.toString(response.getEntity());
+        	 parseResponseDoh(content);
+        	 System.out.println(content);
          }
          else {
 			throw new HttpCodeException(response.getStatusLine().getStatusCode());
@@ -241,8 +257,63 @@ public class MessageSender {
 		throw e;
 	}
 	 catch (Exception e) {
+		 e.printStackTrace();
 		throw new OtherHttpException();
 	}
+	
+	}
+	private String qcountAsString(){
+		String result = "";
+		for (int i = 0; i < qcountTypes.length; i++) {
+			if(i==0) {
+				result += qcountTypes[i];
+			}
+			else {
+				result += ","+qcountTypes[i];
+			}
+		}
+		return result;
+	}
+	
+	private CloseableHttpResponse sendAndRecieveDoH(String uri,String host,boolean httpGet) throws ClientProtocolException, IOException {
+		if(httpGet) {
+			HttpGet request = new HttpGet(uri);
+			request.addHeader("Accept","application/dns-json");
+			request.addHeader("Accept-Encoding","gzip, deflate, br");
+			request.addHeader("User-Agent", "Client-DNS");
+			request.addHeader("Host",host);
+			httpRequestAsString(request);
+			CloseableHttpClient httpClient = HttpClients.createDefault();
+			startTime = System.nanoTime();
+			CloseableHttpResponse response = httpClient.execute(request);
+			stopTime = System.nanoTime();
+			return response;
+		}
+		else {
+			HttpPost request = new HttpPost(uri);
+			request.addHeader("Accept","application/dns-json");
+			request.addHeader("Accept-Encoding","gzip, deflate, br");
+			request.addHeader("User-Agent", "Client-DNS");
+			request.addHeader("Host",host);
+			httpRequestAsString(request);
+			CloseableHttpClient httpClient = HttpClients.createDefault();
+			startTime = System.nanoTime();
+			System.out.println(getDoHRequest());
+			CloseableHttpResponse response = httpClient.execute(request);
+			stopTime = System.nanoTime();
+			return response;
+		}
+
+	}
+	private void httpRequestAsString(HttpRequestBase request) {
+		String result = request.toString() + "\n";
+		for (org.apache.http.Header httpHeader :request.getAllHeaders()) {
+			result +=  httpHeader.toString() + "\n";
+		}
+		httpRequest = result;
+	}
+	public String getDoHRequest() {
+		return httpRequest;
 	}
 	
 	@SuppressWarnings("resource")
@@ -366,8 +437,19 @@ public class MessageSender {
 		JSONParser parser = new JSONParser();  
 		this.httpResponse = (JSONObject) parser.parse(response);  
 	}
-	private String addParamtoUri(String uri, String paramName, String paramValue) {
-		return uri + "&" + paramName + "=" + paramValue;
+	private String addParamtoUris(String uri,String [] paramNames, String [] values) {
+		
+		String result = "https://" + uri +"?";
+		for (int i = 0; i < values.length; i++) {
+			if (i==0) {
+				result += paramNames[i] + "=" + values [i];
+			}
+			else {
+			result += "&" + paramNames[i] + "=" + values [i];
+			}
+		}
+		return result;
+
 	}
 	private void messageToBytes() {
 		int curentIndex = 0;
@@ -453,13 +535,7 @@ public class MessageSender {
 		return jsonObject;
 	}
 
-	public String getDohRequest() {
-		String result = httpRequest.toString() + "\n";
-		for (org.apache.http.Header httpHeader :httpRequest.getAllHeaders()) {
-			result +=  httpHeader.toString() + "\n";
-		}
-		return result;
-	}
+
 	public String getAsJsonString() {
 		return new GsonBuilder().setPrettyPrinting().create().toJson(getAsJson());
 	}

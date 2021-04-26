@@ -15,7 +15,7 @@ import models.TCPConnection;
 public class TestMain {
 
 	public static void main(String[] args) {
-		Q_COUNT[] a = {Q_COUNT.A};
+		Q_COUNT[] a = {Q_COUNT.A,Q_COUNT.AAAA};
 		MessageSender sender;
 		MessageParser parser;
 		TRANSPORT_PROTOCOL protocol = TRANSPORT_PROTOCOL.UDP;
@@ -32,7 +32,7 @@ public class TestMain {
 		sender = new MessageSender(true, false, true, "seznam.cz", a, protocol,APPLICATION_PROTOCOL.DOH,"dns.google/resolve");
 		sender.send();
 		parser = new MessageParser(sender.getHttpResponse());
-		System.out.println(sender.getDohRequest());
+		System.out.println(sender.getDoHRequest());
 		System.out.println(parser.getAsJsonString());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

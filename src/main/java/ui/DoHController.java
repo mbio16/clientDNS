@@ -2,8 +2,10 @@ package ui;
 
 import com.sun.jdi.event.Event;
 
+import enums.APPLICATION_PROTOCOL;
 import enums.DOH_FORMAT;
 import enums.Q_COUNT;
+import enums.TRANSPORT_PROTOCOL;
 import enums.WIRESHARK_FILTER;
 import exceptions.NotValidDomainNameException;
 import javafx.event.ActionEvent;
@@ -19,6 +21,8 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import models.DomainConvert;
 import models.Ip;
+import models.MessageParser;
+import models.MessageSender;
 
 public class DoHController extends DNSController {
 	
@@ -154,17 +158,46 @@ public class DoHController extends DNSController {
 		boolean dnssec = dnssecYesRadioButton.isSelected();
 		boolean signatures = dnssecRecordsRequestCheckBox.isSelected();
 		Q_COUNT [] qcount = getRecordTypes();
-		String resolver = (String) dnsserverToggleGroup.getSelectedToggle().getUserData();
-		
+		String resolverURL = (String) dnsserverToggleGroup.getSelectedToggle().getUserData();
+		logRequest(dnssec, signatures, domain, qcount, resolverURL);
+		sender =  new MessageSender(
+				false, //recursion
+				dnssec, //dnssec
+				signatures, //rrRecords
+				domain, //domain as string
+				qcount, //records
+				null, //
+				APPLICATION_PROTOCOL.DOH, // application protocol
+				resolverURL);
+		sender.send();
+		parser = new MessageParser(sender.getHttpResponse());
+		System.out.println(parser.getAsJsonString());
+		setControls();
 		
 		System.out.println(domain);
 		}
 		catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
 		}
 		}
 
-	
+	private void logRequest(boolean dnssec, boolean signatures, String domain, Q_COUNT [] qcount, String resolverURL) {
+		String records = "";
+		for (Q_COUNT q_COUNT : qcount) {
+			records += q_COUNT + ",";
+		}
+		LOGGER.info("DoH:\n " +
+		"dnssec: " + dnssec + "\n" +
+		"signatures: " + signatures + "\n" +
+		"domain: " + domain + "\n" +
+		"records: " + records  + "\n" + 
+		"resovlerURL: " + resolverURL);
+		
+	}
+	@Override
+	protected void setControls() {
+		requestTextArea.setText(sender.getDoHRequest());
+	}
 	public void loadDataFromSettings() {
 		this.savedDomainNamesChoiseBox.getItems().setAll(settings.getDomainNamesDNS());
 	}

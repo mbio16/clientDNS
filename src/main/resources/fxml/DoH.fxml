@@ -420,7 +420,7 @@
                         <Insets right="5.0" top="5.0" />
                      </BorderPane.margin>
                      <content>
-                        <TextArea editable="false" prefHeight="200.0" prefWidth="200.0" />
+                        <TextArea fx:id="requestTextArea" editable="false" prefHeight="200.0" prefWidth="200.0" />
                      </content>
                   </TitledPane>
                </top>
