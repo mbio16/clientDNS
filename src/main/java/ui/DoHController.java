@@ -43,6 +43,9 @@ public class DoHController extends DNSController {
 	@FXML
 	private ImageView googleImageView;
 	
+	@FXML
+	private TextArea responseTextArea;
+	
 	private ToggleGroup formatDoHToggleGroup;
 	
 	
@@ -197,6 +200,9 @@ public class DoHController extends DNSController {
 	@Override
 	protected void setControls() {
 		requestTextArea.setText(sender.getDoHRequest());
+		responseTimeValueLabel.setText(sender.getTimeElapsed()+"");
+		numberOfMessagesValueLabel.setText(sender.getMessageSent()+"");
+		responseTextArea.setText(parser.getAsJsonString());
 	}
 	public void loadDataFromSettings() {
 		this.savedDomainNamesChoiseBox.getItems().setAll(settings.getDomainNamesDNS());

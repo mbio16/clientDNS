@@ -227,6 +227,7 @@ public class MessageSender {
 			""+ rrRecords,
 			""+ !dnssec
 	};
+	messagesSent = 1;
 	String uri  = addParamtoUris(resolver, httpRequestParamsName, values);
 	System.out.println(uri);
 	switch (httpsDomain) {
