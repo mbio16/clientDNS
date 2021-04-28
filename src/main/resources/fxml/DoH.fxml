@@ -414,17 +414,20 @@
                   <Insets bottom="15.0" />
                </BorderPane.margin>
                <top>
-                  <TitledPane fx:id="queryTitledPane" animated="false" collapsible="false" minWidth="500.0" onMouseClicked="#expandAllRequestOnClick" prefHeight="213.0" prefWidth="561.0" text="Dotaz" BorderPane.alignment="CENTER">
+                  <TitledPane fx:id="queryTitledPane" animated="false" collapsible="false" minWidth="500.0" onMouseClicked="#expandAllRequestOnClick" prefHeight="153.0" prefWidth="500.0" text="Dotaz" BorderPane.alignment="CENTER">
                      <BorderPane.margin>
                         <Insets right="5.0" top="5.0" />
                      </BorderPane.margin>
                      <content>
-                        <TextArea fx:id="requestTextArea" editable="false" prefHeight="200.0" prefWidth="200.0" />
+                        <TextArea fx:id="requestTextArea" editable="false" prefHeight="131.0" prefWidth="498.0">
+                           <font>
+                              <Font size="13.0" />
+                           </font></TextArea>
                      </content>
                   </TitledPane>
                </top>
                <bottom>
-                  <TitledPane fx:id="responseTitledPane" animated="false" collapsible="false" minWidth="310.0" onMouseClicked="#expandAllResponseOnClick" prefHeight="433.0" prefWidth="582.0" text="Odpověď" BorderPane.alignment="CENTER">
+                  <TitledPane fx:id="responseTitledPane" animated="false" collapsible="false" minWidth="310.0" onMouseClicked="#expandAllResponseOnClick" prefHeight="481.0" prefWidth="500.0" text="Odpověď" BorderPane.alignment="CENTER">
                      <padding>
                         <Insets top="5.0" />
                      </padding>
@@ -432,7 +435,10 @@
                         <Insets right="5.0" />
                      </BorderPane.margin>
                      <content>
-                        <TextArea fx:id="responseTextArea" prefHeight="200.0" prefWidth="200.0" />
+                        <TextArea fx:id="responseTextArea" prefHeight="449.0" prefWidth="498.0">
+                           <font>
+                              <Font size="13.0" />
+                           </font></TextArea>
                      </content>
                   </TitledPane>
                </bottom>
