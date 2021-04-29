@@ -7,8 +7,9 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.net.NetworkInterface;
 import java.net.Socket;
-
+import java.net.SocketAddress;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -40,6 +41,7 @@ import exceptions.NotValidDomainNameException;
 import exceptions.NotValidIPException;
 import exceptions.OtherHttpException;
 import exceptions.TimeoutException;
+import inet.ipaddr.IPAddress;
 import javafx.scene.control.TreeItem;
 
 public class MessageSender {
@@ -249,10 +251,7 @@ public class MessageSender {
 		}
        httpClient.close();
 	 }
-	catch (HttpCodeException e) {
-		throw e;
-	}
-	catch (ParseException e) {
+	catch (HttpCodeException | ParseException  e) {
 		throw e;
 	}
 	 catch (Exception e) {
@@ -320,6 +319,7 @@ public class MessageSender {
 		messageToBytesMDNS();
 		messagesSent = 1;
 		InetAddress group;
+
 		DatagramSocket unicastSocket; 
 		if(ipProtocol==IP_PROTOCOL.IPv4) {
 			group = InetAddress.getByName(IPv4_MDNS);
@@ -330,7 +330,9 @@ public class MessageSender {
 
 		while(true) {
 		try {
+			NetworkInterface netInterface = NetworkInterface.getByInetAddress(InetAddress.getLocalHost());
 		 MulticastSocket socket = new MulticastSocket(MDNS_PORT);
+		 socket.setNetworkInterface(netInterface);
 		 socket.joinGroup(group);
 		 DatagramPacket datagramPacket = new DatagramPacket(messageAsBytes, messageAsBytes.length,
                  group, MDNS_PORT);
