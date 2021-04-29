@@ -9,7 +9,6 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -41,7 +40,6 @@ import exceptions.NotValidDomainNameException;
 import exceptions.NotValidIPException;
 import exceptions.OtherHttpException;
 import exceptions.TimeoutException;
-import inet.ipaddr.IPAddress;
 import javafx.scene.control.TreeItem;
 
 public class MessageSender {
@@ -244,12 +242,11 @@ public class MessageSender {
        if (response.getStatusLine().getStatusCode() == 200) {
         	 String content = EntityUtils.toString(response.getEntity());
         	 parseResponseDoh(content);
-        	 System.out.println(content);
          }
          else {
 			throw new HttpCodeException(response.getStatusLine().getStatusCode());
 		}
-       httpClient.close();
+      httpClient.close();
 	 }
 	catch (HttpCodeException | ParseException  e) {
 		throw e;

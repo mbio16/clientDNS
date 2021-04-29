@@ -167,6 +167,7 @@ public class DNSController extends MDNSController {
 
 		super();
 		LOGGER = Logger.getLogger(DNSController.class.getName());
+		PROTOCOL = "DNS";
 
 	}
 

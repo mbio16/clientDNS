@@ -162,6 +162,7 @@ public class MDNSController extends GeneralController {
 	public MDNSController() {
 		super();
 		LOGGER = Logger.getLogger(MDNSController.class.getName());
+		PROTOCOL = "mDNS";
 	}
 
 	public void initialize() {
@@ -229,8 +230,8 @@ public class MDNSController extends GeneralController {
 	}
 	protected void  setTitle() {
 		Stage stage = (Stage) sendButton.getScene().getWindow();
-		System.out.println(language.getLanguageBundle().getString(APP_TITTLE));
-		stage.setTitle(language.getLanguageBundle().getString(APP_TITTLE));
+		//System.out.println(language.getLanguageBundle().getString(APP_TITTLE) + " " +PROTOCOL );
+		stage.setTitle(language.getLanguageBundle().getString(APP_TITTLE)+ " " +PROTOCOL);
 	}
 	private void setUserDataWireshark() {
 		mdnsMenuItem.setUserData("udp.port == 5353");
@@ -361,7 +362,6 @@ public class MDNSController extends GeneralController {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(MainController.FXML_FILE_NAME));
 			Stage newStage = new Stage();
 			newStage.setScene(new Scene((Parent) loader.load()));
-			newStage.setTitle(APP_TITTLE);
 			GeneralController controller = (GeneralController) loader.getController();
 			controller.setLanguage(language);
 			controller.setSettings(settings);

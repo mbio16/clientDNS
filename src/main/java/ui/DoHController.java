@@ -1,6 +1,7 @@
 package ui;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 
 import org.json.simple.parser.ParseException;
 import enums.APPLICATION_PROTOCOL;
@@ -60,7 +61,7 @@ public class DoHController extends DNSController {
 	
 	public DoHController() {
 	super();
-	
+	PROTOCOL = "DNS over Https";
 	}
 	
 	public void initialize() {
@@ -162,6 +163,23 @@ public class DoHController extends DNSController {
 	}
 		
 
+	private String getResolverAndupdateItIp() throws UnknownHostException {
+		String fullName = (String) dnsserverToggleGroup.getSelectedToggle().getUserData();
+		String justDomain = fullName.split("/")[0];
+		switch (justDomain) {
+		case "dns.google":
+			ipDns.updateGoogleIp();
+			//System.out.println("updated google");
+			break;
+		case "cloudflare-dns.com":
+			ipDns.updateCloudflareIp();
+			//System.out.println("updated cloudflare");
+		default:
+			ipDns.userDoHurlIP(justDomain);
+			break;
+		}
+		return fullName;
+	}
 	
 	@FXML
 	protected void sendButtonFired(ActionEvent event) {
@@ -170,7 +188,7 @@ public class DoHController extends DNSController {
 		boolean dnssec = dnssecYesRadioButton.isSelected();
 		boolean signatures = dnssecRecordsRequestCheckBox.isSelected();
 		Q_COUNT [] qcount = getRecordTypes();
-		String resolverURL = (String) dnsserverToggleGroup.getSelectedToggle().getUserData();
+		String resolverURL = getResolverAndupdateItIp();
 		logRequest(dnssec, signatures, domain, qcount, resolverURL);
 		sender =  new MessageSender(
 				false, //recursion

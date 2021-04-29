@@ -67,7 +67,7 @@ public class MainController extends GeneralController {
 	public static final String FXML_FILE_NAME = "/fxml/Main.fxml";
 
 	public void initialize() {
-
+		
 		//
 		LOGGER = Logger.getLogger(DNSController.class.getName());
 
@@ -75,6 +75,7 @@ public class MainController extends GeneralController {
 		languagegroup = new ToggleGroup();
 		czechLangRadioButton.setToggleGroup(languagegroup);
 		englishLangRadioButton.setToggleGroup(languagegroup);
+		PROTOCOL = "DNS";
 	}
 
 	@FXML
@@ -92,7 +93,6 @@ public class MainController extends GeneralController {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml_file));
 			Stage newStage = new Stage();
 			newStage.setScene(new Scene((Parent) loader.load()));
-			newStage.setTitle(APP_TITTLE);
 			GeneralController controller = (GeneralController) loader.getController();
 			controller.setLanguage(language);
 			controller.setSettings(settings);
@@ -138,10 +138,6 @@ public class MainController extends GeneralController {
 		this.settings = settings;
 	}
 
-	public void test() {
-		System.out.println("ahoj");
-	}
-
 	public void setLabels() {
 		basicDNSLabel.setText(language.getLanguageBundle().getString(basicDNSLabel.getId()));
 		dnsButton.setUserData(DNSController.FXML_FILE_NAME);
@@ -151,7 +147,7 @@ public class MainController extends GeneralController {
 		dohButton.setUserData(DoHController.FXML_FILE_NAME);
 		reportBugButton.setText(language.getLanguageBundle().getString(reportBugButton.getId()));
 		Stage stage = (Stage) basicDNSLabel.getScene().getWindow();
-		stage.setTitle(language.getLanguageBundle().getString(APP_TITTLE));
+		stage.setTitle(language.getLanguageBundle().getString(APP_TITTLE) + " " + PROTOCOL);
 		
 		switch (language.getCurrentLanguage()) {
 		case Language.CZECH:

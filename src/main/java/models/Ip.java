@@ -19,6 +19,7 @@ public class Ip {
 	private static final String COMMAND = "powershell.exe $ip=Get-NetIPConfiguration; $ip.'DNSServer' | ForEach-Object -Process {$_.ServerAddresses}";
 	private String clouflareIp;
 	private String googleIp;
+	private String dohUserInputIp;
 	public Ip() {
 		try {
 			setupArrays();
@@ -53,6 +54,16 @@ public class Ip {
 	private void getDoHIps() throws UnknownHostException {
 		clouflareIp = InetAddress.getByName("cloudflare-dns.com").getHostAddress();
 		googleIp = InetAddress.getByName("dns.google").getHostAddress();
+	}
+	
+	public void updateCloudflareIp() throws UnknownHostException {
+		clouflareIp = InetAddress.getByName("cloudflare-dns.com").getHostAddress();
+	}
+	public void updateGoogleIp() throws UnknownHostException {
+		clouflareIp = InetAddress.getByName("dns.google").getHostAddress();
+	}
+	public void userDoHurlIP(String domain) throws UnknownHostException {
+		dohUserInputIp = InetAddress.getByName(domain).getHostAddress();
 	}
 	public String getIpv4DnsServer() {
 		if (ipv4DnsServers.size() == 0) {
@@ -140,5 +151,9 @@ public class Ip {
 
 	public String getGoogleIp() {
 		return googleIp;
+	}
+	
+	public String getUserInputIp() {
+		return dohUserInputIp;
 	}
 }

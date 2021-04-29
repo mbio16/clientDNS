@@ -9,6 +9,7 @@ public class GeneralController {
 
 	protected Language language;
 	public static final String APP_TITTLE = "title";
+	public String PROTOCOL = "DNS";
 	protected Settings settings;
 	protected Logger LOGGER;
 	protected Ip ipDns;
