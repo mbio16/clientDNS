@@ -38,7 +38,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import models.DomainConvert;
 import models.Ip;
-import models.Language;
 import models.MessageParser;
 import models.MessageSender;
 import models.TCPConnection;

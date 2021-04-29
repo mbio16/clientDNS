@@ -3,16 +3,11 @@ package ui;
 import java.io.IOException;
 
 import org.json.simple.parser.ParseException;
-
-import com.sun.jdi.event.Event;
-
 import enums.APPLICATION_PROTOCOL;
 import enums.DOH_FORMAT;
 import enums.Q_COUNT;
-import enums.TRANSPORT_PROTOCOL;
 import enums.WIRESHARK_FILTER;
 import exceptions.CouldNotUseHoldConnectionException;
-import exceptions.DnsServerIpIsNotValidException;
 import exceptions.HttpCodeException;
 import exceptions.MessageTooBigForUDPException;
 import exceptions.MoreRecordsTypesWithPTRException;
@@ -20,7 +15,6 @@ import exceptions.NonRecordSelectedException;
 import exceptions.NotValidDomainNameException;
 import exceptions.NotValidIPException;
 import exceptions.OtherHttpException;
-import exceptions.QueryIdNotMatchException;
 import exceptions.TimeoutException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -33,12 +27,9 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import models.DomainConvert;
-import models.Ip;
 import models.MessageParser;
 import models.MessageSender;
 

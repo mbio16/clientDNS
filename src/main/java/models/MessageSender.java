@@ -1,8 +1,6 @@
 package models;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.BindException;
 import java.net.DatagramPacket;
@@ -13,7 +11,6 @@ import java.net.Socket;
 
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.net.http.HttpRequest;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
@@ -22,7 +19,6 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
@@ -74,6 +70,7 @@ public class MessageSender {
 	private Q_COUNT [] qcountTypes;
 	private String httpRequest;
 	private JSONObject httpResponse;
+	private CloseableHttpClient httpClient;
 	private static final int MAX_MESSAGES_SENT = 3;
 	private static final int TIME_OUT_MILLIS = 2000;
 	public static final int MAX_UDP_SIZE = 1232;
@@ -250,6 +247,7 @@ public class MessageSender {
          else {
 			throw new HttpCodeException(response.getStatusLine().getStatusCode());
 		}
+       httpClient.close();
 	 }
 	catch (HttpCodeException e) {
 		throw e;
@@ -284,7 +282,7 @@ public class MessageSender {
 			request.addHeader("User-Agent", "Client-DNS");
 			request.addHeader("Host",host);
 			httpRequestAsString(request);
-			CloseableHttpClient httpClient = HttpClients.createDefault();
+			httpClient = HttpClients.createDefault();
 			startTime = System.nanoTime();
 			CloseableHttpResponse response = httpClient.execute(request);
 			stopTime = System.nanoTime();
@@ -297,7 +295,7 @@ public class MessageSender {
 			request.addHeader("User-Agent", "Client-DNS");
 			request.addHeader("Host",host);
 			httpRequestAsString(request);
-			CloseableHttpClient httpClient = HttpClients.createDefault();
+			httpClient = HttpClients.createDefault();
 			startTime = System.nanoTime();
 			System.out.println(getDoHRequest());
 			CloseableHttpResponse response = httpClient.execute(request);
