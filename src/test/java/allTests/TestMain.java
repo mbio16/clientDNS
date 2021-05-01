@@ -15,7 +15,7 @@ import models.TCPConnection;
 public class TestMain {
 
 	public static void main(String[] args) {
-		Q_COUNT[] a = {Q_COUNT.A,Q_COUNT.AAAA};
+		Q_COUNT[] a = {Q_COUNT.A};
 		MessageSender sender;
 		MessageParser parser;
 		TRANSPORT_PROTOCOL protocol = TRANSPORT_PROTOCOL.UDP;

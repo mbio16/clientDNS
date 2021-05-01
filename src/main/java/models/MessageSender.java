@@ -71,6 +71,7 @@ public class MessageSender {
 	private String httpRequest;
 	private JSONObject httpResponse;
 	private CloseableHttpClient httpClient;
+	private int byteSizeResponseDoHDecompresed;
 	private static final int MAX_MESSAGES_SENT = 3;
 	private static final int TIME_OUT_MILLIS = 2000;
 	public static final int MAX_UDP_SIZE = 1232;
@@ -226,7 +227,7 @@ public class MessageSender {
 	};
 	messagesSent = 1;
 	String uri  = addParamtoUris(resolver, httpRequestParamsName, values);
-	System.out.println(uri);
+	//System.out.println(uri);
 	switch (httpsDomain) {
 	case "dns.google":
 		response = sendAndRecieveDoH(uri, httpsDomain,false);
@@ -239,8 +240,10 @@ public class MessageSender {
 		break;
 	}
 
-       if (response.getStatusLine().getStatusCode() == 200) {
+       if (response.getStatusLine().getStatusCode() == 200) {   	
         	 String content = EntityUtils.toString(response.getEntity());
+        	 byteSizeResponseDoHDecompresed = getAllHeadersSize(response.getAllHeaders());
+        	 byteSizeResponseDoHDecompresed += content.getBytes().length;
         	 parseResponseDoh(content);
          }
          else {
@@ -257,6 +260,14 @@ public class MessageSender {
 	}
 	
 	}
+	private int getAllHeadersSize(org.apache.http.Header[] allHeaders) {
+		int size = 0;		
+		for (org.apache.http.Header header : allHeaders) {
+			size += header.toString().getBytes().length;
+		}
+		return size+1;
+	}
+
 	private String qcountAsString(){
 		String result = "";
 		for (int i = 0; i < qcountTypes.length; i++) {
@@ -305,6 +316,7 @@ public class MessageSender {
 		for (org.apache.http.Header httpHeader :request.getAllHeaders()) {
 			result +=  httpHeader.toString() + "\n";
 		}
+		this.byteSizeQuery = result.getBytes().length;
 		httpRequest = result;
 	}
 	public String getDoHRequest() {
@@ -579,5 +591,8 @@ public class MessageSender {
 	public JSONObject getHttpResponse() {
 		return httpResponse;
 	}
-
+	
+	public int getByteSizeResponseDoH() {
+		return byteSizeResponseDoHDecompresed;
+	}
 }

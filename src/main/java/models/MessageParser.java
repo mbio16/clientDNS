@@ -3,6 +3,8 @@ package models;
 import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Set;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import com.google.gson.GsonBuilder;
@@ -49,6 +51,7 @@ public class MessageParser {
 
 	public MessageParser(JSONObject response) {
 		this.httpResponse = response;
+		addCommentsDoH();
 	}
 	public void parse() throws QueryIdNotMatchException, UnknownHostException, UnsupportedEncodingException {
 		applicationProtocol = APPLICATION_PROTOCOL.DNS;
@@ -129,7 +132,25 @@ public class MessageParser {
 		}
 		return main;
 	}
-
+	@SuppressWarnings("unchecked")
+	private void addCommentsDoH() {
+		Set<String> keys = httpResponse.keySet();
+		for (String key : keys) {
+			flagsDoh(key,"CD", "Checking disabled");
+			flagsDoh(key,"TC", "Truncation");
+			flagsDoh(key,"RD", "Recursion desired");
+			flagsDoh(key,"RA", "Recursion avaible");
+		}
+		
+	}
+	@SuppressWarnings("unchecked")
+	private void flagsDoh(String key,String keyToCompare, String comment) {
+		if(key.equals(keyToCompare)) {
+			boolean value = (boolean) httpResponse.get(key);
+			//httpResponse.remove(key);
+			httpResponse.put(key, "" + value + " //" + comment);
+		}
+	}
 	private void addRequestToTreeItem() {
 		TreeItem<String> questionTreeItem = new TreeItem<String>(KEY_QUESTIONS);
 		if (header.getQdCount().getValue() > 0) {

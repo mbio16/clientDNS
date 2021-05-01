@@ -201,10 +201,7 @@ public class DoHController extends DNSController {
 				resolverURL);
 		sender.send();
 		parser = new MessageParser(sender.getHttpResponse());
-		System.out.println(parser.getAsJsonString());
 		setControls();
-		
-		System.out.println(domain);
 		}
 		catch(HttpCodeException e) {
 			Alert alert = new Alert(AlertType.ERROR, language.getLanguageBundle().getString("HttpCodeException") + e.getCode());
@@ -249,6 +246,10 @@ public class DoHController extends DNSController {
 		responseTimeValueLabel.setText(sender.getTimeElapsed()+"");
 		numberOfMessagesValueLabel.setText(sender.getMessageSent()+"");
 		responseTextArea.setText(parser.getAsJsonString());
+		queryTitledPane.setText(language.getLanguageBundle().getString(queryTitledPane.getId().toString()) + " ("
+				+ sender.getByteSizeQuery() + " B)");
+		responseTitledPane.setText(language.getLanguageBundle().getString(queryTitledPane.getId().toString()) + " ("
+				+ sender.getByteSizeResponseDoH() + " B)");
 	}
 	public void loadDataFromSettings() {
 		this.savedDomainNamesChoiseBox.getItems().setAll(settings.getDomainNamesDNS());
