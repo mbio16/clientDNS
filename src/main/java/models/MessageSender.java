@@ -236,7 +236,7 @@ public class MessageSender {
 		response = sendAndRecieveDoH(uri,httpsDomain,true);
 		break;
 	default:
-		response = null;
+		response =  sendAndRecieveDoH(uri, httpsDomain,false);
 		break;
 	}
 
@@ -249,16 +249,27 @@ public class MessageSender {
          else {
 			throw new HttpCodeException(response.getStatusLine().getStatusCode());
 		}
-      httpClient.close();
+      closeHttpConnection();
 	 }
 	catch (HttpCodeException | ParseException  e) {
+		closeHttpConnection();
 		throw e;
 	}
 	 catch (Exception e) {
+		 closeHttpConnection();
 		 e.printStackTrace();
 		throw new OtherHttpException();
 	}
 	
+	}
+	
+	private void closeHttpConnection() {
+		try {
+			httpClient.close();
+		} catch (Exception e) {
+			// already closed, just return
+			return;
+		}
 	}
 	private int getAllHeadersSize(org.apache.http.Header[] allHeaders) {
 		int size = 0;		

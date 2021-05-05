@@ -254,6 +254,7 @@ public class DNSController extends MDNSController {
 			systemIpv4DNSRadioButton.setText(ipDns.getIpv4DnsServer());
 			systemIpv4DNSRadioButton.setUserData(ipDns.getIpv4DnsServer());
 			systemIpv4DNSImageView.setDisable(false);
+			systemIpv4DNSImageView.setUserData(ipDns.getIpv4DnsServer());
 		}
 		if (ipDns.getIpv6DnsServer().equals("")) {
 			systemIpv6DNSRadioButton.setSelected(false);

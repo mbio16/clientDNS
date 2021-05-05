@@ -92,17 +92,22 @@ public class MainController extends GeneralController {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml_file));
 			Stage newStage = new Stage();
+			
 			newStage.setScene(new Scene((Parent) loader.load()));
 			GeneralController controller = (GeneralController) loader.getController();
+			
+			Stage oldStage = (Stage) dnsButton.getScene().getWindow();
+			newStage.setX(oldStage.getX());
+			newStage.setY(oldStage.getY());
+			newStage.getIcons().add(new Image(Main.ICON_URI));
 			controller.setLanguage(language);
 			controller.setSettings(settings);
-			newStage.show();
-			newStage.getIcons().add(new Image(Main.ICON_URI));
-			Stage mainStage = (Stage) dnsButton.getScene().getWindow();
-			mainStage.close();
 			controller.setIpDns(ipDns);
 			controller.setLabels();
 			controller.loadDataFromSettings();
+			newStage.show();
+			oldStage.close();
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			LOGGER.severe("Could not open new window:" + e.toString());

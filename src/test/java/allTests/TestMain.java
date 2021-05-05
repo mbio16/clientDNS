@@ -29,7 +29,7 @@ public class TestMain {
 //		System.out.println(parser.getAsJsonString());
 //			https://dns.google/resolve?
 		//sender = new MessageSender(true, false, false, "seznam.cz", a, protocol,APPLICATION_PROTOCOL.DOH,"https://cloudflare-dns.com/dns-query");
-		sender = new MessageSender(true, false, true, "seznam.cz", a, protocol,APPLICATION_PROTOCOL.DOH,"dns.google/resolve");
+		sender = new MessageSender(true, false, true, "seznam.cz", a, protocol,APPLICATION_PROTOCOL.DOH,"1.1.1.1");
 		sender.send();
 		parser = new MessageParser(sender.getHttpResponse());
 		System.out.println(sender.getDoHRequest());

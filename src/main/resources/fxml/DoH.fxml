@@ -73,7 +73,7 @@
          <left>
             <AnchorPane BorderPane.alignment="CENTER">
                <children>
-                  <TitledPane fx:id="dnsServerTitledPane" animated="false" collapsible="false" layoutX="193.0" layoutY="225.0" prefHeight="95.0" prefWidth="240.0" text="DNS server">
+                  <TitledPane fx:id="dnsServerTitledPane" animated="false" collapsible="false" layoutX="193.0" layoutY="225.0" prefHeight="131.0" prefWidth="240.0" text="DNS server">
                      <content>
                         <GridPane prefHeight="320.0" prefWidth="211.0">
                           <columnConstraints>
@@ -83,14 +83,15 @@
                           <rowConstraints>
                             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                              <RadioButton fx:id="cloudflareRadionButton" mnemonicParsing="false" selected="true" text="cloudflare-dns.com">
+                              <RadioButton fx:id="cloudflareRadionButton" mnemonicParsing="false" onAction="#predefineDNSAction" selected="true" text="cloudflare-dns.com">
                                  <font>
                                     <Font size="15.0" />
                                  </font>
                               </RadioButton>
-                              <RadioButton fx:id="googleRadioButton" mnemonicParsing="false" text="dns.google" GridPane.rowIndex="1">
+                              <RadioButton fx:id="googleRadioButton" mnemonicParsing="false" onAction="#predefineDNSAction" text="dns.google" GridPane.rowIndex="1">
                                  <font>
                                     <Font size="15.0" />
                                  </font>
@@ -104,6 +105,31 @@
                                  </GridPane.margin>
                               </ImageView>
                               <ImageView fx:id="googleImageView" fitHeight="20.0" fitWidth="20.0" onMouseClicked="#copyImageViewFired" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                 <image>
+                                    <Image url="@../images/copy-clipboard.png" />
+                                 </image>
+                                 <GridPane.margin>
+                                    <Insets bottom="2.0" left="5.0" right="5.0" top="2.0" />
+                                 </GridPane.margin>
+                              </ImageView>
+                              <GridPane GridPane.rowIndex="2">
+                                <columnConstraints>
+                                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="95.0" minWidth="10.0" prefWidth="24.0" />
+                                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="176.0" minWidth="10.0" prefWidth="176.0" />
+                                </columnConstraints>
+                                <rowConstraints>
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                </rowConstraints>
+                                 <children>
+                                    <RadioButton fx:id="customEndPointRadioButton" mnemonicParsing="false">
+                                       <font>
+                                          <Font size="15.0" />
+                                       </font>
+                                    </RadioButton>
+                                    <TextField fx:id="customEndPointTextField" onKeyTyped="#customDNSAction" GridPane.columnIndex="1" />
+                                 </children>
+                              </GridPane>
+                              <ImageView fx:id="customDnsImageView" fitHeight="20.0" fitWidth="20.0" onMouseClicked="#copyImageViewFired" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="2">
                                  <image>
                                     <Image url="@../images/copy-clipboard.png" />
                                  </image>
@@ -447,16 +473,6 @@
          <bottom>
             <AnchorPane prefHeight="46.0" prefWidth="195.0" BorderPane.alignment="CENTER">
                <children>
-                  <Button fx:id="copyResponseJsonButton" disable="true" layoutX="372.0" layoutY="-6.0" minWidth="100.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="85.0" text="Odpověď JSON">
-                     <padding>
-                        <Insets top="5.0" />
-                     </padding>
-                  </Button>
-                  <Button fx:id="copyRequestJsonButton" disable="true" layoutX="245.0" layoutY="-5.0" minWidth="85.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="85.0" text="Dotaz JSON">
-                     <padding>
-                        <Insets top="5.0" />
-                     </padding>
-                  </Button>
                   <AnchorPane layoutX="6.0" layoutY="-11.0" prefHeight="51.0" prefWidth="217.0">
                      <children>
                         <Label fx:id="responseTimeValueLabel" layoutX="169.0" layoutY="24.0" text="0">

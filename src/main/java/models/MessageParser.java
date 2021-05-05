@@ -3,13 +3,13 @@ package models;
 import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Set;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import com.google.gson.GsonBuilder;
-
 import enums.APPLICATION_PROTOCOL;
+import enums.Q_COUNT;
 import enums.TRANSPORT_PROTOCOL;
 import exceptions.QueryIdNotMatchException;
 import javafx.scene.control.TreeItem;
@@ -34,6 +34,19 @@ public class MessageParser {
 	private TRANSPORT_PROTOCOL protocol;
 	private TreeItem<String> main;
 	private int byteSizeResponse;
+	private static final String [] flagsShort = {
+			"CD",
+			"TC",
+			"RD",
+			"RA"
+	};
+	
+	private static final String [] flagsLong = {
+			"Checking disabled",
+			"Truncation",
+			"Recursion desired",
+			"Recursion avaible"
+	};
 
 	public MessageParser(byte[] rawMessage, Header queryHeader, TRANSPORT_PROTOCOL protocol) {
 		this.rawMessage = rawMessage;
@@ -134,21 +147,38 @@ public class MessageParser {
 	}
 	@SuppressWarnings("unchecked")
 	private void addCommentsDoH() {
-		Set<String> keys = httpResponse.keySet();
-		for (String key : keys) {
-			flagsDoh(key,"CD", "Checking disabled");
-			flagsDoh(key,"TC", "Truncation");
-			flagsDoh(key,"RD", "Recursion desired");
-			flagsDoh(key,"RA", "Recursion avaible");
+		Set<String> keys = httpResponse.keySet();{
+			flagsDoH(keys);
+			typeDoH(keys,"Answer");
+			typeDoH(keys,"Question");
 		}
 		
 	}
 	@SuppressWarnings("unchecked")
-	private void flagsDoh(String key,String keyToCompare, String comment) {
-		if(key.equals(keyToCompare)) {
+	private void typeDoH(Set<String> keys, String name) {
+		for (String key : keys) {
+			if(key.equals(name)) {
+				JSONArray answers = (JSONArray) httpResponse.get(name);
+				for(int i=0;i<answers.size();i++) {
+					JSONObject record  = (JSONObject) answers.get(i);
+					int value = ((Long) record.get("type")).intValue();
+					Q_COUNT recordType = Q_COUNT.getTypeByCode(new UInt16(value));
+					record.put("type","" + recordType.code.getValue() + " //" + recordType.toString());
+				}
+			}
+		}
+		
+	}
+
+	@SuppressWarnings("unchecked")
+	private void flagsDoH(Set<String> keys) {
+		ArrayList<String> flagsShortList = new ArrayList<String>(Arrays.asList(flagsShort));
+		for (String key : keys) {
+		if(flagsShortList.contains(key)) {
 			boolean value = (boolean) httpResponse.get(key);
-			//httpResponse.remove(key);
-			httpResponse.put(key, "" + value + " //" + comment);
+			int index = flagsShortList.indexOf(key);
+			httpResponse.put(key, "" + value +  " //note - " + flagsLong[index]);
+		}
 		}
 	}
 	private void addRequestToTreeItem() {

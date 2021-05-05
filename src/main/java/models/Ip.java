@@ -8,6 +8,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
+import exceptions.CustomEndPointException;
 import exceptions.NotValidIPException;
 import inet.ipaddr.IPAddress;
 import inet.ipaddr.IPAddressString;
@@ -62,8 +63,13 @@ public class Ip {
 	public void updateGoogleIp() throws UnknownHostException {
 		clouflareIp = InetAddress.getByName("dns.google").getHostAddress();
 	}
-	public void userDoHurlIP(String domain) throws UnknownHostException {
+	public void getUserDoHurlIP(String domain) throws CustomEndPointException {
+		try {
 		dohUserInputIp = InetAddress.getByName(domain).getHostAddress();
+		}
+		catch (Exception e) {
+			throw new CustomEndPointException();
+		}
 	}
 	public String getIpv4DnsServer() {
 		if (ipv4DnsServers.size() == 0) {

@@ -9,6 +9,7 @@ import enums.DOH_FORMAT;
 import enums.Q_COUNT;
 import enums.WIRESHARK_FILTER;
 import exceptions.CouldNotUseHoldConnectionException;
+import exceptions.CustomEndPointException;
 import exceptions.HttpCodeException;
 import exceptions.MessageTooBigForUDPException;
 import exceptions.MoreRecordsTypesWithPTRException;
@@ -24,6 +25,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Alert.AlertType;
@@ -31,6 +33,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import models.Ip;
 import models.MessageParser;
 import models.MessageSender;
 
@@ -52,9 +55,14 @@ public class DoHController extends DNSController {
 	private ImageView cloudflareImageView;
 	@FXML
 	private ImageView googleImageView;
-	
+	@FXML 
+	private ImageView customDnsImageView;
 	@FXML
 	private TextArea responseTextArea;
+	@FXML
+	private RadioButton customEndPointRadioButton;
+	@FXML
+	private TextField customEndPointTextField;
 	
 	private ToggleGroup formatDoHToggleGroup;
 	
@@ -78,6 +86,7 @@ public class DoHController extends DNSController {
 		
 		cloudflareRadionButton.setToggleGroup(dnsserverToggleGroup);
 		googleRadioButton.setToggleGroup(dnsserverToggleGroup);
+		customEndPointRadioButton.setToggleGroup(dnsserverToggleGroup);
 		
 		justIp.setToggleGroup(wiresharkFilterToogleGroup);
 		ipAsFilter.setToggleGroup(wiresharkFilterToogleGroup);
@@ -120,6 +129,7 @@ public class DoHController extends DNSController {
 			setLanguageRadioButton();
 			setWiresharkUserData();
 			setImageViewUserData();
+		customEndPointTextField.setPromptText(language.getLanguageBundle().getString(customEndPointTextField.getId()));
 	}
 	
 	private void setImageViewUserData() {
@@ -140,12 +150,36 @@ public class DoHController extends DNSController {
 	private void setDNSServerUserData() {
 		cloudflareRadionButton.setUserData("cloudflare-dns.com/dns-query");
 		googleRadioButton.setUserData("dns.google/resolve");
+		customDnsImageView.setUserData("custom");
 	}
+	@FXML
+	private void customDNSAction() {
+			customEndPointRadioButton.setSelected(true);
+	}
+	@FXML
+	private void predefineDNSAction(ActionEvent event) {
+		if(cloudflareRadionButton.isSelected() || googleRadioButton.isSelected()){
+			customEndPointTextField.setText("");	
+		}
+	}
+	
 	@FXML
 	private void copyImageViewFired(MouseEvent event) {
 		ImageView image = (ImageView) event.getSource();
-		String ip = (String) image.getUserData();
+		String ip;
+		if(image.getUserData().equals("custom")) {
+			try {
+				ip = getCustomIp();
+			}
+			catch (CustomEndPointException e) {
+				showAller("CustomEndPointException");
+				return;
+			}
+		}else {
+			ip = (String) image.getUserData();
+		}
 		String result = "";
+		System.out.println(ip);
 		switch ((WIRESHARK_FILTER) wiresharkFilterToogleGroup.getSelectedToggle().getUserData()) {
 		case JUST_IP:
 			result = ip;
@@ -161,11 +195,31 @@ public class DoHController extends DNSController {
 		}
 		copyDataToClipBoard(result);
 	}
-		
+	
+	private String getCustomIp() throws CustomEndPointException{
+		String ip = "";
+		String domain = customEndPointTextField.getText();
+			if(Ip.isIpValid(domain)) 
+				ip = domain;
+			else {
+				String splited [] = domain.split("/");
+				ipDns.getUserDoHurlIP(splited[0]);
+				ip = ipDns.getUserInputIp();
+			}
+			return ip;
+	}
 
-	private String getResolverAndupdateItIp() throws UnknownHostException {
-		String fullName = (String) dnsserverToggleGroup.getSelectedToggle().getUserData();
-		String justDomain = fullName.split("/")[0];
+	private String getResolverAndupdateItIp() throws UnknownHostException, CustomEndPointException {
+		String fullName;
+		String justDomain;
+		if(customEndPointRadioButton.isSelected()) {
+			fullName = customEndPointTextField.getText();
+		}
+		else {
+			fullName = (String) dnsserverToggleGroup.getSelectedToggle().getUserData();
+		}
+		
+		justDomain = fullName.split("/")[0];
 		switch (justDomain) {
 		case "dns.google":
 			ipDns.updateGoogleIp();
@@ -174,8 +228,8 @@ public class DoHController extends DNSController {
 		case "cloudflare-dns.com":
 			ipDns.updateCloudflareIp();
 			//System.out.println("updated cloudflare");
-		default:
-			ipDns.userDoHurlIP(justDomain);
+		default:			
+				getCustomIp();
 			break;
 		}
 		return fullName;
@@ -219,8 +273,10 @@ public class DoHController extends DNSController {
 				MessageTooBigForUDPException |
 				CouldNotUseHoldConnectionException |
 				OtherHttpException |
-				ParseException
+				ParseException |
+				CustomEndPointException
 				 e) {
+			e.printStackTrace();
 			String fullClassName = e.getClass().getSimpleName();
 			LOGGER.info(fullClassName);
 			showAller(fullClassName);

@@ -3,7 +3,12 @@ package ui;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.BindException;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.logging.Logger;
 
 import application.Main;
@@ -179,7 +184,6 @@ public class MDNSController extends GeneralController {
 
 	public void setLabels() {
 		// define group to iterate over it
-
 		Label[] labelsArray = new Label[] { responseTimeLabel, numberOfMessagesLabel };
 		TitledPane[] titlePaneArray = new TitledPane[] {
 				domainNameTitledPane,
@@ -217,8 +221,22 @@ public class MDNSController extends GeneralController {
 		setUserDataWireshark();
 		setTitle();
 		setLanguageRadioButton();
+		networkInterfaces();
 	}
 	
+	private void networkInterfaces() {
+		try {
+			Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces();
+
+		    while (e.hasMoreElements()) {
+			NetworkInterface ni = e.nextElement();
+			System.out.println("Net interface: " + ni.getName() + " - " + ni.getDisplayName());
+		    }
+		} catch (SocketException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	protected void setLanguageRadioButton() {
 		if (language.getCurrentLanguage().equals(Language.CZECH)) {
 			czechRadioButton.setSelected(true);
@@ -399,6 +417,13 @@ public class MDNSController extends GeneralController {
 	}
 	protected void showAller(String exceptionName) {
 		Alert alert = new Alert(AlertType.ERROR, language.getLanguageBundle().getString(exceptionName));
+		alert.initModality(Modality.APPLICATION_MODAL);
+		alert.initOwner((Stage) sendButton.getScene().getWindow());
+		alert.show();
+	}
+	
+	protected void showAllertStringContent(String content) {
+		Alert alert = new Alert(AlertType.ERROR,content);
 		alert.initModality(Modality.APPLICATION_MODAL);
 		alert.initOwner((Stage) sendButton.getScene().getWindow());
 		alert.show();
