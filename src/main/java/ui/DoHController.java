@@ -258,6 +258,7 @@ public class DoHController extends DNSController {
 				null, //
 				APPLICATION_PROTOCOL.DOH, // application protocol
 				resolverURL);
+		sender.setInterfaceToSend(getInterface());
 		sender.send();
 		parser = new MessageParser(sender.getHttpResponse());
 		setControls();

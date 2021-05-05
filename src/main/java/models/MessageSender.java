@@ -9,12 +9,14 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -191,7 +193,16 @@ public class MessageSender {
 		}
 	}
 	public void send()
-			throws TimeoutException, IOException, MessageTooBigForUDPException, CouldNotUseHoldConnectionException, HttpCodeException, OtherHttpException,ParseException,InterfaceDoesNotHaveIPAddressException {
+			throws 
+				TimeoutException, 
+				IOException,
+				MessageTooBigForUDPException,
+				CouldNotUseHoldConnectionException, 
+				HttpCodeException, 
+				OtherHttpException,
+				ParseException,
+				InterfaceDoesNotHaveIPAddressException,
+				SocketException {
 		switch (application_protocol) {
 		case DNS:
 			switch (transport_protocol) {
@@ -216,7 +227,11 @@ public class MessageSender {
 			break;
 		}
 	}
-	private void doh() throws HttpCodeException,OtherHttpException,ParseException {
+	private void doh() throws 	
+				HttpCodeException,
+				ParseException,
+				InterfaceDoesNotHaveIPAddressException,
+				SocketException, OtherHttpException {
 	try {
 	String httpsDomain = resolver.split("/")[0];
 	CloseableHttpResponse response;
@@ -252,7 +267,7 @@ public class MessageSender {
 		}
       closeHttpConnection();
 	 }
-	catch (HttpCodeException | ParseException  e) {
+	catch (HttpCodeException | ParseException | InterfaceDoesNotHaveIPAddressException | SocketException  e) {
 		closeHttpConnection();
 		throw e;
 	}
@@ -293,13 +308,14 @@ public class MessageSender {
 		return result;
 	}
 	
-	private CloseableHttpResponse sendAndRecieveDoH(String uri,String host,boolean httpGet) throws ClientProtocolException, IOException {
+	private CloseableHttpResponse sendAndRecieveDoH(String uri,String host,boolean httpGet) throws ClientProtocolException, IOException, InterfaceDoesNotHaveIPAddressException {
 		if(httpGet) {
 			HttpGet request = new HttpGet(uri);
 			request.addHeader("Accept","application/dns-json");
 			request.addHeader("Accept-Encoding","gzip, deflate, br");
 			request.addHeader("User-Agent", "Client-DNS");
 			request.addHeader("Host",host);
+			request.setConfig(getRequestConfig());
 			httpRequestAsString(request);
 			httpClient = HttpClients.createDefault();
 			startTime = System.nanoTime();
@@ -313,6 +329,7 @@ public class MessageSender {
 			request.addHeader("Accept-Encoding","gzip, deflate, br");
 			request.addHeader("User-Agent", "Client-DNS");
 			request.addHeader("Host",host);
+			request.setConfig(getRequestConfig());
 			httpRequestAsString(request);
 			httpClient = HttpClients.createDefault();
 			startTime = System.nanoTime();
@@ -322,6 +339,16 @@ public class MessageSender {
 			return response;
 		}
 
+	}
+	
+	private RequestConfig getRequestConfig() throws InterfaceDoesNotHaveIPAddressException {
+		try {
+		return RequestConfig.custom().setLocalAddress(interfaceToSend.getInterfaceAddresses().get(0).getAddress()).build();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			throw new InterfaceDoesNotHaveIPAddressException();
+		}
 	}
 	private void httpRequestAsString(HttpRequestBase request) {
 		String result = request.toString() + "\n";
@@ -396,12 +423,17 @@ public class MessageSender {
 		
 		
 	}
-	private void dnsOverUDP() throws TimeoutException, IOException, MessageTooBigForUDPException {
+	private void dnsOverUDP() throws TimeoutException, IOException, MessageTooBigForUDPException,InterfaceDoesNotHaveIPAddressException {
 		if (size > MAX_UDP_SIZE)
 			throw new MessageTooBigForUDPException();
 		messagesSent = 1;
 		messageToBytes();
-		DatagramSocket datagramSocket = new DatagramSocket();
+		DatagramSocket datagramSocket;
+		try {
+		 datagramSocket = new DatagramSocket(0,interfaceToSend.getInterfaceAddresses().get(0).getAddress());
+		}catch (Exception e) {
+			throw new InterfaceDoesNotHaveIPAddressException();
+		}
 		boolean run = true;
 		boolean exception = false;
 		while (run) {
@@ -413,6 +445,7 @@ public class MessageSender {
 
 				DatagramPacket responsePacket = new DatagramPacket(recieveReply, recieveReply.length);
 				DatagramPacket datagramPacket = new DatagramPacket(messageAsBytes, messageAsBytes.length, ip, DNS_PORT);
+				//DatagramPacket datagramPacket = new Data
 				datagramSocket.setSoTimeout(TIME_OUT_MILLIS);
 				startTime = System.nanoTime();
 
