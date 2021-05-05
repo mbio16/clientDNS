@@ -35,6 +35,7 @@ import enums.RESPONSE_MDNS_TYPE;
 import enums.TRANSPORT_PROTOCOL;
 import exceptions.CouldNotUseHoldConnectionException;
 import exceptions.HttpCodeException;
+import exceptions.InterfaceDoesNotHaveIPAddressException;
 import exceptions.MessageTooBigForUDPException;
 import exceptions.NotValidDomainNameException;
 import exceptions.NotValidIPException;
@@ -190,7 +191,7 @@ public class MessageSender {
 		}
 	}
 	public void send()
-			throws TimeoutException, IOException, MessageTooBigForUDPException, CouldNotUseHoldConnectionException, HttpCodeException, OtherHttpException,ParseException {
+			throws TimeoutException, IOException, MessageTooBigForUDPException, CouldNotUseHoldConnectionException, HttpCodeException, OtherHttpException,ParseException,InterfaceDoesNotHaveIPAddressException {
 		switch (application_protocol) {
 		case DNS:
 			switch (transport_protocol) {
@@ -435,7 +436,7 @@ public class MessageSender {
 
 	}
 
-	private void dnsOverTcp() throws TimeoutException, CouldNotUseHoldConnectionException {
+	private void dnsOverTcp() throws TimeoutException, CouldNotUseHoldConnectionException,IndexOutOfBoundsException,InterfaceDoesNotHaveIPAddressException {
 		messageToBytes();
 		try {
 			messagesSent = 1;
@@ -443,7 +444,7 @@ public class MessageSender {
 			if (tcp == null) {
 				tcp = new TCPConnection(ip);
 			}
-			this.recieveReply = tcp.send(this.messageAsBytes, ip, this.closeConnection);
+			this.recieveReply = tcp.send(this.messageAsBytes, ip, this.closeConnection, interfaceToSend);
 			stopTime = System.nanoTime();
 		} catch (IOException e) {
 			throw new TimeoutException();

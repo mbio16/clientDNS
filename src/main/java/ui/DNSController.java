@@ -5,12 +5,16 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
+
+import org.json.simple.parser.ParseException;
+
 import enums.APPLICATION_PROTOCOL;
 import enums.Q_COUNT;
 import enums.TRANSPORT_PROTOCOL;
 import enums.WIRESHARK_FILTER;
 import exceptions.CouldNotUseHoldConnectionException;
 import exceptions.DnsServerIpIsNotValidException;
+import exceptions.InterfaceDoesNotHaveIPAddressException;
 import exceptions.MessageTooBigForUDPException;
 import exceptions.MoreRecordsTypesWithPTRException;
 import exceptions.NonRecordSelectedException;
@@ -331,6 +335,7 @@ public class DNSController extends MDNSController {
 
 		wiresharkLabel.setText(language.getLanguageBundle().getString(wiresharkLabel.getId()));
 		setTitle();
+		interfaceMenu.setText(language.getLanguageBundle().getString(interfaceMenu.getId()));
 	}
 
 	private void setUserDataWiresharkRadioMenuItem() {
@@ -533,6 +538,7 @@ public class DNSController extends MDNSController {
 			} else {
 				closeHoldedConnection();
 			}
+			sender.setInterfaceToSend(getInterface());
 			sender.send();
 			parser = new MessageParser(sender.getRecieveReply(), sender.getHeader(), transport);
 			parser.parse();
@@ -540,7 +546,7 @@ public class DNSController extends MDNSController {
 			setControls();
 		} catch (NotValidDomainNameException | NotValidIPException | DnsServerIpIsNotValidException
 				| MoreRecordsTypesWithPTRException | NonRecordSelectedException | TimeoutException | IOException
-				| QueryIdNotMatchException | MessageTooBigForUDPException | CouldNotUseHoldConnectionException e) {
+				| QueryIdNotMatchException | MessageTooBigForUDPException | CouldNotUseHoldConnectionException | InterfaceDoesNotHaveIPAddressException e) {
 			String fullClassName = e.getClass().getSimpleName();
 			LOGGER.info(fullClassName);
 			if (sender != null)

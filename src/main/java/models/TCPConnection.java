@@ -5,15 +5,20 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.InterfaceAddress;
+import java.net.NetworkInterface;
 import java.net.Socket;
 
 import exceptions.CouldNotUseHoldConnectionException;
+import exceptions.InterfaceDoesNotHaveIPAddressException;
 import exceptions.TimeoutException;
+
 
 public class TCPConnection {
 	private InetAddress destinationIp;
 	private Socket socket;
 	private OutputStream outputStream;
+	private NetworkInterface netIntreface;
 	private InputStream inputStream;
 	private static final int DNS_PORT = 53;
 	private static final int SOCKET_TIME_OUT_SEC = 3;
@@ -23,8 +28,9 @@ public class TCPConnection {
 		responseMessage = null;
 	}
 
-	public byte[] send(byte messagesAsBytes[], InetAddress ip, boolean closeConnection)
-			throws TimeoutException, IOException, CouldNotUseHoldConnectionException {
+	public byte[] send(byte messagesAsBytes[], InetAddress ip, boolean closeConnection, NetworkInterface netInterface)
+			throws TimeoutException,IndexOutOfBoundsException, IOException, CouldNotUseHoldConnectionException,InterfaceDoesNotHaveIPAddressException {
+		this.netIntreface = netInterface;
 		if (socket == null) {
 			connect();
 		}
@@ -43,12 +49,18 @@ public class TCPConnection {
 		return responseMessage;
 	}
 
-	private void connect() throws IOException {
-		InetSocketAddress socketAddress = new InetSocketAddress(destinationIp, DNS_PORT);
-		socket = new Socket();
-		socket.connect(socketAddress, SOCKET_TIME_OUT_SEC * 1000);
+	private void connect() throws IOException,InterfaceDoesNotHaveIPAddressException {
+		try {
+		InterfaceAddress adresLocal = netIntreface.getInterfaceAddresses().get(0);
+		System.out.println(netIntreface.getDisplayName());
+		System.out.println(adresLocal.toString());
+		socket = new Socket(destinationIp, DNS_PORT, adresLocal.getAddress(), 0);
 		outputStream = socket.getOutputStream();
 		inputStream = socket.getInputStream();
+		}
+		catch (IndexOutOfBoundsException e) {
+			throw new InterfaceDoesNotHaveIPAddressException();
+		}
 	}
 
 	public void closeAll() throws IOException {

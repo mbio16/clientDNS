@@ -11,6 +11,7 @@ import enums.WIRESHARK_FILTER;
 import exceptions.CouldNotUseHoldConnectionException;
 import exceptions.CustomEndPointException;
 import exceptions.HttpCodeException;
+import exceptions.InterfaceDoesNotHaveIPAddressException;
 import exceptions.MessageTooBigForUDPException;
 import exceptions.MoreRecordsTypesWithPTRException;
 import exceptions.NonRecordSelectedException;
@@ -132,6 +133,8 @@ public class DoHController extends DNSController {
 			setWiresharkUserData();
 			setImageViewUserData();
 		customEndPointTextField.setPromptText(language.getLanguageBundle().getString(customEndPointTextField.getId()));
+		
+		interfaceMenu.setText(language.getLanguageBundle().getString(interfaceMenu.getId()));
 		
 	}
 	private void setImageViewUserData() {
@@ -277,6 +280,7 @@ public class DoHController extends DNSController {
 				OtherHttpException |
 				ParseException |
 				CustomEndPointException
+				| InterfaceDoesNotHaveIPAddressException
 				 e) {
 			e.printStackTrace();
 			String fullClassName = e.getClass().getSimpleName();

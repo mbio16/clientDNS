@@ -58,6 +58,7 @@
                   <RadioMenuItem fx:id="ipWithUDPandTcpAsFilter" mnemonicParsing="false" text="IP adresa s UDP a TCP jako filtr" />
                </items>
             </Menu>
+            <Menu fx:id="interfaceMenu" mnemonicParsing="false" text="Síťové rozhraní" />
         </menus>
       </MenuBar>
    </top>

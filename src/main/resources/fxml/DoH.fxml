@@ -55,6 +55,11 @@
                   <RadioMenuItem fx:id="ipwithTCPAsFilter" mnemonicParsing="false" text="IP adresa s TCP jako filtr" />
                </items>
             </Menu>
+            <Menu fx:id="interfaceMenu" mnemonicParsing="false" text="Síťové rozhraní">
+              <items>
+                <MenuItem mnemonicParsing="false" text="Action 1" />
+              </items>
+            </Menu>
         </menus>
       </MenuBar>
    </top>
