@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -24,14 +26,13 @@ public class Settings {
 	public static final String DNS_SERVERS = "DNS_SERVERS";
 	public static final String DOMAIN_NAMES_mDNS = "DOMAIN_NAMES_mDNS";
 	public static final String DOMAIN_NAMES_DNS = "DOMAIN_NAMES_DNS";
+	public static final String LAST_USED_INTERFACE = "LAST_USED_INTERFACE";
 	private String filePath;
 	private File file;
+	private NetworkInterface netInterface;
 	private ArrayList<String> dnsServers;
 	private ArrayList<String> domainNamesDNS;
 	private ArrayList<String> domainNamesMDNS;
-	//private static final int MAX_DOMAIN_NAME_RECORDS = 50;
-	//private static final int MAX_DNS_SERVER_RECORDS = 2;
-	//private static final int MAX_MDNS_NAME_RECORDS = 15;
 	private static final Logger LOGGER = Logger.getLogger(Settings.class.getName());
 
 	public Settings() {
@@ -65,12 +66,19 @@ public class Settings {
 		this.filePath = file.getPath().toString();
 	}
 
+	@SuppressWarnings("unchecked")
 	private void setupJsonFile() throws IOException {
 		Map<String, ArrayList<String>> jsonMap = new HashMap<String, ArrayList<String>>();
 		jsonMap.put(DNS_SERVERS, dnsServers);
 		jsonMap.put(DOMAIN_NAMES_DNS, domainNamesDNS);
 		jsonMap.put(DOMAIN_NAMES_mDNS, domainNamesMDNS);
+		Map<String,String> jsonMap2 = new HashMap<String,String>();
+		if(netInterface == null) {
+			netInterface = NetworkInterface.getByInetAddress(InetAddress.getLocalHost());
+		}
+		jsonMap2.put(LAST_USED_INTERFACE,netInterface.getName());
 		JSONObject json = new JSONObject(jsonMap);
+		json.putAll(jsonMap2);
 		try (FileWriter fw = new FileWriter(file, StandardCharsets.UTF_8);
 				BufferedWriter writer = new BufferedWriter(fw)) {
 			writer.append(json.toString());
@@ -86,6 +94,12 @@ public class Settings {
 			dnsServers = readJsonArraylist(DNS_SERVERS, jsonObject);
 			domainNamesMDNS = readJsonArraylist(DOMAIN_NAMES_mDNS, jsonObject);
 			domainNamesDNS = readJsonArraylist(DOMAIN_NAMES_DNS, jsonObject);
+			try {
+			netInterface = NetworkInterface.getByName((String) jsonObject.get(LAST_USED_INTERFACE));
+			}
+			catch (Exception e) {
+				netInterface = NetworkInterface.getByInetAddress(InetAddress.getLocalHost());
+			}
 			reader.close();
 			jsonObject = null;
 			jsonParser = null;
@@ -168,5 +182,11 @@ public class Settings {
 
 	public ArrayList<String> getDomainNamesMDNS() {
 		return domainNamesMDNS;
+	}
+	public void setInterface(NetworkInterface netInterface) {
+		this.netInterface = netInterface;
+	}
+	public NetworkInterface getInterface() {
+		return this.netInterface;
 	}
 }

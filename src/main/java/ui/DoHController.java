@@ -64,6 +64,8 @@ public class DoHController extends DNSController {
 	@FXML
 	private TextField customEndPointTextField;
 	
+
+	
 	private ToggleGroup formatDoHToggleGroup;
 	
 	
@@ -130,8 +132,8 @@ public class DoHController extends DNSController {
 			setWiresharkUserData();
 			setImageViewUserData();
 		customEndPointTextField.setPromptText(language.getLanguageBundle().getString(customEndPointTextField.getId()));
+		
 	}
-	
 	private void setImageViewUserData() {
 		cloudflareImageView.setUserData(ipDns.getClouflareIp());
 		googleImageView.setUserData(ipDns.getGoogleIp());

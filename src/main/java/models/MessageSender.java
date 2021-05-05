@@ -72,6 +72,7 @@ public class MessageSender {
 	private JSONObject httpResponse;
 	private CloseableHttpClient httpClient;
 	private int byteSizeResponseDoHDecompresed;
+	private NetworkInterface interfaceToSend;
 	private static final int MAX_MESSAGES_SENT = 3;
 	private static final int TIME_OUT_MILLIS = 2000;
 	public static final int MAX_UDP_SIZE = 1232;
@@ -227,7 +228,6 @@ public class MessageSender {
 	};
 	messagesSent = 1;
 	String uri  = addParamtoUris(resolver, httpRequestParamsName, values);
-	//System.out.println(uri);
 	switch (httpsDomain) {
 	case "dns.google":
 		response = sendAndRecieveDoH(uri, httpsDomain,false);
@@ -350,9 +350,9 @@ public class MessageSender {
 
 		while(true) {
 		try {
-			NetworkInterface netInterface = NetworkInterface.getByInetAddress(InetAddress.getLocalHost());
+			System.out.println(interfaceToSend.getDisplayName().toString() + " " + interfaceToSend.getName());
 		 MulticastSocket socket = new MulticastSocket(MDNS_PORT);
-		 socket.setNetworkInterface(netInterface);
+		 socket.setNetworkInterface(interfaceToSend);
 		 socket.joinGroup(group);
 		 DatagramPacket datagramPacket = new DatagramPacket(messageAsBytes, messageAsBytes.length,
                  group, MDNS_PORT);
@@ -606,4 +606,13 @@ public class MessageSender {
 	public int getByteSizeResponseDoH() {
 		return byteSizeResponseDoHDecompresed;
 	}
+
+	public NetworkInterface getInterfaceToSend() {
+		return interfaceToSend;
+	}
+
+	public void setInterfaceToSend(NetworkInterface interfaceToSend) {
+		this.interfaceToSend = interfaceToSend;
+	}
+	
 }

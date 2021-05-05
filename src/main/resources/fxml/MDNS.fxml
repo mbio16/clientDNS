@@ -47,6 +47,7 @@
                   <MenuItem fx:id="iPv6MulticastMenuItem" mnemonicParsing="false" onAction="#getWiresharkFilter" text="IPv6 Multicast" />
               </items>
             </Menu>
+            <Menu fx:id="interfaceMenu" mnemonicParsing="false" text="Rozhraní" />
          </menus>
       </MenuBar>
    </top>

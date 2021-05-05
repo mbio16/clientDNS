@@ -105,6 +105,7 @@ public class MainController extends GeneralController {
 			controller.setIpDns(ipDns);
 			controller.setLabels();
 			controller.loadDataFromSettings();
+			controller.networkInterfaces();
 			newStage.show();
 			oldStage.close();
 

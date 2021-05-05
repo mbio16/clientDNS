@@ -3,10 +3,8 @@ package ui;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.BindException;
-import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.logging.Logger;
@@ -67,7 +65,8 @@ public class MDNSController extends GeneralController {
 	protected Menu historyMenu;
 	@FXML
 	protected Menu languageMenu;
-
+	@FXML
+	protected Menu interfaceMenu;
 	@FXML
 	protected MenuItem backMenuItem;
 	@FXML 
@@ -153,6 +152,8 @@ public class MDNSController extends GeneralController {
 	private ToggleGroup ipToggleGroup;
 
 	private ToggleGroup multicastResponseToggleGroup; 
+	
+	private ToggleGroup interfaceToggleGroup;
 	@FXML
 	protected ComboBox<String> savedDomainNamesChoiseBox;
 
@@ -178,7 +179,8 @@ public class MDNSController extends GeneralController {
 		multicastResponseToggleGroup = new ToggleGroup();
 		multicastResponseRadioButton.setToggleGroup(multicastResponseToggleGroup);
 		unicastResponseRadioButton.setToggleGroup(multicastResponseToggleGroup);
-
+		
+		interfaceToggleGroup = new ToggleGroup();
 	}
 
 
@@ -194,7 +196,6 @@ public class MDNSController extends GeneralController {
 				};
 		dnssecRecordsRequestCheckBox.setText(language.getLanguageBundle().getString(dnssecRecordsRequestCheckBox.getId()));
 		// set labels to current language in menu
-		
 		actionMenu.setText(language.getLanguageBundle().getString(actionMenu.getId()));
 		languageMenu.setText(language.getLanguageBundle().getString(languageMenu.getId()));
 		historyMenu.setText(language.getLanguageBundle().getString(historyMenu.getId()));
@@ -221,19 +222,27 @@ public class MDNSController extends GeneralController {
 		setUserDataWireshark();
 		setTitle();
 		setLanguageRadioButton();
-		networkInterfaces();
+		interfaceMenu.setText(language.getLanguageBundle().getString(interfaceMenu.getId()));
 	}
 	
-	private void networkInterfaces() {
+	public void networkInterfaces() {
 		try {
+			interfaceToggleGroup = new ToggleGroup();
 			Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces();
-
+			ArrayList<RadioMenuItem> listMenuItems = new ArrayList<RadioMenuItem>();
 		    while (e.hasMoreElements()) {
+		    RadioMenuItem pom = new RadioMenuItem();
 			NetworkInterface ni = e.nextElement();
-			System.out.println("Net interface: " + ni.getName() + " - " + ni.getDisplayName());
+			if(ni.getName().equals(settings.getInterface().getName())) {
+				pom.setSelected(true);
+			}
+		    pom.setText(ni.getName() + " -- " + ni.getDisplayName());
+		    pom.setUserData(ni);
+		    pom.setToggleGroup(interfaceToggleGroup);
+		    listMenuItems.add(pom);
 		    }
+		    interfaceMenu.getItems().addAll(listMenuItems);
 		} catch (SocketException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -429,6 +438,12 @@ public class MDNSController extends GeneralController {
 		alert.show();
 	}
 	
+	protected NetworkInterface getInterface() {
+		NetworkInterface netInterface =  (NetworkInterface) interfaceToggleGroup.getSelectedToggle().getUserData();
+		LOGGER.info(netInterface.getDisplayName().toString() + " " + netInterface.getName());
+		settings.setInterface(netInterface);
+		return netInterface;
+	}
 	@FXML
 	protected void sendButtonFired(ActionEvent event) {
 		try {
@@ -444,6 +459,7 @@ public class MDNSController extends GeneralController {
 				records,
 				networkProtocol,
 				mdnsType);
+		sender.setInterfaceToSend(getInterface());
 		sender.send();
 		parser = new MessageParser(sender.getRecieveReply(), sender.getHeader(), null);
 		parser.parseMDNS();
@@ -555,10 +571,10 @@ public class MDNSController extends GeneralController {
 		controlKeys(event, domainNameTextField);
 		autobinging(domainNameTextField.getText(), settings.getDomainNamesMDNS(), savedDomainNamesChoiseBox);
 	}
-	@FXML
+/*	@FXML
 	private void treeViewclicked(Event event) {
 		
-	}
+	}*/
 	
 	protected void controlKeys(KeyEvent e, TextField text) {
 		byte b = e.getCharacter().getBytes()[0];
