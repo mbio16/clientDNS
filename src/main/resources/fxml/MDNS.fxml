@@ -344,7 +344,7 @@
                               <Insets top="5.0" />
                            </padding>
                         </Label>
-                        <Button fx:id="copyRequestJsonButton" disable="true" layoutX="208.0" layoutY="17.0" minWidth="100.0" mnemonicParsing="false" onAction="#copyJsonRequestDataFired" prefHeight="40.0" prefWidth="102.0" text="Dotaz JSON" />
+                        <Button fx:id="copyRequestJsonButton" disable="true" layoutX="230.0" layoutY="17.0" minWidth="80.0" mnemonicParsing="false" onAction="#copyJsonRequestDataFired" prefHeight="40.0" prefWidth="80.0" text="Dotaz JSON" />
                      </children>
                   </AnchorPane>
                </bottom>

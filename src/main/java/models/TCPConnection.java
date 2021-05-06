@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.Socket;
@@ -21,7 +20,7 @@ public class TCPConnection {
 	private NetworkInterface netIntreface;
 	private InputStream inputStream;
 	private static final int DNS_PORT = 53;
-	private static final int SOCKET_TIME_OUT_SEC = 3;
+	//private static final int SOCKET_TIME_OUT_SEC = 3;
 	private byte[] responseMessage;
 	public TCPConnection(InetAddress ip) {
 		this.destinationIp = ip;

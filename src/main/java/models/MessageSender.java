@@ -401,11 +401,12 @@ public class MessageSender {
 		else {
 		socket.receive(recievePacket);
 		socket.receive(recievePacket);
+		isResponse();
 		stopTime = System.nanoTime();
 		socket.leaveGroup(group);
 		socket.close();
 		return;
-		}
+			}
 		}
 		catch (BindException e) {
 			throw new BindException();
@@ -423,6 +424,14 @@ public class MessageSender {
 		
 		
 	}
+	
+	private void isResponse() throws Exception{
+		if(!(Byte.toUnsignedInt(recieveReply[2]) > 128)) {
+			LOGGER.warning("Not a response message");
+			throw new Exception("Not a response message Exception");
+		}
+	}
+	
 	private void dnsOverUDP() throws TimeoutException, IOException, MessageTooBigForUDPException,InterfaceDoesNotHaveIPAddressException {
 		if (size > MAX_UDP_SIZE)
 			throw new MessageTooBigForUDPException();
