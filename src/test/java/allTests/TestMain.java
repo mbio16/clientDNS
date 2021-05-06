@@ -1,4 +1,5 @@
 package allTests;
+import java.net.NetworkInterface;
 import java.util.concurrent.TimeUnit;
 import enums.APPLICATION_PROTOCOL;
 import enums.IP_PROTOCOL;
@@ -21,19 +22,21 @@ public class TestMain {
 		TRANSPORT_PROTOCOL protocol = TRANSPORT_PROTOCOL.UDP;
 		try {
 		
-//		sender = new MessageSender(false,"macMartin.local",a,IP_PROTOCOL.IPv6,RESPONSE_MDNS_TYPE.RESPONSE_MULTICAST);
-//		sender.send();
-//		sender.getAsJsonString();
-//		parser = new MessageParser(sender.getRecieveReply(), sender.getHeader(), null);
-//		parser.parseMDNS();
-//		System.out.println(parser.getAsJsonString());
+		sender = new MessageSender(false,"macMartin.local",a,IP_PROTOCOL.IPv4,RESPONSE_MDNS_TYPE.RESPONSE_MULTICAST);
+		sender.setInterfaceToSend(NetworkInterface.getByName("eth7"));
+		sender.send();
+		
+		sender.getAsJsonString();
+		parser = new MessageParser(sender.getRecieveReply(), sender.getHeader(), null);
+		parser.parseMDNS();
+		System.out.println(parser.getAsJsonString());
 //			https://dns.google/resolve?
 		//sender = new MessageSender(true, false, false, "seznam.cz", a, protocol,APPLICATION_PROTOCOL.DOH,"https://cloudflare-dns.com/dns-query");
-		sender = new MessageSender(true, false, true, "seznam.cz", a, protocol,APPLICATION_PROTOCOL.DOH,"1.1.1.1");
-		sender.send();
-		parser = new MessageParser(sender.getHttpResponse());
-		System.out.println(sender.getDoHRequest());
-		System.out.println(parser.getAsJsonString());
+//		sender = new MessageSender(true, false, true, "seznam.cz", a, protocol,APPLICATION_PROTOCOL.DOH,"1.1.1.1");
+//		sender.send();
+//		parser = new MessageParser(sender.getHttpResponse());
+//		System.out.println(sender.getDoHRequest());
+//		System.out.println(parser.getAsJsonString());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -32,7 +32,7 @@ public class Header {
 	private static final int size = 12;
 
 	private static final String ID_KEY = "Id";
-	private static final String QR_KEY = "Reply";
+	private static final String QR_KEY = "Message type";
 	private static final String OPCODE_KEY = "Opcode";
 	private static final String AA_KEY = "Authoritative answer";
 	private static final String TC_KEY = "Truncation";
@@ -132,10 +132,8 @@ public class Header {
 	private TreeItem<String> getFlagsAsTreeView() {
 		String flagsKeys[] = { QR_KEY, OPCODE_KEY, AA_KEY, TC_KEY, RD_KEY, CHECKING_DISABLED_KEY,
 				AUTHENTICATE_DATA__KEY, RCODE_KEY };
-		String flagsValue[] = { opCode.toString(), qr.toString(), aa.toString(), tc.toString(), rd.toString(),
-				cd.toString(), ad.toString(), rCode.toString(),
-
-		};
+		String flagsValue[] = { qr.toString(),opCode.toString(),aa.toString(), tc.toString(), rd.toString(),
+				cd.toString(), ad.toString(), rCode.toString()};
 		TreeItem<String> main = new TreeItem<String>("Flags");
 		for (int i = 0; i < flagsValue.length; i++) {
 			main.getChildren().add(new TreeItem<String>(flagsKeys[i] + ": " + flagsValue[i]));
