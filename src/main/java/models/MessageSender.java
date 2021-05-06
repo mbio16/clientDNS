@@ -361,24 +361,25 @@ public class MessageSender {
 	public String getDoHRequest() {
 		return httpRequest;
 	}
-	
+
+	private InetAddress getGroup() throws UnknownHostException {
+		if(ipProtocol==IP_PROTOCOL.IPv4) {
+			return  InetAddress.getByName(IPv4_MDNS);
+		}
+		else {
+			return InetAddress.getByName(IPv6_MDNS);
+		}
+	}
 	@SuppressWarnings("resource")
 	private void mdns() throws UnknownHostException, TimeoutException, BindException{
 		messageToBytesMDNS();
 		messagesSent = 1;
-		InetAddress group;
+		InetAddress group = getGroup();
 
 		DatagramSocket unicastSocket; 
-		if(ipProtocol==IP_PROTOCOL.IPv4) {
-			group = InetAddress.getByName(IPv4_MDNS);
-		}
-		else {
-			group = InetAddress.getByName(IPv6_MDNS);
-		}
-
+		
 		while(true) {
 		try {
-			System.out.println(interfaceToSend.getDisplayName().toString() + " " + interfaceToSend.getName());
 		 MulticastSocket socket = new MulticastSocket(MDNS_PORT);
 		 socket.setNetworkInterface(interfaceToSend);
 		 socket.joinGroup(group);
