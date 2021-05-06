@@ -436,7 +436,7 @@ public class MessageSender {
 	private void dnsOverUDP() throws TimeoutException, IOException, MessageTooBigForUDPException,InterfaceDoesNotHaveIPAddressException {
 		if (size > MAX_UDP_SIZE)
 			throw new MessageTooBigForUDPException();
-		messagesSent = 1;
+		messagesSent = 0;
 		messageToBytes();
 		DatagramSocket datagramSocket;
 		try {
