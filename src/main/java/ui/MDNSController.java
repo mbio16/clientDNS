@@ -20,6 +20,7 @@ import exceptions.NonRecordSelectedException;
 import exceptions.NotValidDomainNameException;
 import exceptions.NotValidIPException;
 import exceptions.QueryIdNotMatchException;
+import exceptions.ResponseDoesNotContainRequestDomainNameException;
 import exceptions.TimeoutException;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -463,6 +464,7 @@ public class MDNSController extends GeneralController {
 		sender.send();
 		parser = new MessageParser(sender.getRecieveReply(), sender.getHeader(), null);
 		parser.parseMDNS();
+		parser.checkDomainNamesWithRequest(sender.getDomain());
 		settings.addMDNSDomain(domain);
 		setControls();
 		}
@@ -471,13 +473,14 @@ public class MDNSController extends GeneralController {
 		}
 		catch (NotValidDomainNameException | NotValidIPException
 				| MoreRecordsTypesWithPTRException | NonRecordSelectedException | TimeoutException | IOException
-				| QueryIdNotMatchException | MessageTooBigForUDPException | CouldNotUseHoldConnectionException e) {
+				| QueryIdNotMatchException | MessageTooBigForUDPException | CouldNotUseHoldConnectionException |  
+				ResponseDoesNotContainRequestDomainNameException e) {
 			String fullClassName = e.getClass().getSimpleName();
 			LOGGER.info(fullClassName);
 			if (sender != null)
 				numberOfMessagesValueLabel.setText("" + sender.getMessageSent());
 			if (sender.getWasSend()) {
-				setRequestTreeview();
+				setRequestAfterNotRieciveResponse();
 			}
 			showAller(fullClassName);
 		} catch (Exception e) {
@@ -486,12 +489,16 @@ public class MDNSController extends GeneralController {
 		}
 		}
 	
-	protected void setRequestTreeview() {
+	protected void setRequestAfterNotRieciveResponse() {
 		requestTreeView.setRoot(sender.getAsTreeItem());
 		queryTitledPane.setText(language.getLanguageBundle().getString(queryTitledPane.getId().toString()) + " ("
 				+ sender.getByteSizeQuery() + " B)");
 		expandAll(requestTreeView);
+		responseTreeView.setRoot(null);
+		responseTitledPane.setText(language.getLanguageBundle().getString(queryTitledPane.getId().toString()));
 		copyRequestJsonButton.setDisable(false);
+		copyResponseJsonButton.setDisable(true);
+		responseTimeValueLabel.setText("0");
 	}
 	
 	@FXML

@@ -12,6 +12,7 @@ import enums.APPLICATION_PROTOCOL;
 import enums.Q_COUNT;
 import enums.TRANSPORT_PROTOCOL;
 import exceptions.QueryIdNotMatchException;
+import exceptions.ResponseDoesNotContainRequestDomainNameException;
 import javafx.scene.control.TreeItem;
 
 public class MessageParser {
@@ -255,5 +256,24 @@ public class MessageParser {
 	public int getByteSizeResponse() {
 		return byteSizeResponse;
 	}
+	
+	public void checkDomainNamesWithRequest(String domainFromRequest) throws ResponseDoesNotContainRequestDomainNameException  {
+		for (Response response : ancountResponses) {
+			if (response.getDomain().equals(domainFromRequest)) {
+				return;
+			}
+		}
+		for (Response response : arcountResponses) {
+			if (response.getDomain().equals(domainFromRequest)) {
+				return;
+			}
+		}
+		for (Response response : nscountResponses) {
+			if (response.getDomain().equals(domainFromRequest)) {
+				return;
+			}
 
+		}
+		throw new ResponseDoesNotContainRequestDomainNameException();
+	}
 }

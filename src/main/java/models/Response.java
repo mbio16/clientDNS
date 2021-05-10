@@ -426,5 +426,9 @@ public class Response {
 	public Record getRdata() {
 		return rdata;
 	}
+	
+	public String getDomain() {
+		return this.nameAsString;
+	}
 
 }

@@ -549,7 +549,7 @@ public class DNSController extends MDNSController {
 			if (sender != null)
 				numberOfMessagesValueLabel.setText("" + sender.getMessageSent());
 			if(sender.getWasSend()) {
-				setRequestTreeview();
+				setRequestAfterNotRieciveResponse();
 			}
 			showAller(fullClassName);
 		} catch (Exception e) {

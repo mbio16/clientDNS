@@ -133,6 +133,7 @@ public class MessageSender {
 		this.messagesSent = 0;
 		this.recieveReply = new byte [1232];
 		this.wasSend = false;
+		this.domainAsString = domain;
 	}
 	private String checkAndStripFullyQualifyName(String domain) {
 		if (domain.endsWith(".")) {
@@ -667,6 +668,9 @@ public class MessageSender {
 	
 	public boolean getWasSend() {
 		return this.wasSend;
+	}
+	public String getDomain() {
+		return this.domainAsString;
 	}
 	
 }
