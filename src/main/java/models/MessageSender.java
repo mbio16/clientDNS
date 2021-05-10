@@ -76,6 +76,7 @@ public class MessageSender {
 	private CloseableHttpClient httpClient;
 	private int byteSizeResponseDoHDecompresed;
 	private NetworkInterface interfaceToSend;
+	private boolean wasSend;
 	private static final int MAX_MESSAGES_SENT = 3;
 	private static final int TIME_OUT_MILLIS = 2000;
 	public static final int MAX_UDP_SIZE = 1232;
@@ -117,6 +118,7 @@ public class MessageSender {
 		messagesSent = 0;
 		tcp = null;
 		closeConnection = true;
+		this.wasSend = false;
 	}
 
 	public MessageSender(boolean mdnsDnssecSignatures,String domain, Q_COUNT[] types, IP_PROTOCOL ipProtocol, RESPONSE_MDNS_TYPE  mdnsType) throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException {
@@ -130,6 +132,7 @@ public class MessageSender {
 		addRequests(types, checkAndStripFullyQualifyName(domain), mdnsType);
 		this.messagesSent = 0;
 		this.recieveReply = new byte [1232];
+		this.wasSend = false;
 	}
 	private String checkAndStripFullyQualifyName(String domain) {
 		if (domain.endsWith(".")) {
@@ -388,6 +391,7 @@ public class MessageSender {
 		 startTime = System.nanoTime();
 		 socket.setSoTimeout(TIME_OUT_MILLIS);
 		 socket.send(datagramPacket);
+		 wasSend = true;
 		 DatagramPacket recievePacket = new DatagramPacket(recieveReply, recieveReply.length);
 		if(mdnsType == RESPONSE_MDNS_TYPE.RESPONSE_UNICAST) {
 			socket.leaveGroup(group);
@@ -460,6 +464,7 @@ public class MessageSender {
 				startTime = System.nanoTime();
 
 				datagramSocket.send(datagramPacket);
+				this.wasSend = true;
 				datagramSocket.receive(responsePacket);
 
 				stopTime = System.nanoTime();
@@ -488,6 +493,7 @@ public class MessageSender {
 				tcp = new TCPConnection(ip);
 			}
 			this.recieveReply = tcp.send(this.messageAsBytes, ip, this.closeConnection, interfaceToSend);
+			wasSend = true;
 			stopTime = System.nanoTime();
 		} catch (IOException e) {
 			throw new TimeoutException();
@@ -657,6 +663,10 @@ public class MessageSender {
 
 	public void setInterfaceToSend(NetworkInterface interfaceToSend) {
 		this.interfaceToSend = interfaceToSend;
+	}
+	
+	public boolean getWasSend() {
+		return this.wasSend;
 	}
 	
 }

@@ -476,12 +476,23 @@ public class MDNSController extends GeneralController {
 			LOGGER.info(fullClassName);
 			if (sender != null)
 				numberOfMessagesValueLabel.setText("" + sender.getMessageSent());
+			if (sender.getWasSend()) {
+				setRequestTreeview();
+			}
 			showAller(fullClassName);
 		} catch (Exception e) {
 			LOGGER.warning(e.toString());
 			showAller("Exception");
 		}
 		}
+	
+	protected void setRequestTreeview() {
+		requestTreeView.setRoot(sender.getAsTreeItem());
+		queryTitledPane.setText(language.getLanguageBundle().getString(queryTitledPane.getId().toString()) + " ("
+				+ sender.getByteSizeQuery() + " B)");
+		expandAll(requestTreeView);
+		copyRequestJsonButton.setDisable(false);
+	}
 	
 	@FXML
 	protected void onDomainNameAction(ActionEvent e) {

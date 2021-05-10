@@ -548,6 +548,9 @@ public class DNSController extends MDNSController {
 			LOGGER.info(fullClassName);
 			if (sender != null)
 				numberOfMessagesValueLabel.setText("" + sender.getMessageSent());
+			if(sender.getWasSend()) {
+				setRequestTreeview();
+			}
 			showAller(fullClassName);
 		} catch (Exception e) {
 			LOGGER.warning(e.toString());
@@ -556,6 +559,8 @@ public class DNSController extends MDNSController {
 
 	}
 
+	
+	
 	@FXML
 	private void onSavedDNSChoiseBoxFired(MouseEvent e) {
 		customDNSRadioButton.setSelected(true);

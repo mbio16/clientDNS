@@ -22,6 +22,8 @@ public class TCPConnection {
 	private static final int DNS_PORT = 53;
 	//private static final int SOCKET_TIME_OUT_SEC = 3;
 	private byte[] responseMessage;
+	
+	
 	public TCPConnection(InetAddress ip) {
 		this.destinationIp = ip;
 		responseMessage = null;
