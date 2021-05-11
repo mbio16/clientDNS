@@ -42,7 +42,7 @@
             </Menu>
             <Menu mnemonicParsing="false" text="Wireshark">
               <items>
-                <MenuItem fx:id="mdnsMenuItem" mnemonicParsing="false" onAction="#getWiresharkFilter" text="MDNS" />
+                <MenuItem fx:id="mdnsMenuItem" mnemonicParsing="false" onAction="#getWiresharkFilter" text="mDNS" />
                   <MenuItem fx:id="iPv4MulticastMenuItem" mnemonicParsing="false" onAction="#getWiresharkFilter" text="IPv4 Multicast" />
                   <MenuItem fx:id="iPv6MulticastMenuItem" mnemonicParsing="false" onAction="#getWiresharkFilter" text="IPv6 Multicast" />
               </items>

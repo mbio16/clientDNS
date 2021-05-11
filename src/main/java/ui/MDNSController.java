@@ -210,6 +210,9 @@ public class MDNSController extends GeneralController {
 			label.setText(language.getLanguageBundle().getString(label.getId()));
 		}
 
+		iPv4MulticastMenuItem.setText(language.getLanguageBundle().getString(iPv4MulticastMenuItem.getId()));
+		iPv6MulticastMenuItem.setText(language.getLanguageBundle().getString(iPv6MulticastMenuItem.getId()));
+		
 		// set sendButton
 		sendButton.setText(language.getLanguageBundle().getString(sendButton.getId()));
 		copyResponseJsonButton.setText(language.getLanguageBundle().getString(copyResponseJsonButton.getId()));
