@@ -311,7 +311,7 @@ public class DoHController extends DNSController {
 		responseTextArea.setText(parser.getAsJsonString());
 		queryTitledPane.setText(language.getLanguageBundle().getString(queryTitledPane.getId().toString()) + " ("
 				+ sender.getByteSizeQuery() + " B)");
-		responseTitledPane.setText(language.getLanguageBundle().getString(queryTitledPane.getId().toString()) + " ("
+		responseTitledPane.setText(language.getLanguageBundle().getString(responseTitledPane.getId().toString()) + " ("
 				+ sender.getByteSizeResponseDoH() + " B)");
 	}
 	public void loadDataFromSettings() {

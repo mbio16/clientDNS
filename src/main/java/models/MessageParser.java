@@ -39,14 +39,16 @@ public class MessageParser {
 			"CD",
 			"TC",
 			"RD",
-			"RA"
+			"RA",
+			"AD"
 	};
 	
 	private static final String [] flagsLong = {
 			"Checking disabled",
 			"Truncation",
 			"Recursion desired",
-			"Recursion avaible"
+			"Recursion avaible",
+			"Authenticated data"
 	};
 
 	public MessageParser(byte[] rawMessage, Header queryHeader, TRANSPORT_PROTOCOL protocol) {
