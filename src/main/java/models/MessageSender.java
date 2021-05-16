@@ -15,6 +15,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
+import javax.net.ssl.SSLPeerUnverifiedException;
+
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -206,7 +208,8 @@ public class MessageSender {
 				OtherHttpException,
 				ParseException,
 				InterfaceDoesNotHaveIPAddressException,
-				SocketException {
+				SocketException,
+				SSLPeerUnverifiedException{
 		switch (application_protocol) {
 		case DNS:
 			switch (transport_protocol) {
@@ -235,7 +238,10 @@ public class MessageSender {
 				HttpCodeException,
 				ParseException,
 				InterfaceDoesNotHaveIPAddressException,
-				SocketException, OtherHttpException {
+				SocketException, 
+				OtherHttpException, 
+				SSLPeerUnverifiedException
+				{
 	try {
 	String httpsDomain = resolver.split("/")[0];
 	CloseableHttpResponse response;
@@ -271,7 +277,7 @@ public class MessageSender {
 		}
       closeHttpConnection();
 	 }
-	catch (HttpCodeException | ParseException | InterfaceDoesNotHaveIPAddressException | SocketException  e) {
+	catch (HttpCodeException | ParseException | InterfaceDoesNotHaveIPAddressException | SocketException | SSLPeerUnverifiedException  e) {
 		closeHttpConnection();
 		throw e;
 	}
@@ -515,6 +521,14 @@ public class MessageSender {
 	}
 	private String addParamtoUris(String uri,String [] paramNames, String [] values) {
 		
+		String splited [] = uri.split("/");
+		if(Ip.isIpv6Address(splited[0])) {
+			
+			uri = "[" + splited[0] +"]" ; 
+			if(splited.length > 1) {
+				uri += "/" + splited[1];
+			}
+		}
 		String result = "https://" + uri +"?";
 		for (int i = 0; i < values.length; i++) {
 			if (i==0) {
@@ -524,6 +538,7 @@ public class MessageSender {
 			result += "&" + paramNames[i] + "=" + values [i];
 			}
 		}
+		System.out.println(result);
 		return result;
 
 	}

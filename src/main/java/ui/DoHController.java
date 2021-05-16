@@ -3,6 +3,8 @@ package ui;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
+import javax.net.ssl.SSLPeerUnverifiedException;
+
 import org.json.simple.parser.ParseException;
 import enums.APPLICATION_PROTOCOL;
 import enums.DOH_FORMAT;
@@ -308,7 +310,12 @@ public class DoHController extends DNSController {
 		parser = new MessageParser(sender.getHttpResponse());
 		setControls();
 		}
-		catch(HttpCodeException e) {
+		catch(SSLPeerUnverifiedException e) {
+			String fullClassName = e.getClass().getSimpleName();
+			LOGGER.info(fullClassName);
+			showAller(fullClassName);
+		}
+		catch(HttpCodeException  e) {
 			Alert alert = new Alert(AlertType.ERROR, language.getLanguageBundle().getString("HttpCodeException") + e.getCode());
 			alert.initModality(Modality.APPLICATION_MODAL);
 			alert.initOwner((Stage) sendButton.getScene().getWindow());
@@ -325,9 +332,8 @@ public class DoHController extends DNSController {
 				CouldNotUseHoldConnectionException |
 				OtherHttpException |
 				ParseException |
-				CustomEndPointException
-				| InterfaceDoesNotHaveIPAddressException
-				 e) {
+				CustomEndPointException |
+				InterfaceDoesNotHaveIPAddressException e) {
 			e.printStackTrace();
 			String fullClassName = e.getClass().getSimpleName();
 			LOGGER.info(fullClassName);
