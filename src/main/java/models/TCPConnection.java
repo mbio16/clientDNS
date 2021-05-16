@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
-import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.Socket;
 
@@ -52,10 +51,8 @@ public class TCPConnection {
 
 	private void connect() throws IOException,InterfaceDoesNotHaveIPAddressException {
 		try {
-		InterfaceAddress adresLocal = netIntreface.getInterfaceAddresses().get(0);
 		System.out.println(netIntreface.getDisplayName());
-		System.out.println(adresLocal.toString());
-		socket = new Socket(destinationIp, DNS_PORT, adresLocal.getAddress(), 0);
+		socket = new Socket(destinationIp, DNS_PORT,Ip.getIpAddressFromInterface(netIntreface, destinationIp.getHostAddress()), 0);
 		outputStream = socket.getOutputStream();
 		inputStream = socket.getInputStream();
 		}

@@ -4,11 +4,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.net.InterfaceAddress;
+import java.net.NetworkInterface;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import exceptions.CustomEndPointException;
+import exceptions.InterfaceDoesNotHaveIPAddressException;
 import exceptions.NotValidIPException;
 import inet.ipaddr.IPAddress;
 import inet.ipaddr.IPAddressString;
@@ -18,11 +21,12 @@ public class Ip {
 	private ArrayList<String> ipv4DnsServers;
 	private ArrayList<String> ipv6DnsServers;
 	private static final String COMMAND = "powershell.exe $ip=Get-NetIPConfiguration; $ip.'DNSServer' | ForEach-Object -Process {$_.ServerAddresses}";
-	private String clouflareIp;
+	private String clouflareIp [];
 	private String googleIp;
 	private String dohUserInputIp;
 	public Ip() {
 		try {
+			googleIp = "";
 			setupArrays();
 			parseDnsServersIp();
 			getDoHIps();
@@ -53,15 +57,21 @@ public class Ip {
 	}
 
 	private void getDoHIps() throws UnknownHostException {
-		clouflareIp = InetAddress.getByName("cloudflare-dns.com").getHostAddress();
-		googleIp = InetAddress.getByName("dns.google").getHostAddress();
+		updateCloudflareIp();
+		updateGoogleIp();
 	}
 	
 	public void updateCloudflareIp() throws UnknownHostException {
-		clouflareIp = InetAddress.getByName("cloudflare-dns.com").getHostAddress();
+		InetAddress[] records = InetAddress.getAllByName("cloudflare-dns.com");
+		clouflareIp = new String [records.length];
+		int i = 0;
+		for(InetAddress address : records){
+		  clouflareIp[i] = address.getHostAddress();
+		  i++;
+		}
 	}
 	public void updateGoogleIp() throws UnknownHostException {
-		clouflareIp = InetAddress.getByName("dns.google").getHostAddress();
+		googleIp = InetAddress.getByName("dns.google").getHostAddress();
 	}
 	public void getUserDoHurlIP(String domain) throws CustomEndPointException {
 		try {
@@ -151,7 +161,25 @@ public class Ip {
 		
 	}
 
-	public String getClouflareIp() {
+	public static InetAddress getIpAddressFromInterface(NetworkInterface interfaceToSend, String resolverIP) throws InterfaceDoesNotHaveIPAddressException{
+		ArrayList<InterfaceAddress> ipAdrresses = (ArrayList<InterfaceAddress>) interfaceToSend.getInterfaceAddresses();
+		System.out.println("Resolver ip:" + resolverIP);
+		for (InterfaceAddress sourceIp : ipAdrresses) {
+			String sourceIpString = sourceIp.getAddress().getHostAddress();
+			System.out.println("Current ip of interface: " + sourceIpString);
+			if(Ip.isIpv6Address(resolverIP) && Ip.isIpv6Address(sourceIpString)) {
+				System.out.println("Source address: " + sourceIpString);
+				return sourceIp.getAddress();
+			}
+			if(Ip.isIPv4Address(resolverIP) && Ip.isIPv4Address(sourceIpString)) {
+				System.out.println("Source address: " + sourceIpString);
+				return sourceIp.getAddress();
+
+			}
+		}
+		throw new InterfaceDoesNotHaveIPAddressException();
+	}
+	public String [] getClouflareIp() {
 		return clouflareIp;
 	}
 

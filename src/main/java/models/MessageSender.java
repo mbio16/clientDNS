@@ -319,7 +319,7 @@ public class MessageSender {
 			request.addHeader("Accept-Encoding","gzip, deflate, br");
 			request.addHeader("User-Agent", "Client-DNS");
 			request.addHeader("Host",host);
-			request.setConfig(getRequestConfig());
+			request.setConfig(getRequestConfig(host));
 			httpRequestAsString(request);
 			httpClient = HttpClients.createDefault();
 			startTime = System.nanoTime();
@@ -333,7 +333,7 @@ public class MessageSender {
 			request.addHeader("Accept-Encoding","gzip, deflate, br");
 			request.addHeader("User-Agent", "Client-DNS");
 			request.addHeader("Host",host);
-			request.setConfig(getRequestConfig());
+			request.setConfig(getRequestConfig(host));
 			httpRequestAsString(request);
 			httpClient = HttpClients.createDefault();
 			startTime = System.nanoTime();
@@ -345,8 +345,12 @@ public class MessageSender {
 
 	}
 	
-	private RequestConfig getRequestConfig() throws InterfaceDoesNotHaveIPAddressException {
+	private RequestConfig getRequestConfig(String host) throws InterfaceDoesNotHaveIPAddressException {
 		try {
+			System.out.println(host);
+			if(Ip.isIpValid(host)) {
+				return RequestConfig.custom().setLocalAddress(Ip.getIpAddressFromInterface(interfaceToSend, host)).build();
+			}
 		return RequestConfig.custom().setLocalAddress(interfaceToSend.getInterfaceAddresses().get(0).getAddress()).build();
 		}
 		catch (Exception e) {
@@ -445,7 +449,7 @@ public class MessageSender {
 		messageToBytes();
 		DatagramSocket datagramSocket;
 		try {
-		 datagramSocket = new DatagramSocket(0,interfaceToSend.getInterfaceAddresses().get(0).getAddress());
+		 datagramSocket = new DatagramSocket(0,Ip.getIpAddressFromInterface(interfaceToSend,resolver));
 		}catch (Exception e) {
 			throw new InterfaceDoesNotHaveIPAddressException();
 		}
@@ -606,8 +610,7 @@ public class MessageSender {
 			}
 		return jsonObject;
 	}
-
-
+	
 	public String getAsJsonString() {
 		return new GsonBuilder().setPrettyPrinting().create().toJson(getAsJson());
 	}

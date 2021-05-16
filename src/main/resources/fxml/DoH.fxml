@@ -97,7 +97,7 @@
                                     <Font size="15.0" />
                                  </font>
                               </RadioButton>
-                              <ImageView fx:id="cloudflareImageView" fitHeight="20.0" fitWidth="20.0" onMouseClicked="#copyImageViewFired" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1">
+                              <ImageView fx:id="cloudflareImageView" fitHeight="20.0" fitWidth="20.0" onMouseClicked="#copyCloudflareViewFired" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1">
                                  <image>
                                     <Image url="@../images/copy-clipboard.png" />
                                  </image>

@@ -169,6 +169,45 @@ public class DoHController extends DNSController {
 	}
 	
 	@FXML
+	private void copyCloudflareViewFired(MouseEvent event) {
+
+		String result = "";
+		switch ((WIRESHARK_FILTER) wiresharkFilterToogleGroup.getSelectedToggle().getUserData()) {
+		case JUST_IP:
+			result = ipDns.getClouflareIp()[0];
+			break;
+		case IP_FILTER:
+			result = getCloudflareWiresharkIpFilter();
+			break;
+		case IP_WITH_TCP:
+			result = getCloudflareWiresharkIpFilter() +  " && tcp.port == 443";
+			break;
+		default:
+			break;
+		}
+		copyDataToClipBoard(result);
+	}
+	
+	private String getCloudflareWiresharkIpFilter() {
+		String result = "(";
+		for (int i = 0; i < ipDns.getClouflareIp().length; i++) {
+			String ip = ipDns.getClouflareIp()[i];
+			if(Ip.isIPv4Address(ip)) {
+				result += "ip.addr == " + ip; 
+			}
+			else {
+				result += "ipv6.addr == " + ip;
+			}
+			if(i == ipDns.getClouflareIp().length-1) {
+				result += ")";
+			}
+			else {
+				result += " || ";
+			}
+		}
+		return result;
+	}
+	@FXML
 	private void copyImageViewFired(MouseEvent event) {
 		ImageView image = (ImageView) event.getSource();
 		String ip;
@@ -184,16 +223,22 @@ public class DoHController extends DNSController {
 			ip = (String) image.getUserData();
 		}
 		String result = "";
-		System.out.println(ip);
+		String prefix = "";
+		if(Ip.isIpv6Address(ip)) {
+			prefix = "ipv6.addr == ";
+		}
+		else {
+			prefix = "ip.addr == ";
+		}
 		switch ((WIRESHARK_FILTER) wiresharkFilterToogleGroup.getSelectedToggle().getUserData()) {
 		case JUST_IP:
 			result = ip;
 			break;
 		case IP_FILTER:
-			result = "ip.addr == " + ip;
+			result = prefix + ip;
 			break;
 		case IP_WITH_TCP:
-			result = "ip.addr == " + ip + " && tcp.port == 443";
+			result = prefix + ip + " && tcp.port == 443";
 			break;
 		default:
 			break;
