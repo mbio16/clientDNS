@@ -24,6 +24,7 @@ public class MessageParser {
 	private ArrayList<Response> arcountResponses;
 	private byte[] rawMessage;
 	private int currentIndex;
+	private boolean mdnsDomainNameCaseSensitive;
 	private APPLICATION_PROTOCOL applicationProtocol;
 	private JSONObject httpResponse;
 	private static final String KEY_HEAD = "Head";
@@ -260,22 +261,41 @@ public class MessageParser {
 	}
 	
 	public void checkDomainNamesWithRequest(String domainFromRequest) throws ResponseDoesNotContainRequestDomainNameException  {
+		String requestDomain = domainFromRequest.toLowerCase();
+		String responseDomain = "";
 		for (Response response : ancountResponses) {
-			if (response.getDomain().equals(domainFromRequest)) {
+			responseDomain = response.getDomain().toLowerCase();
+			if (responseDomain.equals(requestDomain)) {
+				checkCaseSensitive(domainFromRequest, response.getDomain());
 				return;
 			}
 		}
 		for (Response response : arcountResponses) {
-			if (response.getDomain().equals(domainFromRequest)) {
+			responseDomain = response.getDomain().toLowerCase();
+			if (responseDomain.equals(requestDomain)) {
+				checkCaseSensitive(domainFromRequest, response.getDomain());
 				return;
 			}
 		}
 		for (Response response : nscountResponses) {
-			if (response.getDomain().equals(domainFromRequest)) {
+			responseDomain = response.getDomain().toLowerCase();
+			if (responseDomain.equals(requestDomain)) {
+				checkCaseSensitive(domainFromRequest, response.getDomain());
 				return;
 			}
 
 		}
 		throw new ResponseDoesNotContainRequestDomainNameException();
+	}
+	private void checkCaseSensitive(String requestDomain, String responseDomain) {
+		if(requestDomain.equals(responseDomain)) {
+			mdnsDomainNameCaseSensitive = true;
+		}
+		else {
+			mdnsDomainNameCaseSensitive = false;
+		}
+	}
+	public boolean isCaseSensitive() {
+		return mdnsDomainNameCaseSensitive;
 	}
 }

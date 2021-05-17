@@ -470,6 +470,9 @@ public class MDNSController extends GeneralController {
 		parser.checkDomainNamesWithRequest(sender.getDomain());
 		settings.addMDNSDomain(domain);
 		setControls();
+		if(!parser.isCaseSensitive()) {
+			informWindow(language.getLanguageBundle().getString("notCaseSensitive"));
+		}
 		}
 		catch (BindException e) {
 			showAller("BindException");
