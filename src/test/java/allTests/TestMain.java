@@ -1,18 +1,10 @@
 package allTests;
 import java.net.NetworkInterface;
-import java.util.concurrent.TimeUnit;
 import enums.APPLICATION_PROTOCOL;
-import enums.IP_PROTOCOL;
 import enums.Q_COUNT;
-import enums.RESPONSE_MDNS_TYPE;
 import enums.TRANSPORT_PROTOCOL;
-import models.DomainConvert;
-import models.Header;
 import models.MessageParser;
 import models.MessageSender;
-import models.Request;
-import models.TCPConnection;
-
 public class TestMain {
 
 	public static void main(String[] args) {
