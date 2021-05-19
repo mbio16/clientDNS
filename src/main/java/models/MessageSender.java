@@ -321,7 +321,6 @@ public class MessageSender {
 			httpRequestAsString(request);
 			httpClient = HttpClients.createDefault();
 			startTime = System.nanoTime();
-			System.out.println(getDoHRequest());
 			CloseableHttpResponse response = httpClient.execute(request);
 			stopTime = System.nanoTime();
 			return response;
