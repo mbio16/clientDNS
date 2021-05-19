@@ -1,8 +1,7 @@
 package enums;
 
 public enum CHECKING_DISABLED {
-	DATA_NOT_CHECKED((boolean) true),
-	DATA_CHECKED((boolean) false);
+	DATA_NOT_CHECKED((boolean) true), DATA_CHECKED((boolean) false);
 
 	public boolean code;
 

@@ -1,8 +1,7 @@
 package enums;
 
 public enum RA {
-	RECURSION_AVAIBLE((boolean) true),
-	RECURSION_NON_AVAIBLE((boolean) false);
+	RECURSION_AVAIBLE((boolean) true), RECURSION_NON_AVAIBLE((boolean) false);
 
 	public boolean code;
 

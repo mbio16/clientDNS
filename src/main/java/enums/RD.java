@@ -1,8 +1,7 @@
 package enums;
 
 public enum RD {
-	RECURSIVE((boolean) true),
-	ITERATIVE((boolean) false);
+	RECURSIVE((boolean) true), ITERATIVE((boolean) false);
 
 	public boolean code;
 

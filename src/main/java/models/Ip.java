@@ -21,9 +21,10 @@ public class Ip {
 	private ArrayList<String> ipv4DnsServers;
 	private ArrayList<String> ipv6DnsServers;
 	private static final String COMMAND = "powershell.exe $ip=Get-NetIPConfiguration; $ip.'DNSServer' | ForEach-Object -Process {$_.ServerAddresses}";
-	private String clouflareIp [];
+	private String clouflareIp[];
 	private String googleIp;
 	private String dohUserInputIp;
+
 	public Ip() {
 		try {
 			googleIp = "";
@@ -60,27 +61,29 @@ public class Ip {
 		updateCloudflareIp();
 		updateGoogleIp();
 	}
-	
+
 	public void updateCloudflareIp() throws UnknownHostException {
 		InetAddress[] records = InetAddress.getAllByName("cloudflare-dns.com");
-		clouflareIp = new String [records.length];
+		clouflareIp = new String[records.length];
 		int i = 0;
-		for(InetAddress address : records){
-		  clouflareIp[i] = address.getHostAddress();
-		  i++;
+		for (InetAddress address : records) {
+			clouflareIp[i] = address.getHostAddress();
+			i++;
 		}
 	}
+
 	public void updateGoogleIp() throws UnknownHostException {
 		googleIp = InetAddress.getByName("dns.google").getHostAddress();
 	}
+
 	public void getUserDoHurlIP(String domain) throws CustomEndPointException {
 		try {
-		dohUserInputIp = InetAddress.getByName(domain).getHostAddress();
-		}
-		catch (Exception e) {
+			dohUserInputIp = InetAddress.getByName(domain).getHostAddress();
+		} catch (Exception e) {
 			throw new CustomEndPointException();
 		}
 	}
+
 	public String getIpv4DnsServer() {
 		if (ipv4DnsServers.size() == 0) {
 			return "";
@@ -157,36 +160,32 @@ public class Ip {
 		} catch (Exception e) {
 			return "No primary address";
 		}
-		
-		
+
 	}
 
-	public static InetAddress getIpAddressFromInterface(NetworkInterface interfaceToSend, String resolverIP) throws InterfaceDoesNotHaveIPAddressException{
+	public static InetAddress getIpAddressFromInterface(NetworkInterface interfaceToSend, String resolverIP)
+			throws InterfaceDoesNotHaveIPAddressException {
 		ArrayList<InterfaceAddress> ipAdrresses = (ArrayList<InterfaceAddress>) interfaceToSend.getInterfaceAddresses();
-		System.out.println("Resolver ip:" + resolverIP);
 		for (InterfaceAddress sourceIp : ipAdrresses) {
 			String sourceIpString = sourceIp.getAddress().getHostAddress();
-			System.out.println("Current ip of interface: " + sourceIpString);
-			if(Ip.isIpv6Address(resolverIP) && Ip.isIpv6Address(sourceIpString)) {
-				System.out.println("Source address: " + sourceIpString);
+			if (Ip.isIpv6Address(resolverIP) && Ip.isIpv6Address(sourceIpString)) {
 				return sourceIp.getAddress();
 			}
-			if(Ip.isIPv4Address(resolverIP) && Ip.isIPv4Address(sourceIpString)) {
-				System.out.println("Source address: " + sourceIpString);
+			if (Ip.isIPv4Address(resolverIP) && Ip.isIPv4Address(sourceIpString)) {
 				return sourceIp.getAddress();
-
 			}
 		}
 		throw new InterfaceDoesNotHaveIPAddressException();
 	}
-	public String [] getClouflareIp() {
+
+	public String[] getClouflareIp() {
 		return clouflareIp;
 	}
 
 	public String getGoogleIp() {
 		return googleIp;
 	}
-	
+
 	public String getUserInputIp() {
 		return dohUserInputIp;
 	}

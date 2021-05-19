@@ -72,6 +72,7 @@ public class Header {
 		this(false, false, numberOfQueris, true);
 		this.id = new UInt16(0);
 	}
+
 	public Header() {
 		root = new TreeItem<String>("Head");
 	}
@@ -132,8 +133,8 @@ public class Header {
 	private TreeItem<String> getFlagsAsTreeView() {
 		String flagsKeys[] = { QR_KEY, OPCODE_KEY, AA_KEY, TC_KEY, RD_KEY, CHECKING_DISABLED_KEY,
 				AUTHENTICATE_DATA__KEY, RCODE_KEY };
-		String flagsValue[] = { qr.toString(),opCode.toString(),aa.toString(), tc.toString(), rd.toString(),
-				cd.toString(), ad.toString(), rCode.toString()};
+		String flagsValue[] = { qr.toString(), opCode.toString(), aa.toString(), tc.toString(), rd.toString(),
+				cd.toString(), ad.toString(), rCode.toString() };
 		TreeItem<String> main = new TreeItem<String>("Flags");
 		for (int i = 0; i < flagsValue.length; i++) {
 			main.getChildren().add(new TreeItem<String>(flagsKeys[i] + ": " + flagsValue[i]));
@@ -168,6 +169,7 @@ public class Header {
 		this.ArCount = new UInt16().loadFromBytes(byteHead[10], byteHead[11]);
 		return this;
 	}
+
 	public static int getSize() {
 		return size;
 	}

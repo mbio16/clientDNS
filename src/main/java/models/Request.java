@@ -43,7 +43,8 @@ public class Request {
 		this.mdnsType = null;
 	}
 
-	public Request(String qName, Q_COUNT a,RESPONSE_MDNS_TYPE mdnsType) throws NotValidIPException, UnsupportedEncodingException {
+	public Request(String qName, Q_COUNT a, RESPONSE_MDNS_TYPE mdnsType)
+			throws NotValidIPException, UnsupportedEncodingException {
 		this.qName = qName;
 		this.mdnsType = mdnsType;
 		if (a.equals(Q_COUNT.PTR)) {
@@ -52,14 +53,15 @@ public class Request {
 		this.nameInBytes = DomainConvert.encodeMDNS(this.qName);
 		this.qCount = a;
 		this.qtype = Q_TYPE.IN;
-		
+
 		this.size = this.nameInBytes.length + BYTE_SIZE_OF_QCLASS_AND_QTYPE;
 	}
+
 	public Request() {
 	};
 
 	public byte[] getRequestAsBytes() {
-		
+
 		int lenghtOfName = nameInBytes.length;
 
 		byte result[] = new byte[lenghtOfName + 4];
@@ -68,14 +70,14 @@ public class Request {
 		}
 		result[lenghtOfName] = qCount.code.getAsBytes()[1];
 		result[lenghtOfName + 1] = qCount.code.getAsBytes()[0];
-		
-		if(mdnsType != null) {
+
+		if (mdnsType != null) {
 			UInt16 newQtype = new UInt16(mdnsType.value + qtype.code.getValue());
 			result[lenghtOfName + 2] = newQtype.getAsBytes()[1];
 			result[lenghtOfName + 3] = newQtype.getAsBytes()[0];
 			return result;
 		}
-		
+
 		result[lenghtOfName + 2] = qtype.code.getAsBytes()[1];
 		result[lenghtOfName + 3] = qtype.code.getAsBytes()[0];
 		return result;
@@ -85,7 +87,7 @@ public class Request {
 		root = new TreeItem<String>(qName + " " + qCount + " " + qtype);
 		root.getChildren().add(new TreeItem<String>(KEY_NAME + ": " + qName));
 		root.getChildren().add(new TreeItem<String>(KEY_QCOUNT + ": " + qCount));
-		if(mdnsType != null) {
+		if (mdnsType != null) {
 			root.getChildren().add(new TreeItem<String>(KEY_RESPONSE_TYPE + ": " + mdnsType.toString()));
 		}
 		root.getChildren().add(new TreeItem<String>(KEY_QTYPE + ": " + qtype));
@@ -93,7 +95,7 @@ public class Request {
 	}
 
 	private void ipAddressToPTRFormat() throws NotValidIPException {
-		if(qName.contains(".arpa")) {
+		if (qName.contains(".arpa")) {
 			return;
 		}
 		this.qName = Ip.getIpReversed(qName);
@@ -117,6 +119,7 @@ public class Request {
 		}
 		System.out.println(res);
 	}
+
 	public Request parseRequest(byte[] request, int startIndex) {
 
 		int nameEndIndex = DomainConvert.getIndexOfLastByteOfName(request, startIndex);
@@ -145,11 +148,11 @@ public class Request {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put(KEY_NAME, qName);
 		jsonObject.put(KEY_QCOUNT, qCount);
-		if(mdnsType != null) {
+		if (mdnsType != null) {
 			jsonObject.put(KEY_RESPONSE_TYPE, mdnsType.toString());
 		}
 		jsonObject.put(KEY_QTYPE, qtype);
 		return jsonObject;
 	}
-	
+
 }

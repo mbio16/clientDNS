@@ -42,6 +42,7 @@ public class GeneralController {
 	public void loadDataFromSettings() {
 		// to be overrited
 	}
+
 	public void networkInterfaces() {
 		// to be overrited
 	}

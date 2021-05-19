@@ -26,20 +26,23 @@ public class RecordOPT extends Record {
 		isNull = true;
 		parse();
 	}
+
 	public boolean getIsNull() {
 		return isNull;
 	}
+
 	private void parse() {
 		int currentIndex = startIndex;
 		if (lenght > 4) {
 			while (lenght + startIndex > currentIndex) {
 				optionCode.add(new UInt16().loadFromBytes(rawMessage[currentIndex], rawMessage[currentIndex + 1]));
 				currentIndex += 2;
-				UInt16 lenghtOption = new UInt16().loadFromBytes(rawMessage[currentIndex], rawMessage[currentIndex + 1]);
+				UInt16 lenghtOption = new UInt16().loadFromBytes(rawMessage[currentIndex],
+						rawMessage[currentIndex + 1]);
 				optionDataLenght.add(lenghtOption);
 				currentIndex += 2;
 				String data = "";
-				for (int i = 0; i < lenghtOption.getValue() ; i++) {
+				for (int i = 0; i < lenghtOption.getValue(); i++) {
 					data += String.format("%02x", rawMessage[currentIndex + i]);
 				}
 				currentIndex += lenghtOption.getValue();
@@ -53,8 +56,6 @@ public class RecordOPT extends Record {
 		}
 	}
 
-	
-	
 	@SuppressWarnings("unchecked")
 	@Override
 	public JSONObject getAsJson() {

@@ -1,8 +1,7 @@
 package enums;
 
 public enum KEY_TYPE {
-	DNS_ZONE_KEY((byte) 0x01),
-	NOT_DNS_ZONE_KEY((byte) 0x00);
+	DNS_ZONE_KEY((byte) 0x01), NOT_DNS_ZONE_KEY((byte) 0x00);
 
 	public byte code;
 

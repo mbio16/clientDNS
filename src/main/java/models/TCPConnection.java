@@ -11,7 +11,6 @@ import exceptions.CouldNotUseHoldConnectionException;
 import exceptions.InterfaceDoesNotHaveIPAddressException;
 import exceptions.TimeoutException;
 
-
 public class TCPConnection {
 	private InetAddress destinationIp;
 	private Socket socket;
@@ -19,17 +18,17 @@ public class TCPConnection {
 	private NetworkInterface netIntreface;
 	private InputStream inputStream;
 	private static final int DNS_PORT = 53;
-	//private static final int SOCKET_TIME_OUT_SEC = 3;
+	// private static final int SOCKET_TIME_OUT_SEC = 3;
 	private byte[] responseMessage;
-	
-	
+
 	public TCPConnection(InetAddress ip) {
 		this.destinationIp = ip;
 		responseMessage = null;
 	}
 
 	public byte[] send(byte messagesAsBytes[], InetAddress ip, boolean closeConnection, NetworkInterface netInterface)
-			throws TimeoutException,IndexOutOfBoundsException, IOException, CouldNotUseHoldConnectionException,InterfaceDoesNotHaveIPAddressException {
+			throws TimeoutException, IndexOutOfBoundsException, IOException, CouldNotUseHoldConnectionException,
+			InterfaceDoesNotHaveIPAddressException {
 		this.netIntreface = netInterface;
 		if (socket == null) {
 			connect();
@@ -49,14 +48,14 @@ public class TCPConnection {
 		return responseMessage;
 	}
 
-	private void connect() throws IOException,InterfaceDoesNotHaveIPAddressException {
+	private void connect() throws IOException, InterfaceDoesNotHaveIPAddressException {
 		try {
-		System.out.println(netIntreface.getDisplayName());
-		socket = new Socket(destinationIp, DNS_PORT,Ip.getIpAddressFromInterface(netIntreface, destinationIp.getHostAddress()), 0);
-		outputStream = socket.getOutputStream();
-		inputStream = socket.getInputStream();
-		}
-		catch (IndexOutOfBoundsException e) {
+			System.out.println(netIntreface.getDisplayName());
+			socket = new Socket(destinationIp, DNS_PORT,
+					Ip.getIpAddressFromInterface(netIntreface, destinationIp.getHostAddress()), 0);
+			outputStream = socket.getOutputStream();
+			inputStream = socket.getInputStream();
+		} catch (IndexOutOfBoundsException e) {
 			throw new InterfaceDoesNotHaveIPAddressException();
 		}
 	}

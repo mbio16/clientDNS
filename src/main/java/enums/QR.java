@@ -1,8 +1,7 @@
 package enums;
 
 public enum QR {
-	REQUEST((boolean) false),
-	REPLY((boolean) true);
+	REQUEST((boolean) false), REPLY((boolean) true);
 
 	public boolean code;
 

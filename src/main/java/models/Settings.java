@@ -72,11 +72,11 @@ public class Settings {
 		jsonMap.put(DNS_SERVERS, dnsServers);
 		jsonMap.put(DOMAIN_NAMES_DNS, domainNamesDNS);
 		jsonMap.put(DOMAIN_NAMES_mDNS, domainNamesMDNS);
-		Map<String,String> jsonMap2 = new HashMap<String,String>();
-		if(netInterface == null) {
+		Map<String, String> jsonMap2 = new HashMap<String, String>();
+		if (netInterface == null) {
 			netInterface = NetworkInterface.getByInetAddress(InetAddress.getLocalHost());
 		}
-		jsonMap2.put(LAST_USED_INTERFACE,netInterface.getName());
+		jsonMap2.put(LAST_USED_INTERFACE, netInterface.getName());
 		JSONObject json = new JSONObject(jsonMap);
 		json.putAll(jsonMap2);
 		try (FileWriter fw = new FileWriter(file, StandardCharsets.UTF_8);
@@ -95,9 +95,8 @@ public class Settings {
 			domainNamesMDNS = readJsonArraylist(DOMAIN_NAMES_mDNS, jsonObject);
 			domainNamesDNS = readJsonArraylist(DOMAIN_NAMES_DNS, jsonObject);
 			try {
-			netInterface = NetworkInterface.getByName((String) jsonObject.get(LAST_USED_INTERFACE));
-			}
-			catch (Exception e) {
+				netInterface = NetworkInterface.getByName((String) jsonObject.get(LAST_USED_INTERFACE));
+			} catch (Exception e) {
 				netInterface = NetworkInterface.getByInetAddress(InetAddress.getLocalHost());
 			}
 			reader.close();
@@ -168,6 +167,7 @@ public class Settings {
 	public void eraseDNSServers() {
 		this.dnsServers = new ArrayList<String>();
 	}
+
 	public void eraseMDNSDomainNames() {
 		this.domainNamesMDNS = new ArrayList<String>();
 	}
@@ -183,9 +183,11 @@ public class Settings {
 	public ArrayList<String> getDomainNamesMDNS() {
 		return domainNamesMDNS;
 	}
+
 	public void setInterface(NetworkInterface netInterface) {
 		this.netInterface = netInterface;
 	}
+
 	public NetworkInterface getInterface() {
 		return this.netInterface;
 	}

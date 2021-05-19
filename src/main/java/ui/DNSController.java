@@ -363,7 +363,7 @@ public class DNSController extends MDNSController {
 		cznicIpv6ImageView.setUserData("2001:148f:ffff::1");
 
 	}
-	
+
 	protected void setUserDataRecords() {
 		aCheckBox.setUserData(Q_COUNT.A);
 		aaaaCheckBox.setUserData(Q_COUNT.AAAA);
@@ -397,7 +397,8 @@ public class DNSController extends MDNSController {
 	}
 
 	private String getDnsServerIp() throws DnsServerIpIsNotValidException, UnknownHostException {
-		if(dnsServerTextField.getText().equals("") &&  customDNSRadioButton.isSelected()) throw new DnsServerIpIsNotValidException();
+		if (dnsServerTextField.getText().equals("") && customDNSRadioButton.isSelected())
+			throw new DnsServerIpIsNotValidException();
 		if (DomainConvert.isValidDomainName(dnsServerTextField.getText()) && customDNSRadioButton.isSelected()) {
 			InetAddress ipaddress = InetAddress.getByName(dnsServerTextField.getText());
 			System.out.println("IP address: " + ipaddress.getHostAddress());
@@ -432,7 +433,7 @@ public class DNSController extends MDNSController {
 		try {
 			String domain = (domainNameTextField.getText());
 			LOGGER.info("Domain name: " + domain);
-			if(domain == "") {
+			if (domain == "") {
 				throw new NotValidDomainNameException();
 			}
 
@@ -460,7 +461,7 @@ public class DNSController extends MDNSController {
 		ArrayList<Q_COUNT> list = new ArrayList<Q_COUNT>();
 		CheckBox[] checkBoxArray = { aCheckBox, aaaaCheckBox, nsCheckBox, mxCheckBox, soaCheckBox, cnameCheckBox,
 				ptrCheckBox, dnskeyCheckBox, dsCheckBox, caaCheckBox, txtCheckBox, rrsigCheckBox, nsecCheckBox,
-				nsec3CheckBox, nsec3paramCheckBox,anyCheckBox };
+				nsec3CheckBox, nsec3paramCheckBox, anyCheckBox };
 		for (int i = 0; i < checkBoxArray.length; i++) {
 			if (checkBoxArray[i].isSelected()) {
 				list.add((Q_COUNT) checkBoxArray[i].getUserData());
@@ -512,8 +513,6 @@ public class DNSController extends MDNSController {
 				+ "\n" + "Application protocol: " + APPLICATION_PROTOCOL.DNS);
 	}
 
-
-
 	@FXML
 	protected void sendButtonFired(ActionEvent event) {
 		try {
@@ -543,12 +542,13 @@ public class DNSController extends MDNSController {
 			setControls();
 		} catch (NotValidDomainNameException | NotValidIPException | DnsServerIpIsNotValidException
 				| MoreRecordsTypesWithPTRException | NonRecordSelectedException | TimeoutException | IOException
-				| QueryIdNotMatchException | MessageTooBigForUDPException | CouldNotUseHoldConnectionException | InterfaceDoesNotHaveIPAddressException e) {
+				| QueryIdNotMatchException | MessageTooBigForUDPException | CouldNotUseHoldConnectionException
+				| InterfaceDoesNotHaveIPAddressException e) {
 			String fullClassName = e.getClass().getSimpleName();
 			LOGGER.info(fullClassName);
 			if (sender != null)
 				numberOfMessagesValueLabel.setText("" + sender.getMessageSent());
-			if(sender.getWasSend()) {
+			if (sender.getWasSend()) {
 				setRequestAfterNotRieciveResponse();
 			}
 			showAller(fullClassName);
@@ -559,14 +559,13 @@ public class DNSController extends MDNSController {
 
 	}
 
-	
-	
 	@FXML
 	private void onSavedDNSChoiseBoxFired(MouseEvent e) {
 		customDNSRadioButton.setSelected(true);
 		savedDNSChoiceBox.getItems().removeAll(savedDNSChoiceBox.getItems());
 		savedDNSChoiceBox.getItems().addAll(settings.getDnsServers());
 	}
+
 	@FXML
 	protected void onDomainNameChoiseBoxAction(ActionEvent event) {
 		try {
@@ -598,7 +597,8 @@ public class DNSController extends MDNSController {
 	}
 
 	@FXML
-	protected void domainNameKeyPressed(KeyEvent event) {		controlKeys(event, domainNameTextField);
+	protected void domainNameKeyPressed(KeyEvent event) {
+		controlKeys(event, domainNameTextField);
 		autobinging(domainNameTextField.getText(), settings.getDomainNamesDNS(), savedDomainNamesChoiseBox);
 	}
 
@@ -608,9 +608,6 @@ public class DNSController extends MDNSController {
 		controlKeys(event, dnsServerTextField);
 		autobinging(dnsServerTextField.getText(), settings.getDnsServers(), savedDNSChoiceBox);
 	}
-
-
-
 
 	@FXML
 	private void deleteDomainNameHistoryFired(Event event) {

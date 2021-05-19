@@ -32,25 +32,14 @@ public class MessageParser {
 	private static final String KEY_ANSWERS = "Answer";
 	private static final String KEY_AUTHORITY = "Authority";
 	public static final String KEY_ADDITIONAL_RECORDS = "Aditional records";
-	private static final String KEY_LENGHT="Lenght";
+	private static final String KEY_LENGHT = "Lenght";
 	private TRANSPORT_PROTOCOL protocol;
 	private TreeItem<String> main;
 	private int byteSizeResponse;
-	private static final String [] flagsShort = {
-			"CD",
-			"TC",
-			"RD",
-			"RA",
-			"AD"
-	};
-	
-	private static final String [] flagsLong = {
-			"Checking disabled",
-			"Truncation",
-			"Recursion desired",
-			"Recursion avaible",
-			"Authenticated data"
-	};
+	private static final String[] flagsShort = { "CD", "TC", "RD", "RA", "AD" };
+
+	private static final String[] flagsLong = { "Checking disabled", "Truncation", "Recursion desired",
+			"Recursion avaible", "Authenticated data" };
 
 	public MessageParser(byte[] rawMessage, Header queryHeader, TRANSPORT_PROTOCOL protocol) {
 		this.rawMessage = rawMessage;
@@ -70,6 +59,7 @@ public class MessageParser {
 		this.httpResponse = response;
 		addCommentsDoH();
 	}
+
 	public void parse() throws QueryIdNotMatchException, UnknownHostException, UnsupportedEncodingException {
 		applicationProtocol = APPLICATION_PROTOCOL.DNS;
 		header = new Header().parseHead(rawMessage);
@@ -133,6 +123,7 @@ public class MessageParser {
 		}
 		byteSizeResponse = currentIndex;
 	}
+
 	public TreeItem<String> getAsTreeItem() {
 
 		main.getChildren().add(header.getAsTreeItem());
@@ -140,51 +131,55 @@ public class MessageParser {
 		addResponsToTreeItem(ancountResponses, KEY_ANSWERS);
 		addResponsToTreeItem(nscountResponses, KEY_AUTHORITY);
 		addResponsToTreeItem(arcountResponses, KEY_ADDITIONAL_RECORDS);
-		if(protocol == TRANSPORT_PROTOCOL.TCP) {
+		if (protocol == TRANSPORT_PROTOCOL.TCP) {
 			TreeItem<String> tcpTreeItem = new TreeItem<String>("");
-			tcpTreeItem.getChildren().add(new TreeItem<String>(KEY_LENGHT + ": " + (byteSizeResponse -2 )));
+			tcpTreeItem.getChildren().add(new TreeItem<String>(KEY_LENGHT + ": " + (byteSizeResponse - 2)));
 			tcpTreeItem.getChildren().add(main);
 			return tcpTreeItem;
-			
+
 		}
 		return main;
 	}
+
 	@SuppressWarnings("unchecked")
 	private void addCommentsDoH() {
-		Set<String> keys = httpResponse.keySet();{
+		Set<String> keys = httpResponse.keySet();
+		{
 			flagsDoH(keys);
-			typeDoH(keys,"Answer");
-			typeDoH(keys,"Question");
+			typeDoH(keys, "Answer");
+			typeDoH(keys, "Question");
 		}
-		
+
 	}
+
 	@SuppressWarnings("unchecked")
 	private void typeDoH(Set<String> keys, String name) {
 		for (String key : keys) {
-			if(key.equals(name)) {
+			if (key.equals(name)) {
 				JSONArray answers = (JSONArray) httpResponse.get(name);
-				for(int i=0;i<answers.size();i++) {
-					JSONObject record  = (JSONObject) answers.get(i);
+				for (int i = 0; i < answers.size(); i++) {
+					JSONObject record = (JSONObject) answers.get(i);
 					int value = ((Long) record.get("type")).intValue();
 					Q_COUNT recordType = Q_COUNT.getTypeByCode(new UInt16(value));
-					record.put("type","" + recordType.code.getValue() + " //" + recordType.toString());
+					record.put("type", "" + recordType.code.getValue() + " //" + recordType.toString());
 				}
 			}
 		}
-		
+
 	}
 
 	@SuppressWarnings("unchecked")
 	private void flagsDoH(Set<String> keys) {
 		ArrayList<String> flagsShortList = new ArrayList<String>(Arrays.asList(flagsShort));
 		for (String key : keys) {
-		if(flagsShortList.contains(key)) {
-			boolean value = (boolean) httpResponse.get(key);
-			int index = flagsShortList.indexOf(key);
-			httpResponse.put(key, "" + value +  " //note - " + flagsLong[index]);
-		}
+			if (flagsShortList.contains(key)) {
+				boolean value = (boolean) httpResponse.get(key);
+				int index = flagsShortList.indexOf(key);
+				httpResponse.put(key, "" + value + " //note - " + flagsLong[index]);
+			}
 		}
 	}
+
 	private void addRequestToTreeItem() {
 		TreeItem<String> questionTreeItem = new TreeItem<String>(KEY_QUESTIONS);
 		if (header.getQdCount().getValue() > 0) {
@@ -211,6 +206,7 @@ public class MessageParser {
 			throw new QueryIdNotMatchException();
 		}
 	}
+
 	@Override
 	public String toString() {
 		return "MessageParser [queryHeader=" + queryHeader + ", header=" + header + ", qcountResponses="
@@ -244,7 +240,8 @@ public class MessageParser {
 		main.put(KEY_ANSWERS, an);
 		main.put(KEY_AUTHORITY, ns);
 		main.put(KEY_ADDITIONAL_RECORDS, ar);
-		if (protocol == TRANSPORT_PROTOCOL.TCP) main.put(KEY_LENGHT, (byteSizeResponse -2));
+		if (protocol == TRANSPORT_PROTOCOL.TCP)
+			main.put(KEY_LENGHT, (byteSizeResponse - 2));
 
 		return main;
 	}
@@ -259,8 +256,9 @@ public class MessageParser {
 	public int getByteSizeResponse() {
 		return byteSizeResponse;
 	}
-	
-	public void checkDomainNamesWithRequest(String domainFromRequest) throws ResponseDoesNotContainRequestDomainNameException  {
+
+	public void checkDomainNamesWithRequest(String domainFromRequest)
+			throws ResponseDoesNotContainRequestDomainNameException {
 		String requestDomain = domainFromRequest.toLowerCase();
 		String responseDomain = "";
 		for (Response response : ancountResponses) {
@@ -287,14 +285,15 @@ public class MessageParser {
 		}
 		throw new ResponseDoesNotContainRequestDomainNameException();
 	}
+
 	private void checkCaseSensitive(String requestDomain, String responseDomain) {
-		if(requestDomain.equals(responseDomain)) {
+		if (requestDomain.equals(responseDomain)) {
 			mdnsDomainNameCaseSensitive = true;
-		}
-		else {
+		} else {
 			mdnsDomainNameCaseSensitive = false;
 		}
 	}
+
 	public boolean isCaseSensitive() {
 		return mdnsDomainNameCaseSensitive;
 	}

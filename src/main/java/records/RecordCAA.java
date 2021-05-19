@@ -51,8 +51,7 @@ public class RecordCAA extends Record {
 
 	@Override
 	public String[] getValesForTreeItem() {
-		String[] pole = { KEY_CERTIFICATE_FLAG + ": " + flag, KEY_TAG + ": " + tag,
-				KEY_VALUE + ": " + value };
+		String[] pole = { KEY_CERTIFICATE_FLAG + ": " + flag, KEY_TAG + ": " + tag, KEY_VALUE + ": " + value };
 		return pole;
 	}
 

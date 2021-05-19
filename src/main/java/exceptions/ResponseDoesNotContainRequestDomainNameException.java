@@ -1,6 +1,6 @@
 package exceptions;
 
-public class ResponseDoesNotContainRequestDomainNameException extends Exception{
+public class ResponseDoesNotContainRequestDomainNameException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 

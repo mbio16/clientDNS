@@ -1,8 +1,7 @@
 package enums;
 
 public enum AA {
-	AUTHORITATIVE((boolean) true), 
-	NON_AUTHORITATIVE((boolean) false);
+	AUTHORITATIVE((boolean) true), NON_AUTHORITATIVE((boolean) false);
 
 	public boolean code;
 

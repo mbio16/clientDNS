@@ -72,7 +72,7 @@ public class MessageSender {
 	private RESPONSE_MDNS_TYPE mdnsType;
 	private boolean mdnsDnssecSignatures;
 	private boolean closeConnection;
-	private Q_COUNT [] qcountTypes;
+	private Q_COUNT[] qcountTypes;
 	private String httpRequest;
 	private JSONObject httpResponse;
 	private CloseableHttpClient httpClient;
@@ -82,25 +82,21 @@ public class MessageSender {
 	private static final int MAX_MESSAGES_SENT = 3;
 	private static final int TIME_OUT_MILLIS = 2000;
 	public static final int MAX_UDP_SIZE = 1232;
-	private static final String IPv4_MDNS="224.0.0.251";
-	private static final String IPv6_MDNS="ff02::fb";
+	private static final String IPv4_MDNS = "224.0.0.251";
+	private static final String IPv6_MDNS = "ff02::fb";
 	private static final int MDNS_PORT = 5353;
 	private static final String KEY_HEAD = "Head";
 	private static final String KEY_QUERY = "Questions";
 	private static final String KEY_REQUEST = "Request";
 	public static final String KEY_ADDITIONAL_RECORDS = "Aditional records";
-	private static final String KEY_LENGHT="Lenght";
-	private static final String [] httpRequestParamsName = new String [] {
-			"name",
-			"type",
-			"do",
-			"cd"
-	};
+	private static final String KEY_LENGHT = "Lenght";
+	private static final String[] httpRequestParamsName = new String[] { "name", "type", "do", "cd" };
 	private static Logger LOGGER = Logger.getLogger(DomainConvert.class.getName());
 
 	public MessageSender(boolean recursion, boolean dnssec, boolean rrRecords, String domain, Q_COUNT[] types,
 			TRANSPORT_PROTOCOL transport_protocol, APPLICATION_PROTOCOL application_protocol, String resolverIP)
-			throws NotValidIPException, UnsupportedEncodingException, NotValidDomainNameException, UnknownHostException {
+			throws NotValidIPException, UnsupportedEncodingException, NotValidDomainNameException,
+			UnknownHostException {
 		requests = new ArrayList<Request>();
 		header = new Header(recursion, dnssec, types.length, rrRecords);
 		size = Header.getSize();
@@ -108,7 +104,7 @@ public class MessageSender {
 		// this.resolverIP = resolverIP;
 		this.transport_protocol = transport_protocol;
 		this.application_protocol = application_protocol;
-		if (application_protocol != APPLICATION_PROTOCOL.DOH ) {
+		if (application_protocol != APPLICATION_PROTOCOL.DOH) {
 			this.ip = InetAddress.getByName(resolverIP);
 		}
 		this.resolver = resolverIP;
@@ -123,7 +119,9 @@ public class MessageSender {
 		this.wasSend = false;
 	}
 
-	public MessageSender(boolean mdnsDnssecSignatures,String domain, Q_COUNT[] types, IP_PROTOCOL ipProtocol, RESPONSE_MDNS_TYPE  mdnsType) throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException {
+	public MessageSender(boolean mdnsDnssecSignatures, String domain, Q_COUNT[] types, IP_PROTOCOL ipProtocol,
+			RESPONSE_MDNS_TYPE mdnsType)
+			throws UnsupportedEncodingException, NotValidIPException, NotValidDomainNameException {
 		this.application_protocol = APPLICATION_PROTOCOL.MDNS;
 		this.ipProtocol = ipProtocol;
 		this.mdnsDnssecSignatures = mdnsDnssecSignatures;
@@ -133,13 +131,13 @@ public class MessageSender {
 		this.mdnsType = mdnsType;
 		addRequests(types, checkAndStripFullyQualifyName(domain), mdnsType);
 		this.messagesSent = 0;
-		this.recieveReply = new byte [1232];
+		this.recieveReply = new byte[1232];
 		this.wasSend = false;
 		this.domainAsString = domain;
 	}
+
 	private String checkAndStripFullyQualifyName(String domain) {
 		if (domain.endsWith(".")) {
-			System.out.println("Striping .");
 			return domain.substring(0, domain.length() - 1);
 		} else {
 			return domain;
@@ -150,23 +148,23 @@ public class MessageSender {
 		root = new TreeItem<String>(KEY_REQUEST);
 		root.getChildren().add(header.getAsTreeItem());
 		addRequestToTreeItem();
-		//OPT in DNS
+		// OPT in DNS
 		if (rrRecords) {
 			TreeItem<String> optRecord = new TreeItem<String>(MessageParser.KEY_ADDITIONAL_RECORDS);
-			optRecord.getChildren().add(Response.getOptAsTreeItem(true,false));
+			optRecord.getChildren().add(Response.getOptAsTreeItem(true, false));
 			root.getChildren().add(optRecord);
 		}
-		if(mdnsType != null){
+		if (mdnsType != null) {
 			TreeItem<String> optRecord = new TreeItem<String>(MessageParser.KEY_ADDITIONAL_RECORDS);
-			optRecord.getChildren().add(Response.getOptAsTreeItem(mdnsDnssecSignatures,true));
+			optRecord.getChildren().add(Response.getOptAsTreeItem(mdnsDnssecSignatures, true));
 			root.getChildren().add(optRecord);
 		}
-		if(transport_protocol == TRANSPORT_PROTOCOL.TCP) {
+		if (transport_protocol == TRANSPORT_PROTOCOL.TCP) {
 			TreeItem<String> tcpTreeItem = new TreeItem<String>("");
 			tcpTreeItem.getChildren().add(new TreeItem<String>(KEY_LENGHT + ": " + (byteSizeQuery - 2)));
 			tcpTreeItem.getChildren().add(root);
 			return tcpTreeItem;
-			
+
 		}
 		return root;
 	}
@@ -193,23 +191,15 @@ public class MessageSender {
 	private void addRequests(Q_COUNT[] types, String domain, RESPONSE_MDNS_TYPE mdnsType)
 			throws NotValidIPException, UnsupportedEncodingException, NotValidDomainNameException {
 		for (Q_COUNT qcount : types) {
-			Request r = new Request(domain,qcount,mdnsType);
+			Request r = new Request(domain, qcount, mdnsType);
 			requests.add(r);
 			size += r.getSize();
 		}
 	}
-	public void send()
-			throws 
-				TimeoutException, 
-				IOException,
-				MessageTooBigForUDPException,
-				CouldNotUseHoldConnectionException, 
-				HttpCodeException, 
-				OtherHttpException,
-				ParseException,
-				InterfaceDoesNotHaveIPAddressException,
-				SocketException,
-				SSLPeerUnverifiedException{
+
+	public void send() throws TimeoutException, IOException, MessageTooBigForUDPException,
+			CouldNotUseHoldConnectionException, HttpCodeException, OtherHttpException, ParseException,
+			InterfaceDoesNotHaveIPAddressException, SocketException, SSLPeerUnverifiedException {
 		switch (application_protocol) {
 		case DNS:
 			switch (transport_protocol) {
@@ -234,61 +224,49 @@ public class MessageSender {
 			break;
 		}
 	}
-	private void doh() throws 	
-				HttpCodeException,
-				ParseException,
-				InterfaceDoesNotHaveIPAddressException,
-				SocketException, 
-				OtherHttpException, 
-				SSLPeerUnverifiedException
-				{
-	try {
-	String httpsDomain = resolver.split("/")[0];
-	CloseableHttpResponse response;
-	;
-	String [] values = new String [] {
-			domainAsString,
-			qcountAsString(),
-			""+ rrRecords,
-			""+ !dnssec
-	};
-	messagesSent = 1;
-	String uri  = addParamtoUris(resolver, httpRequestParamsName, values);
-	switch (httpsDomain) {
-	case "dns.google":
-		response = sendAndRecieveDoH(uri, httpsDomain,false);
-		break;
-	case "cloudflare-dns.com":
-		response = sendAndRecieveDoH(uri,httpsDomain,true);
-		break;
-	default:
-		response =  sendAndRecieveDoH(uri, httpsDomain,false);
-		break;
+
+	private void doh() throws HttpCodeException, ParseException, InterfaceDoesNotHaveIPAddressException,
+			SocketException, OtherHttpException, SSLPeerUnverifiedException {
+		try {
+			String httpsDomain = resolver.split("/")[0];
+			CloseableHttpResponse response;
+			;
+			String[] values = new String[] { domainAsString, qcountAsString(), "" + rrRecords, "" + !dnssec };
+			messagesSent = 1;
+			String uri = addParamtoUris(resolver, httpRequestParamsName, values);
+			switch (httpsDomain) {
+			case "dns.google":
+				response = sendAndRecieveDoH(uri, httpsDomain, false);
+				break;
+			case "cloudflare-dns.com":
+				response = sendAndRecieveDoH(uri, httpsDomain, true);
+				break;
+			default:
+				response = sendAndRecieveDoH(uri, httpsDomain, false);
+				break;
+			}
+
+			if (response.getStatusLine().getStatusCode() == 200) {
+				String content = EntityUtils.toString(response.getEntity());
+				byteSizeResponseDoHDecompresed = getAllHeadersSize(response.getAllHeaders());
+				byteSizeResponseDoHDecompresed += content.getBytes().length;
+				parseResponseDoh(content);
+			} else {
+				throw new HttpCodeException(response.getStatusLine().getStatusCode());
+			}
+			closeHttpConnection();
+		} catch (HttpCodeException | ParseException | InterfaceDoesNotHaveIPAddressException | SocketException
+				| SSLPeerUnverifiedException e) {
+			closeHttpConnection();
+			throw e;
+		} catch (Exception e) {
+			closeHttpConnection();
+			e.printStackTrace();
+			throw new OtherHttpException();
+		}
+
 	}
 
-       if (response.getStatusLine().getStatusCode() == 200) {   	
-        	 String content = EntityUtils.toString(response.getEntity());
-        	 byteSizeResponseDoHDecompresed = getAllHeadersSize(response.getAllHeaders());
-        	 byteSizeResponseDoHDecompresed += content.getBytes().length;
-        	 parseResponseDoh(content);
-         }
-         else {
-			throw new HttpCodeException(response.getStatusLine().getStatusCode());
-		}
-      closeHttpConnection();
-	 }
-	catch (HttpCodeException | ParseException | InterfaceDoesNotHaveIPAddressException | SocketException | SSLPeerUnverifiedException  e) {
-		closeHttpConnection();
-		throw e;
-	}
-	 catch (Exception e) {
-		 closeHttpConnection();
-		 e.printStackTrace();
-		throw new OtherHttpException();
-	}
-	
-	}
-	
 	private void closeHttpConnection() {
 		try {
 			httpClient.close();
@@ -297,34 +275,35 @@ public class MessageSender {
 			return;
 		}
 	}
+
 	private int getAllHeadersSize(org.apache.http.Header[] allHeaders) {
-		int size = 0;		
+		int size = 0;
 		for (org.apache.http.Header header : allHeaders) {
 			size += header.toString().getBytes().length;
 		}
-		return size+1;
+		return size + 1;
 	}
 
-	private String qcountAsString(){
+	private String qcountAsString() {
 		String result = "";
 		for (int i = 0; i < qcountTypes.length; i++) {
-			if(i==0) {
+			if (i == 0) {
 				result += qcountTypes[i];
-			}
-			else {
-				result += ","+qcountTypes[i];
+			} else {
+				result += "," + qcountTypes[i];
 			}
 		}
 		return result;
 	}
-	
-	private CloseableHttpResponse sendAndRecieveDoH(String uri,String host,boolean httpGet) throws ClientProtocolException, IOException, InterfaceDoesNotHaveIPAddressException {
-		if(httpGet) {
+
+	private CloseableHttpResponse sendAndRecieveDoH(String uri, String host, boolean httpGet)
+			throws ClientProtocolException, IOException, InterfaceDoesNotHaveIPAddressException {
+		if (httpGet) {
 			HttpGet request = new HttpGet(uri);
-			request.addHeader("Accept","application/dns-json");
-			request.addHeader("Accept-Encoding","gzip, deflate, br");
+			request.addHeader("Accept", "application/dns-json");
+			request.addHeader("Accept-Encoding", "gzip, deflate, br");
 			request.addHeader("User-Agent", "Client-DNS");
-			request.addHeader("Host",host);
+			request.addHeader("Host", host);
 			request.setConfig(getRequestConfig(host));
 			httpRequestAsString(request);
 			httpClient = HttpClients.createDefault();
@@ -332,13 +311,12 @@ public class MessageSender {
 			CloseableHttpResponse response = httpClient.execute(request);
 			stopTime = System.nanoTime();
 			return response;
-		}
-		else {
+		} else {
 			HttpPost request = new HttpPost(uri);
-			request.addHeader("Accept","application/dns-json");
-			request.addHeader("Accept-Encoding","gzip, deflate, br");
+			request.addHeader("Accept", "application/dns-json");
+			request.addHeader("Accept-Encoding", "gzip, deflate, br");
 			request.addHeader("User-Agent", "Client-DNS");
-			request.addHeader("Host",host);
+			request.addHeader("Host", host);
 			request.setConfig(getRequestConfig(host));
 			httpRequestAsString(request);
 			httpClient = HttpClients.createDefault();
@@ -350,113 +328,111 @@ public class MessageSender {
 		}
 
 	}
-	
+
 	private RequestConfig getRequestConfig(String host) throws InterfaceDoesNotHaveIPAddressException {
 		try {
-			System.out.println(host);
-			if(Ip.isIpValid(host)) {
-				return RequestConfig.custom().setLocalAddress(Ip.getIpAddressFromInterface(interfaceToSend, host)).build();
+			if (Ip.isIpValid(host)) {
+				return RequestConfig.custom().setLocalAddress(Ip.getIpAddressFromInterface(interfaceToSend, host))
+						.build();
 			}
-		return RequestConfig.custom().setLocalAddress(interfaceToSend.getInterfaceAddresses().get(0).getAddress()).build();
-		}
-		catch (Exception e) {
+			return RequestConfig.custom().setLocalAddress(interfaceToSend.getInterfaceAddresses().get(0).getAddress())
+					.build();
+		} catch (Exception e) {
 			e.printStackTrace();
 			throw new InterfaceDoesNotHaveIPAddressException();
 		}
 	}
+
 	private void httpRequestAsString(HttpRequestBase request) {
 		String result = request.toString() + "\n";
-		for (org.apache.http.Header httpHeader :request.getAllHeaders()) {
-			result +=  httpHeader.toString() + "\n";
+		for (org.apache.http.Header httpHeader : request.getAllHeaders()) {
+			result += httpHeader.toString() + "\n";
 		}
 		this.byteSizeQuery = result.getBytes().length;
 		httpRequest = result;
 	}
+
 	public String getDoHRequest() {
 		return httpRequest;
 	}
 
 	private InetAddress getGroup() throws UnknownHostException {
-		if(ipProtocol==IP_PROTOCOL.IPv4) {
-			return  InetAddress.getByName(IPv4_MDNS);
-		}
-		else {
+		if (ipProtocol == IP_PROTOCOL.IPv4) {
+			return InetAddress.getByName(IPv4_MDNS);
+		} else {
 			return InetAddress.getByName(IPv6_MDNS);
 		}
 	}
+
 	@SuppressWarnings("resource")
-	private void mdns() throws UnknownHostException, TimeoutException, BindException{
+	private void mdns() throws UnknownHostException, TimeoutException, BindException {
 		messageToBytesMDNS();
 		messagesSent = 1;
 		InetAddress group = getGroup();
 
-		DatagramSocket unicastSocket; 
-		
-		while(true) {
-		try {
-		 MulticastSocket socket = new MulticastSocket(MDNS_PORT);
-		 socket.setNetworkInterface(interfaceToSend);
-		 socket.joinGroup(group);
-		 DatagramPacket datagramPacket = new DatagramPacket(messageAsBytes, messageAsBytes.length,
-                 group, MDNS_PORT);
-		 startTime = System.nanoTime();
-		 socket.setSoTimeout(TIME_OUT_MILLIS);
-		 socket.send(datagramPacket);
-		 wasSend = true;
-		 DatagramPacket recievePacket = new DatagramPacket(recieveReply, recieveReply.length);
-		if(mdnsType == RESPONSE_MDNS_TYPE.RESPONSE_UNICAST) {
-			socket.leaveGroup(group);
-			socket.close();
-			unicastSocket = new DatagramSocket(MDNS_PORT);
-			unicastSocket.receive(recievePacket);
-			unicastSocket.close();
-			socket.close();
-			return;
-			
-		}
-		else {
-		socket.receive(recievePacket);
-		socket.receive(recievePacket);
-		isResponse();
-		stopTime = System.nanoTime();
-		socket.leaveGroup(group);
-		socket.close();
-		return;
-			}
-		}
-		catch (BindException e) {
-			throw new BindException();
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			if (messagesSent < 3) {
-				messagesSent++;
-			}	
-			else {
-				throw new TimeoutException();
+		DatagramSocket unicastSocket;
+
+		while (true) {
+			try {
+				MulticastSocket socket = new MulticastSocket(MDNS_PORT);
+				socket.setNetworkInterface(interfaceToSend);
+				socket.joinGroup(group);
+				DatagramPacket datagramPacket = new DatagramPacket(messageAsBytes, messageAsBytes.length, group,
+						MDNS_PORT);
+				startTime = System.nanoTime();
+				socket.setSoTimeout(TIME_OUT_MILLIS);
+				socket.send(datagramPacket);
+				wasSend = true;
+				DatagramPacket recievePacket = new DatagramPacket(recieveReply, recieveReply.length);
+				if (mdnsType == RESPONSE_MDNS_TYPE.RESPONSE_UNICAST) {
+					socket.leaveGroup(group);
+					socket.close();
+					unicastSocket = new DatagramSocket(MDNS_PORT);
+					unicastSocket.receive(recievePacket);
+					unicastSocket.close();
+					socket.close();
+					return;
+
+				} else {
+					socket.receive(recievePacket);
+					socket.receive(recievePacket);
+					isResponse();
+					stopTime = System.nanoTime();
+					socket.leaveGroup(group);
+					socket.close();
+					return;
+				}
+			} catch (BindException e) {
+				throw new BindException();
+			} catch (Exception e) {
+				e.printStackTrace();
+				if (messagesSent < 3) {
+					messagesSent++;
+				} else {
+					throw new TimeoutException();
 				}
 			}
 		}
-		
-		
+
 	}
-	
-	private void isResponse() throws Exception{
-		if(!(Byte.toUnsignedInt(recieveReply[2]) > 128)) {
+
+	private void isResponse() throws Exception {
+		if (!(Byte.toUnsignedInt(recieveReply[2]) > 128)) {
 			LOGGER.warning("Not a response message");
 			throw new Exception("Not a response message Exception");
 		}
 	}
-	
-	private void dnsOverUDP() throws TimeoutException, IOException, MessageTooBigForUDPException,InterfaceDoesNotHaveIPAddressException {
+
+	private void dnsOverUDP()
+			throws TimeoutException, IOException, MessageTooBigForUDPException, InterfaceDoesNotHaveIPAddressException {
 		if (size > MAX_UDP_SIZE)
 			throw new MessageTooBigForUDPException();
 		messagesSent = 0;
 		messageToBytes();
 		DatagramSocket datagramSocket;
 		try {
-		 datagramSocket = new DatagramSocket(0,Ip.getIpAddressFromInterface(interfaceToSend,resolver));
-		}catch (Exception e) {
+			datagramSocket = new DatagramSocket(0, Ip.getIpAddressFromInterface(interfaceToSend, resolver));
+		} catch (Exception e) {
 			throw new InterfaceDoesNotHaveIPAddressException();
 		}
 		boolean run = true;
@@ -467,10 +443,9 @@ public class MessageSender {
 					throw new TimeoutException();
 				}
 
-
 				DatagramPacket responsePacket = new DatagramPacket(recieveReply, recieveReply.length);
 				DatagramPacket datagramPacket = new DatagramPacket(messageAsBytes, messageAsBytes.length, ip, DNS_PORT);
-				//DatagramPacket datagramPacket = new Data
+				// DatagramPacket datagramPacket = new Data
 				datagramSocket.setSoTimeout(TIME_OUT_MILLIS);
 				startTime = System.nanoTime();
 
@@ -495,7 +470,8 @@ public class MessageSender {
 
 	}
 
-	private void dnsOverTcp() throws TimeoutException, CouldNotUseHoldConnectionException,IndexOutOfBoundsException,InterfaceDoesNotHaveIPAddressException {
+	private void dnsOverTcp() throws TimeoutException, CouldNotUseHoldConnectionException, IndexOutOfBoundsException,
+			InterfaceDoesNotHaveIPAddressException {
 		messageToBytes();
 		try {
 			messagesSent = 1;
@@ -514,34 +490,34 @@ public class MessageSender {
 	public void closeTCPConnection() throws IOException {
 		tcp.closeAll();
 	}
-	
-	private  void parseResponseDoh(String response) throws ParseException {
-		JSONParser parser = new JSONParser();  
-		this.httpResponse = (JSONObject) parser.parse(response);  
+
+	private void parseResponseDoh(String response) throws ParseException {
+		JSONParser parser = new JSONParser();
+		this.httpResponse = (JSONObject) parser.parse(response);
 	}
-	private String addParamtoUris(String uri,String [] paramNames, String [] values) {
-		
-		String splited [] = uri.split("/");
-		if(Ip.isIpv6Address(splited[0])) {
-			
-			uri = "[" + splited[0] +"]" ; 
-			if(splited.length > 1) {
+
+	private String addParamtoUris(String uri, String[] paramNames, String[] values) {
+
+		String splited[] = uri.split("/");
+		if (Ip.isIpv6Address(splited[0])) {
+
+			uri = "[" + splited[0] + "]";
+			if (splited.length > 1) {
 				uri += "/" + splited[1];
 			}
 		}
-		String result = "https://" + uri +"?";
+		String result = "https://" + uri + "?";
 		for (int i = 0; i < values.length; i++) {
-			if (i==0) {
-				result += paramNames[i] + "=" + values [i];
-			}
-			else {
-			result += "&" + paramNames[i] + "=" + values [i];
+			if (i == 0) {
+				result += paramNames[i] + "=" + values[i];
+			} else {
+				result += "&" + paramNames[i] + "=" + values[i];
 			}
 		}
-		System.out.println(result);
 		return result;
 
 	}
+
 	private void messageToBytes() {
 		int curentIndex = 0;
 		if (rrRecords) {
@@ -579,11 +555,12 @@ public class MessageSender {
 		byteSizeQuery = messageAsBytes.length;
 
 	}
+
 	private void messageToBytesMDNS() {
 		int curentIndex = 0;
 		size += new Response().getDnssecAsBytesMDNS(mdnsDnssecSignatures).length;
-		this.messageAsBytes = new byte [size];
-		byte head [] = header.getHaderAsBytes();
+		this.messageAsBytes = new byte[size];
+		byte head[] = header.getHaderAsBytes();
 		for (int i = 0; i < head.length; i++) {
 			this.messageAsBytes[curentIndex] = head[i];
 			curentIndex++;
@@ -603,6 +580,7 @@ public class MessageSender {
 		}
 		byteSizeQuery = messageAsBytes.length;
 	}
+
 	@SuppressWarnings("unchecked")
 	public JSONObject getAsJson() {
 		JSONObject jsonObject = new JSONObject();
@@ -613,19 +591,20 @@ public class MessageSender {
 			jsonArray.add(request.getAsJson());
 		}
 		jsonObject.put(KEY_QUERY, jsonArray);
-		if (transport_protocol == TRANSPORT_PROTOCOL.TCP) jsonObject.put(KEY_LENGHT, (byteSizeQuery -2));
-		
-		//opt record
-		if (header.getArCount().getValue()==1) {
+		if (transport_protocol == TRANSPORT_PROTOCOL.TCP)
+			jsonObject.put(KEY_LENGHT, (byteSizeQuery - 2));
+
+		// opt record
+		if (header.getArCount().getValue() == 1) {
 			boolean mdns = (mdnsType != null);
-			if(mdns)
-				jsonObject.put(KEY_ADDITIONAL_RECORDS,Response.getOptRequestAsJson(mdnsDnssecSignatures, mdns));
+			if (mdns)
+				jsonObject.put(KEY_ADDITIONAL_RECORDS, Response.getOptRequestAsJson(mdnsDnssecSignatures, mdns));
 			else
-				jsonObject.put(KEY_ADDITIONAL_RECORDS,Response.getOptRequestAsJson(true, mdns));
-			}
+				jsonObject.put(KEY_ADDITIONAL_RECORDS, Response.getOptRequestAsJson(true, mdns));
+		}
 		return jsonObject;
 	}
-	
+
 	public String getAsJsonString() {
 		return new GsonBuilder().setPrettyPrinting().create().toJson(getAsJson());
 	}
@@ -667,11 +646,10 @@ public class MessageSender {
 		this.closeConnection = closeConnection;
 	}
 
-
 	public JSONObject getHttpResponse() {
 		return httpResponse;
 	}
-	
+
 	public int getByteSizeResponseDoH() {
 		return byteSizeResponseDoHDecompresed;
 	}
@@ -683,12 +661,13 @@ public class MessageSender {
 	public void setInterfaceToSend(NetworkInterface interfaceToSend) {
 		this.interfaceToSend = interfaceToSend;
 	}
-	
+
 	public boolean getWasSend() {
 		return this.wasSend;
 	}
+
 	public String getDomain() {
 		return this.domainAsString;
 	}
-	
+
 }
