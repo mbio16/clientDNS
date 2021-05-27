@@ -15,7 +15,7 @@ public class TestMain {
 		try {
 		
 	//	sender = new MessageSender(false,"macMartin.local",a,IP_PROTOCOL.IPv4,RESPONSE_MDNS_TYPE.RESPONSE_MULTICAST);
-		sender = new MessageSender(true, false, false, "seznam.cz", a,protocol,APPLICATION_PROTOCOL.DNS,"1.1.1.1");
+		sender = new MessageSender(true, false, false, ".", a,protocol,APPLICATION_PROTOCOL.DNS,"1.1.1.1");
 		sender.setInterfaceToSend(NetworkInterface.getByName("eth7"));
 		sender.send();
 		

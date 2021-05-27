@@ -433,6 +433,9 @@ public class DNSController extends MDNSController {
 		try {
 			String domain = (domainNameTextField.getText());
 			LOGGER.info("Domain name: " + domain);
+			if (domain.equals(".")) {
+				return domain;
+			}
 			if (domain == "") {
 				throw new NotValidDomainNameException();
 			}
